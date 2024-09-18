@@ -39,12 +39,14 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <main className="grid grid-cols-12">
-            <TopMenuNav />
             {/* left side nav */}
             <div className="col-span-2 relative">
               <LeftMenuNav />
             </div>
-            <div className="col-span-10 p-4 pt-16">{children}</div>
+            <div className="col-span-10 relative">
+              <TopMenuNav />
+              <div className="col-span-12 p-4 pt-16">{children}</div>
+            </div>
           </main>
         </NextIntlClientProvider>
       </body>
