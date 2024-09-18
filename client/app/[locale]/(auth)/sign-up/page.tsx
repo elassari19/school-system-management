@@ -28,9 +28,13 @@ export default function SignUpPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: { userType: 'student' },
   });
+
+  const userType = watch('userType');
 
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
@@ -42,27 +46,28 @@ export default function SignUpPage() {
   return (
     <div className="max-w-md mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label htmlFor="userType" className="block mb-1">
-            User Type
+      <div className="flex gap-1 mb-4 rounded-xl overflow-hidden">
+        {['student', 'parent', 'teacher'].map((type) => (
+          <label key={type} className="flex-1">
+            <input
+              type="radio"
+              value={type}
+              {...register('userType')}
+              className="sr-only"
+            />
+            <div
+              className={`text-center py-2 cursor-pointer ${
+                userType === type
+                  ? 'bg-primary text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </div>
           </label>
-          <select
-            id="userType"
-            {...register('userType')}
-            className="w-full px-3 py-2 border rounded"
-          >
-            <option value="">Select user type</option>
-            <option value="student">Student</option>
-            <option value="parent">Parent</option>
-            <option value="teacher">Teacher</option>
-          </select>
-          {errors.userType && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.userType.message}
-            </p>
-          )}
-        </div>
+        ))}
+      </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label htmlFor="fullName" className="block mb-1">
             Full Name
@@ -70,7 +75,7 @@ export default function SignUpPage() {
           <input
             id="fullName"
             {...register('fullName')}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
           {errors.fullName && (
             <p className="text-red-500 text-sm mt-1">
@@ -86,7 +91,7 @@ export default function SignUpPage() {
             id="email"
             type="email"
             {...register('email')}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
           {errors.email && (
             <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -100,7 +105,7 @@ export default function SignUpPage() {
             id="password"
             type="password"
             {...register('password')}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
           {errors.password && (
             <p className="text-red-500 text-sm mt-1">
@@ -116,7 +121,7 @@ export default function SignUpPage() {
             id="confirmPassword"
             type="password"
             {...register('confirmPassword')}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
           {errors.confirmPassword && (
             <p className="text-red-500 text-sm mt-1">
@@ -127,7 +132,7 @@ export default function SignUpPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+          className="w-full bg-primary text-white py-2 rounded hover:bg-primary/90 disabled:opacity-50"
         >
           {isLoading ? 'Signing up...' : 'Sign Up'}
         </button>
