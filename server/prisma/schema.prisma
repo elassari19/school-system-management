@@ -13,6 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  TEACHER
+  PARENT
+  STUDENT
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
 model Account {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   userId            String   @db.ObjectId
@@ -33,34 +46,6 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model Session {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  expires      DateTime @db.Date
-  sessionToken String
-  userId       String   @db.ObjectId
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
-  phone     String
-  password  String
-  role      String  @default("user")
-  age       Int?
-  gender    String?
-  image     String?
-  specialty String?
-  address   String?
-  fees      Float?
-  session   Session[]
-  account   Account[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
 model VerificationToken {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
@@ -70,5 +55,102 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Session {
+  id        String   @id @map("_id")
+  expiresAt DateTime @db.Date
+  sid       String
+  data      String
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @db.ObjectId
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  fullname  String?
+  phone     String?
+  password  String
+  role      Role      @default(PARENT)
+  children  Child[]
+  age       Int?
+  gender    String?
+  image     String?
+  address   String?
+  session   Session[]
+  account   Account[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  cours     Course[]
+  grade     Grade[]
+  student   Student[]
+}
+
+model Student {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  grade     Int?
+  school    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payments  Payment[]
+}
+
+model Payment {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  signatureId String
+  status      PaymentStatus @default(PENDING)
+  studentId   String        @db.ObjectId
+  student     Student       @relation(fields: [studentId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Child {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  parentId String @db.ObjectId
+  parent   User   @relation(fields: [parentId], references: [id])
+}
+
+model Course {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  modules     Module[]
+  grade       Grade[]
+  exams       Exam[]
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  price       Float    @default(0)
+}
+
+model Module {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+  courseId String @db.ObjectId
+  course   Course @relation(fields: [courseId], references: [id])
+}
+
+model Exam {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+  dueDate  DateTime
+  courseId String   @db.ObjectId
+  course   Course   @relation(fields: [courseId], references: [id])
+  grade    Grade[]
+}
+
+model Grade {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  score    Int
+  userId   String  @db.ObjectId
+  courseId String? @db.ObjectId
+  examId   String? @db.ObjectId
+  user     User    @relation(fields: [userId], references: [id])
+  course   Course? @relation(fields: [courseId], references: [id])
+  exam     Exam?   @relation(fields: [examId], references: [id])
+}
+
 // npx prisma generate
-// npx prisma db push%                                                          
+// npx prisma db push
