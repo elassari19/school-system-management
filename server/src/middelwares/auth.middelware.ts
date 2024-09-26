@@ -5,7 +5,10 @@ import { ExtendsSessionRequest } from '../types/auth.types';
 
 export const isAuthenticated =
   () => (req: ExtendsSessionRequest, res: Response, next: NextFunction) => {
-    if (req.session?.user && req.session.user?.id) {
+    // using session
+    // if(req.session?.user && req.session.user?.id)
+    // using passport
+    if (req.isAuthenticated()) {
       next();
     } else {
       res.status(401).json({ message: 'Unauthorized' });

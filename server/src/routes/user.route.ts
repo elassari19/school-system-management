@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../middelwares/auth.middelware';
+import passport from 'passport';
 
 const router = Router();
 
@@ -62,7 +63,8 @@ export const getUsers = router.get(
  */
 export const deleteUser = router.delete(
   '/user-delete/:userId',
-  // isAuthenticated,
+  // @ts-ignore
+  isAuthenticated(),
   (req, res) => {
     const { userId } = req.params;
     // console.log('Deleting user with id:', userId);

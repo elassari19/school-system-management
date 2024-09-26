@@ -3,7 +3,8 @@ import validateSchema from '../middelwares/validateSchema';
 import { signInSchema, signUpSchema } from '../joiValidation/auth.joi';
 import { signIn, signOut, signUp } from '../controllers/auth.controller';
 import { isAuthenticated } from '../middelwares/auth.middelware';
-import { ExtendsSessionRequest } from '../types/auth.types';
+import passport from 'passport';
+import '../strategies/local-strategy';
 
 const router = Router();
 
@@ -71,6 +72,16 @@ export const signInUser = router.post(
   '/sign-in',
   validateSchema(signInSchema),
   signIn as any
+);
+
+export const signInUserWithPassport = router.post(
+  '/passport/sign-in',
+  validateSchema(signInSchema),
+  passport.authenticate('local', { session: true }),
+  (req, res) => {
+    console.log('User logged in', req.user);
+    res.send('Sign in with passport');
+  }
 );
 
 /**
