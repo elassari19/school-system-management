@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import '../globals.css';
+import Providers from '@/components/app-providers';
 
 const geistSans = localFont({
   src: '../fonts/GeistVF.woff',
@@ -36,9 +37,11 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <main className="w-full h-screen flex justify-center items-center">
-            {children}
-          </main>{' '}
+          <Providers>
+            <main className="w-full h-screen flex justify-center items-center">
+              {children}
+            </main>{' '}
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>
