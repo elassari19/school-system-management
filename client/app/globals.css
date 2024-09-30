@@ -3,15 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #0a0a0a;
-  }
+  --background: #f3efef;
+  --foreground: #f0f0f0;
 }
 
 @layer utilities {
@@ -22,15 +15,15 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0deg 0% 94.51%;
+    --background: 0deg 14.29% 94.51%;
+    --foreground: 0deg 0% 94.12%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
     --primary: 220deg 24.49% 19.22%;
     --primary-foreground: 214.29deg 9.5% 43.33%;
-    --secondary: 0 0% 96.1%;
+    --secondary: 345deg 67.74% 51.37%;
     --secondary-foreground: 0 0% 9%;
     --success: 163.55deg 77.87% 49.61%;
     --orange: 32.05deg 99.15% 53.73%;
@@ -52,15 +45,15 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 0deg 14.29% 94.51%;
+    --foreground: 0deg 0% 94.12%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --secondary: 345deg 67.74% 51.37%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
@@ -85,7 +78,9 @@
   }
 
   body {
-    @apply bg-foreground text-primary;
+    @apply text-primary;
     font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    max-height: 100vh;
   }
 }

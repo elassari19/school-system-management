@@ -1,48 +1,71 @@
 import React from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { IoNotificationsOutline, IoSearch } from 'react-icons/io5';
+import { IoMenu, IoSearch } from 'react-icons/io5';
 import DropDountMenu from '../menu/dropdown-menu';
-import { AiOutlineMessage } from 'react-icons/ai';
+import SignOut from '../auth/sign-out';
+import { getCookie } from '@/lib/cookies-handler';
+import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { FaPlus } from 'react-icons/fa6';
 
-const TopMenuNav = () => {
+const TopMenuNav = async () => {
+  const auth = await getCookie('session');
+  console.log('auth', auth);
   return (
-    <div className="col-span-full grid grid-cols-12 sticky top-0 z-50">
-      <div className="col-span-full bg-gray-100">
-        <div className="flex justify-between items-center p-4">
-          {/* <Translations /> */}
-          <div className="flex items-center bg-white">
-            <Input
-              type="text"
-              placeholder="Search..."
-              className="w-64 bg-white outline-none border-none"
-            />
-            <Button variant="ghost" size="icon" className="cursor-pointer">
-              <IoSearch className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <DropDountMenu
-              menuContent={['null']}
-              icon={<AiOutlineMessage className="w-7 h-7" />}
-              title="Messages"
-            />
-            <DropDountMenu
-              menuContent={['null']}
-              icon={<IoNotificationsOutline className="w-7 h-7" />}
-              title="Notification"
-            />
-            <div className="flex items-center gap-2">
-              <div className="flex flex-col items-end">
-                <span className="font-semibold">John Doe</span>
-                <span className="text-sm text-gray-500">Student</span>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-600 mr-2">
-                JD
-              </div>
+    <div className="flex justify-between items-center p-4">
+      {/* <Search Input /> */}
+      <div className="flex items-center bg-white rounded-full overflow-hidden">
+        <Input
+          type="text"
+          placeholder="Try Searching 'insights'"
+          className="w-64 bg-white border-none"
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="cursor-pointer text-primary/40"
+        >
+          <IoSearch className="h-6 w-6" />
+        </Button>
+      </div>
+      <div className="flex items-center gap-8">
+        {/* User Options */}
+        <DropDountMenu
+          menuContent={['null']}
+          icon={
+            <div className="flex items-center gap-2 rounded-full bg-white px-2 py-1">
+              <IoMenu className="w-7 h-7" />
+              <Avatar className="w-8 h-8">
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="@shadcn"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>{' '}
             </div>
+          }
+          title="Notification"
+        />
+        {/* user account */}
+        {auth ? (
+          <div className="flex justify-center">
+            <DropDountMenu
+              menuContent={[<SignOut />]}
+              icon={
+                <div className="rounded-full bg-secondary w-10 h-10 flex justify-center items-center">
+                  <FaPlus className="w-4 h-4 text-white" />
+                </div>
+              }
+              title="User Account"
+              className="w-40 !self-end"
+            />
           </div>
-        </div>
+        ) : (
+          <Link href="/en/sign-in" className="font-bold">
+            SignIn
+          </Link>
+        )}
       </div>
     </div>
   );

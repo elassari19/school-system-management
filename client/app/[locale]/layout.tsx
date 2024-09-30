@@ -38,7 +38,7 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <main className="w-full h-screen flex justify-center items-center">
+            <main className="w-full flex justify-center items-center">
               {children}
             </main>{' '}
           </Providers>
