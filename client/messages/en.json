@@ -1,6 +1,9 @@
 {
+  "local": "en",
+  "en": "English",
+  "ar": "Arabic",
   "language": "language",
-  "dashbobard": "Dashbobard",
+  "Dashboard": "Dashbobard",
   "Menu": "Menu",
   "Home": "Home",
   "Teachers": "Teachers",
