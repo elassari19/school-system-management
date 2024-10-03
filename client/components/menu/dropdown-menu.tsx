@@ -8,16 +8,15 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { IoNotificationsOutline } from 'react-icons/io5';
-import { IconType } from 'react-icons/lib';
+import { cn } from '@/lib/utils';
 
-type Props = {
-  menuContent: string[];
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  menuContent: React.ReactNode[];
   icon: React.ReactNode;
   title: string;
-};
+}
 
-const DropDountMenu = ({ menuContent, icon, title }: Props) => {
+const DropDountMenu = ({ menuContent, icon, title, className }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,7 +25,7 @@ const DropDountMenu = ({ menuContent, icon, title }: Props) => {
           <span className="sr-only">{title}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="center" className={cn('', className)}>
         <DropdownMenuLabel>{title}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {menuContent.map((notify, index) => (

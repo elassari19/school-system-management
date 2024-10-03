@@ -1,47 +1,59 @@
 'use client';
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+
 import { cn } from '@/lib/utils';
+import { menuList } from '@/lib/constant';
+import Link from 'next/link';
+import { AccordionMenu } from '../ui/accordion';
+import { usePathname } from 'next/navigation';
 
-interface IProps {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-}
-
-const menuItems = ({ href, icon, label }: IProps) => {
-  const pathname = usePathname();
-
-  let isActiveRoute = false;
-  if (
-    (href == '/' && (pathname == '/en' || pathname == '/ar')) ||
-    (pathname.includes(href) && href != '/')
-  )
-    isActiveRoute = true;
+const MenuTabs = () => {
+  const headersList = usePathname();
+  const path = headersList.split('/').at(-1);
+  console.log('path', headersList);
 
   return (
-    <li className="group">
-      <Link href={href}>
-        <div
-          className={cn(
-            'flex items-center p-2 group-hover:bg-primary/10 group-hover:text-primary font-bold rounded-md',
-            isActiveRoute && 'bg-primary/20 text-primary'
-          )}
-        >
-          <div
-            className={cn(
-              'group-hover:text-white group-hover:bg-primary p-1 rounded-sm',
-              isActiveRoute && 'text-white bg-primary'
-            )}
-          >
-            {icon}
-          </div>
-          <span className="ml-2">{label}</span>
-        </div>
-      </Link>
-    </li>
+    <div className="flex-1 w-full px-6 flex flex-col gap-4 py-4">
+      {menuList.map((item) => (
+        <AccordionMenu
+          accordionTrigger={
+            <Link
+              key={item.title}
+              href={item.title.toLocaleLowerCase()}
+              className={cn(
+                'group flex items-center justify-between gap-4 font-semibold',
+                path === item.title.toLocaleLowerCase()
+                  ? 'text-secondary'
+                  : 'text-primary'
+              )}
+            >
+              <item.icon
+                className={cn(
+                  'rounded-full p-2 w-8 h-8 bg-white group-hover:bg-secondary group-hover:text-white',
+                  path === item.title.toLocaleLowerCase()
+                    ? 'bg-secondary text-white'
+                    : 'text-primary'
+                )}
+              />
+              <span className="group-hover:text-secondary text-sm">
+                {item.title}
+              </span>
+            </Link>
+          }
+          accordionContent={item.list?.map((subItem) => (
+            <Link
+              key={subItem.title}
+              href={`${path}/${subItem.title.toLocaleLowerCase()}`}
+              className="hover:text-secondary flex items-center justify-between ml-4 pl-10 text-sm font-semibold border-l-2 border-primary/30"
+            >
+              {subItem.title}
+            </Link>
+          ))}
+          value={item.title.toLocaleLowerCase()}
+          key={item.title}
+        />
+      ))}
+    </div>
   );
 };
 
-export default menuItems;
+export default MenuTabs;
