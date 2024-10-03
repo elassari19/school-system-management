@@ -4,12 +4,13 @@ import { cn } from '@/lib/utils';
 import { menuList } from '@/lib/constant';
 import Link from 'next/link';
 import { AccordionMenu } from '../ui/accordion';
-import { usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 
 const MenuTabs = () => {
   const headersList = usePathname();
+  const params = useSearchParams().get('tab');
   const path = headersList.split('/').at(-1);
-  console.log('path', headersList);
+  console.log('path', headersList, params);
 
   return (
     <div className="flex-1 w-full px-6 flex flex-col gap-4 py-4">
@@ -42,10 +43,29 @@ const MenuTabs = () => {
           accordionContent={item.list?.map((subItem) => (
             <Link
               key={subItem.title}
-              href={`${path}/${subItem.title.toLocaleLowerCase()}`}
-              className="hover:text-secondary flex items-center justify-between ml-4 pl-10 text-sm font-semibold border-l-2 border-primary/30"
+              href={`${path}/?tab=${subItem.title.toLocaleLowerCase()}`}
+              className={cn(
+                'hover:text-secondary flex items-center gap-8 ml-4 text-sm font-semibold border-l-2 border-primary/30'
+              )}
             >
-              {subItem.title}
+              <div
+                className={cn(
+                  'w-3 border',
+                  params === subItem.title.toLocaleLowerCase()
+                    ? 'border-b-primary'
+                    : 'border-b-primary/50'
+                )}
+              />
+              <p
+                className={cn(
+                  'text-sm',
+                  params === subItem.title.toLocaleLowerCase()
+                    ? 'text-primary'
+                    : 'text-primary/50'
+                )}
+              >
+                {subItem.title}
+              </p>
             </Link>
           ))}
           value={item.title.toLocaleLowerCase()}
