@@ -19,10 +19,10 @@ export default async function LocaleLayout({ children }: IProps) {
   return (
     <main className="w-full grid grid-cols-10">
       {/* left side nav */}
-      <div className="hidden md:block col-span-2 relative">
+      <div className="hidden lg:block col-span-2 relative">
         <LeftMenuNav />
       </div>
-      <div className="col-span-full md:col-span-8 relative">
+      <div className="col-span-full lg:col-span-8 relative">
         <div className="h-screen w-full flex flex-col">
           <TopMenuNav />
           <div className="md:mr-4 rounded-3xl flex-1 overflow-hidden bg-white">
