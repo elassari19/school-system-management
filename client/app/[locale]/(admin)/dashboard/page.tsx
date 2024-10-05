@@ -1,127 +1,85 @@
 import { getTranslations } from 'next-intl/server';
-import {
-  PieChart,
-  Pie,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-import StudentGender from '../../../../components/charts/students';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Users, User } from 'lucide-react';
+import MonthlyFinanceChart from '@/components/charts/month-finance';
+import YearsFinancialChart from '@/components/charts/year-expenses';
+import { GiTeacher } from 'react-icons/gi';
+import { PiExam } from 'react-icons/pi';
+import ParentChildTable from '@/components/tables/parents-tables';
+import { events, monthlyFinance, parentData } from '@/lib/dummy-data';
+import EventsCard from '@/components/cards/events-card';
 
 interface IProps {}
 
 export default async function Page({}: IProps) {
   const t = await getTranslations('');
 
-  // Sample data (replace with your actual data)
-  const genderData = [
-    {
-      name: 'Total',
-      count: 20344,
-      fill: '#fff',
-    },
-    {
-      name: 'Male',
-      count: 9342,
-      fill: '#e6acd1',
-    },
-    {
-      name: 'Female',
-      count: 11002,
-      fill: '#13c4e9',
-    },
-  ];
-
-  const attendanceData = [
-    { name: 'Mon', male: 80, female: 75 },
-    { name: 'Tue', male: 85, female: 80 },
-    { name: 'Wed', male: 75, female: 85 },
-    { name: 'Thu', male: 90, female: 88 },
-    { name: 'Fri', male: 82, female: 79 },
-  ];
-
-  const financeData = [
-    { month: 'Jan', revenue: 1000 },
-    { month: 'Feb', revenue: 1500 },
-    { month: 'Mar', revenue: 1300 },
-    { month: 'Apr', revenue: 1800 },
-    { month: 'May', revenue: 2000 },
-  ];
-
-  const gradeData = [
-    { month: 'Jan', male: 75, female: 80 },
-    { month: 'Feb', male: 78, female: 82 },
-    { month: 'Mar', male: 80, female: 79 },
-    { month: 'Apr', male: 82, female: 85 },
-    { month: 'May', male: 85, female: 87 },
-  ];
-
   return (
-    <div className="h-full overflow-auto bg-white grid grid-cols-2 gap-4 p-4">
-      {/* Students Card */}
-      <div className="bg-foreground p-4 rounded-lg">
-        <div className="flex items-center justify-between px-4">
-          <h2 className="text-lg font-semibold mb-4">Students</h2>
-          <h2 className="text-lg font-semibold mb-4">
-            Total {genderData[0].count}
-          </h2>
+    <div className="h-full overflow-auto flex flex-col gap-4">
+      {/* cards */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {[
+          {
+            icon: <GiTeacher className="h-6 w-6 text-secondary" />,
+            title: `${t('Teachers')} ${t('Courses')}`,
+            currentValue: '89',
+            pastValue: `+20.1% ${t('from last year')}`,
+          },
+          {
+            icon: <PiExam className="h-6 w-6 text-secondary" />,
+            title: t('Exams'),
+            currentValue: '12',
+            pastValue: `+5.4% ${t('from last year')}`,
+          },
+          {
+            icon: <Users className="h-6 w-6 text-secondary" />,
+            title: t('Students'),
+            currentValue: '1,234',
+            pastValue: `+180 ${t('new students this year')}`,
+          },
+          {
+            icon: <User className="h-6 w-6 text-secondary" />,
+            title: t('Parents'),
+            currentValue: '2,345',
+            pastValue: `+210 ${t('new parents this year')}`,
+          },
+        ].map(({ icon, title, currentValue, pastValue }) => (
+          <Card
+            key={title}
+            className="flex-1 border-secondary/70 bg-gradient-to-b from-white to-secondary/10"
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
+              <CardTitle className="text-sm font-semibold">{title}</CardTitle>
+              {icon}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{currentValue}</div>
+              <p className="text-xs text-muted-foreground">{pastValue}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      {/* charts */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+        {/* monthly */}
+        <MonthlyFinanceChart data={monthlyFinance} />
+        {/* yearly */}
+        <YearsFinancialChart />
+      </section>
+
+      <section className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 h-40">
+        {/* parend child general info */}
+        <div className="lg:col-span-3">
+          <ParentChildTable data={parentData} />
         </div>
-        <StudentGender genderData={genderData} />
-      </div>
-
-      {/* Attendance Card */}
-      {/* <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Student Attendance</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={attendanceData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="male" fill="#8884d8" />
-            <Bar dataKey="female" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div> */}
-
-      {/* Finance Card */}
-      {/* <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Finance</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={financeData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div> */}
-
-      {/* Grades Card */}
-      {/* <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Student Grades</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={gradeData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="male" stroke="#8884d8" />
-            <Line type="monotone" dataKey="female" stroke="#82ca9d" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div> */}
+        {/* coming events */}
+        <div className="lg:col-span-1 h-full overflow-auto grid grid-cols-1 gap-4">
+          {events.map((event) => (
+            <EventsCard key={event.id} event={event} />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

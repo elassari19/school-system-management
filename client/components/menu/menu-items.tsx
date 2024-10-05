@@ -5,8 +5,10 @@ import { menuList } from '@/lib/constant';
 import Link from 'next/link';
 import { AccordionMenu } from '../ui/accordion';
 import { useSearchParams, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 const MenuTabs = () => {
+  const t = useTranslations();
   const headersList = usePathname();
   const params = useSearchParams().get('tab');
   const path = headersList.split('/').at(-1);
@@ -36,7 +38,7 @@ const MenuTabs = () => {
                 )}
               />
               <span className="group-hover:text-secondary text-sm">
-                {item.title}
+                {t(item.title)}
               </span>
             </Link>
           }
@@ -45,7 +47,8 @@ const MenuTabs = () => {
               key={subItem.title}
               href={`${path}/?tab=${subItem.title.toLocaleLowerCase()}`}
               className={cn(
-                'hover:text-secondary flex items-center gap-8 ml-4 text-sm font-semibold border-l-2 border-primary/30'
+                'hover:text-secondary flex items-center gap-8 ml-4 text-sm font-semibold border-primary/30',
+                t('loacle') == 'en' ? 'border-l-2' : 'border-r-2'
               )}
             >
               <div
@@ -64,7 +67,7 @@ const MenuTabs = () => {
                     : 'text-primary/50'
                 )}
               >
-                {subItem.title}
+                {t(subItem.title)}
               </p>
             </Link>
           ))}

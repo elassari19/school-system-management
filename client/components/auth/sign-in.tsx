@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { UserRole } from '../../lib/types';
 import { signInAction } from '../../app/api/auth';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -18,6 +19,7 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
+  const t = useTranslations();
   const [selectedRole, setSelectedRole] = useState<UserRole>('Student');
   const [error, setError] = useState<string | null>(null);
   const {
@@ -45,7 +47,7 @@ const SignIn = () => {
   return (
     <>
       <div className="flex gap-1 mb-4 rounded-md overflow-hidden">
-        {['Student', 'Parent', 'Teacher'].map((role) => (
+        {['Student', 'Parents', 'Teachers'].map((role) => (
           <button
             key={role}
             onClick={() => setSelectedRole(role as UserRole)}
@@ -55,14 +57,14 @@ const SignIn = () => {
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            {role}
+            {t(role)}
           </button>
         ))}
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label htmlFor="email" className="block mb-1">
-            Email
+            {t('Email')}
           </label>
           <input
             {...register('email')}
@@ -76,7 +78,7 @@ const SignIn = () => {
         </div>
         <div>
           <label htmlFor="password" className="block mb-1">
-            Password
+            {t('Password')}
           </label>
           <input
             {...register('password')}
@@ -92,14 +94,14 @@ const SignIn = () => {
         </div>
         <div className="flex justify-end">
           <Link href={'/forgot-password'} className="text-sm font-bold">
-            Forgot password?
+            {t('Forgot password')}?
           </Link>
         </div>
         <button
           type="submit"
           className="w-full bg-primary text-white py-2 rounded hover:bg-primary/90"
         >
-          Sign In
+          {t('Sign In')}
         </button>
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}

@@ -3,6 +3,7 @@ import logo from '@/app/public/assets/logo.png';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import MenuTabs from '@/components/menu/menu-items';
+import SelectLanguage from '../translations';
 
 const MenuNav: React.FC = () => {
   const t = useTranslations('');
@@ -10,7 +11,7 @@ const MenuNav: React.FC = () => {
   return (
     <nav className="w-full h-screen flex flex-col gap-3">
       {/* logo */}
-      <div className="flex gap-4 items-center p-4 pt-6">
+      <div className="w-full flex gap-4 items-center p-4 pt-6">
         <div>
           <Image
             src={logo}
@@ -20,7 +21,10 @@ const MenuNav: React.FC = () => {
             height={40}
           />
         </div>
-        <p className="font-bold font-serif">School Anoul</p>
+        <p className="font-bold font-serif">{t('School Anoul')}</p>
+        <div className="self-end">
+          <SelectLanguage />
+        </div>
       </div>
       <div className="flex-1 overflow-auto flex flex-col gap-4 justify-start items-start">
         <MenuTabs />

@@ -25,7 +25,7 @@ export default async function LocaleLayout({ children }: IProps) {
       <div className="col-span-full lg:col-span-8 relative">
         <div className="h-screen w-full flex flex-col">
           <TopMenuNav />
-          <div className="md:mr-4 rounded-3xl flex-1 overflow-hidden bg-white">
+          <div className="md:mr-4 p-6 rounded-3xl flex-1 overflow-hidden bg-white">
             {children}
           </div>
         </div>

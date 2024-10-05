@@ -1,4 +1,5 @@
 import React from 'react';
+import { getTranslations } from 'next-intl/server';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { IoSearch } from 'react-icons/io5';
@@ -12,8 +13,9 @@ import ListMenu from './list-menu';
 import { Menu } from 'lucide-react';
 
 const TopMenuNav = async () => {
+  const t = await getTranslations();
   const auth = await getCookie('session');
-  console.log('auth', auth);
+
   return (
     <div className="flex justify-between items-center p-4 py-2">
       <div className="flex items-center gap-2">
@@ -25,7 +27,7 @@ const TopMenuNav = async () => {
         <div className="flex items-center bg-white rounded-full overflow-hidden">
           <Input
             type="text"
-            placeholder="Try Searching 'insights'"
+            placeholder={t("Try Searching 'insights'")}
             className="flex-1 mx-4 md:max-w-64 bg-white border-none"
           />
           <Button
@@ -53,7 +55,7 @@ const TopMenuNav = async () => {
               </Avatar>{' '}
             </div>
           }
-          title="Notification"
+          title={t('Notification')}
         />
         {/* user account */}
         {auth ? (
@@ -65,7 +67,7 @@ const TopMenuNav = async () => {
                   <FaPlus className="w-4 h-4 text-white" />
                 </div>
               }
-              title="User Account"
+              title={t('User Account')}
               className="w-40 !self-end"
             />
           </div>
