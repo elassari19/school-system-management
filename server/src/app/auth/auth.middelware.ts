@@ -1,7 +1,7 @@
 // src/utils/middlewares.ts
 
 import { Response, NextFunction } from 'express';
-import { ExtendsSessionRequest } from '../types/auth.types';
+import { ExtendsSessionRequest } from './auth.types';
 
 export const isAuthenticated =
   () => (req: ExtendsSessionRequest, res: Response, next: NextFunction) => {

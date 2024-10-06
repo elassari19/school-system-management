@@ -83,4 +83,11 @@
     background: var(--background);
     max-height: 100vh;
   }
+  .recharts-legend-item-text {
+    font-size: medium !important;
+    font-weight: 600 !important;
+  }
+  .recharts-layer.recharts-cartesian-axis-tick text:dir(rtl) {
+    text-anchor: start !important;
+  }
 }

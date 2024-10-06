@@ -5,16 +5,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import passport from 'passport';
-import sessionMiddelware from './middelwares/session.middelware';
-import { User } from '@prisma/client';
-import LocalStrategy from 'passport-local';
-import { prisma } from './utils/configs';
-import { compare } from 'bcryptjs';
+import sessionMiddelware from '../middelwares/session.middelware';
 
 /* ROUTE IMPORTS */
-import authRouter from './routes/auth.route';
-import userRouter from './routes/user.route';
-import { getStripePriceId } from './routes/payment.route';
+import authRouter from './auth/auth.route';
+import userRouter from './user/user.route';
+import { getStripePriceId } from './payment/payment.route';
 
 export const creatApp = () => {
   /* CONFIGURATIONS */

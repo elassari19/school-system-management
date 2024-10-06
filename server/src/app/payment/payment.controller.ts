@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
-import { prisma } from '../utils/configs';
+import { prisma } from '../../utils/configs';
 
 dotenv.config();
 // Initialize Stripe

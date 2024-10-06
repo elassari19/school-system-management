@@ -1,8 +1,8 @@
 import { Request, RequestHandler, Router } from 'express';
-import validateSchema from '../middelwares/validateSchema';
-import { signInSchema, signUpSchema } from '../joiValidation/auth.joi';
-import { signIn, signOut, signUp } from '../controllers/auth.controller';
-import { isAuthenticated } from '../middelwares/auth.middelware';
+import validateSchema from '../../middelwares/validateSchema';
+import { signInSchema, signUpSchema } from './auth.joi';
+import { signIn, signOut, signUp } from './auth.controller';
+import { isAuthenticated } from './auth.middelware';
 import passport from 'passport';
 import '../strategies/local-strategy';
 
@@ -80,7 +80,7 @@ export const signInUserWithPassport = router.post(
   passport.authenticate('local', { session: true }),
   (req, res) => {
     console.log('User logged in', req.user);
-    res.send('Sign in with passport');
+    res.send({ message: 'Sign in with passport', user: req.user });
   }
 );
 
@@ -96,10 +96,8 @@ export const signInUserWithPassport = router.post(
  *        500:
  *          description: Server error
  */
-export const signOutUser = router.get(
-  '/sign-out',
-  isAuthenticated() as any,
-  signOut
-);
+export const signOutUser = router.get('/sign-out', (req, res) => {
+  signOut;
+});
 
 export default router;

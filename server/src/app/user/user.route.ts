@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../middelwares/auth.middelware';
+import { isAuthenticated } from '../auth/auth.middelware';
 import passport from 'passport';
 
 const router = Router();

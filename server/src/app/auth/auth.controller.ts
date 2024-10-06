@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { compare, hash } from 'bcryptjs';
-import { prisma, redis } from '../utils/configs';
-import { ExtendsSessionRequest } from '../types/auth.types';
-import { redisCacheHandler } from '../utils/redisCache';
+import { prisma, redis } from '../../utils/configs';
+import { ExtendsSessionRequest } from './auth.types';
+import { redisCacheHandler } from '../../utils/redisCache';
 import { User } from '@prisma/client';
 
 // signUp controller
@@ -58,5 +58,7 @@ export const signOut = async (req: Request, res: Response) => {
       return res.status(500).json({ error: 'Something went wrong' });
     }
   });
-  return res.status(200).json({ message: 'Logged out successfully' });
+  return res
+    .status(200)
+    .json({ success: true, message: 'Logged out successfully' });
 };

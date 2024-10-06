@@ -5,7 +5,7 @@ import {
   payemntIntentSignature,
   getPriceId,
   getPaymentSession,
-} from '../controllers/payment.controller';
+} from './payment.controller';
 
 const router = Router();
 

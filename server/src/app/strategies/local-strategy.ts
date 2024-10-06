@@ -1,8 +1,8 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { User } from '@prisma/client';
-import { redisCacheHandler } from '../utils/redisCache';
-import { prisma } from '../utils/configs';
+import { redisCacheHandler } from '../../utils/redisCache';
+import { prisma } from '../../utils/configs';
 import { compare } from 'bcryptjs';
 
 passport.use(
