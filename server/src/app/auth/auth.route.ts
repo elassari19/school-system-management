@@ -2,7 +2,6 @@ import { Request, RequestHandler, Router } from 'express';
 import validateSchema from '../../middelwares/validateSchema';
 import { signInSchema, signUpSchema } from './auth.joi';
 import { signIn, signOut, signUp } from './auth.controller';
-import { isAuthenticated } from './auth.middelware';
 import passport from 'passport';
 import '../strategies/local-strategy';
 

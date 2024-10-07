@@ -27,21 +27,21 @@ enum PaymentStatus {
 }
 
 model Account {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String   @db.ObjectId
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String    @db.ObjectId
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?  @db.String
-  access_token      String?  @db.String
+  refresh_token     String?   @db.String
+  access_token      String?   @db.String
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?  @db.String
+  id_token          String?   @db.String
   session_state     String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -65,24 +65,27 @@ model Session {
 }
 
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  email     String    @unique
-  fullname  String?
-  phone     String?
-  password  String
-  role      Role      @default(PARENT)
-  children  Child[]
-  age       Int?
-  gender    String?
-  image     String?
-  address   String?
-  session   Session[]
-  account   Account[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  cours     Course[]
-  grade     Grade[]
-  student   Student[]
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  email      String       @unique
+  fullname   String?
+  phone      String?
+  password   String
+  role       Role         @default(PARENT)
+  children   Student[]
+  age        Int?
+  gender     String?
+  image      String?
+  address    String?
+  salary     Float?
+  education  Education[] // teachers Education
+  experience Experience[] // teachers Experience
+  session    Session[]
+  account    Account[]
+  classes    Class[]
+  subjects   Subject[]
+  courses    Course[]
+  createdAt  DateTime?    @default(now())
+  updatedAt  DateTime?    @updatedAt
 }
 
 model Student {
@@ -90,10 +93,11 @@ model Student {
   userId    String    @db.ObjectId
   user      User      @relation(fields: [userId], references: [id])
   grade     Int?
-  school    String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
   payments  Payment[]
+  classId   String    @db.ObjectId
+  class     Class     @relation(fields: [classId], references: [id])
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Payment {
@@ -102,34 +106,42 @@ model Payment {
   status      PaymentStatus @default(PENDING)
   studentId   String        @db.ObjectId
   student     Student       @relation(fields: [studentId], references: [id])
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?     @updatedAt
 }
 
-model Child {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  parentId String @db.ObjectId
-  parent   User   @relation(fields: [parentId], references: [id])
+model Class {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  grade     Int
+  students  Student[]
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Subject {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  userId    String?   @db.ObjectId
+  createdBy User?     @relation(fields: [userId], references: [id])
+  courses   Course[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Course {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  modules     Module[]
   grade       Grade[]
   exams       Exam[]
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  price       Float    @default(0)
-}
-
-model Module {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  title    String
-  courseId String @db.ObjectId
-  course   Course @relation(fields: [courseId], references: [id])
+  subjectId   String  @db.ObjectId
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  userId      String  @db.ObjectId
+  user        User    @relation(fields: [userId], references: [id])
+  price       Float   @default(0)
 }
 
 model Exam {
@@ -144,12 +156,37 @@ model Exam {
 model Grade {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
   score    Int
-  userId   String  @db.ObjectId
   courseId String? @db.ObjectId
   examId   String? @db.ObjectId
-  user     User    @relation(fields: [userId], references: [id])
   course   Course? @relation(fields: [courseId], references: [id])
   exam     Exam?   @relation(fields: [examId], references: [id])
+}
+
+model Education {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  school    String
+  degree    String
+  image     String?
+  field     String
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  from      DateTime
+  to        DateTime
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Experience {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  company     String
+  position    String
+  certificate String?
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  from        DateTime
+  to          DateTime
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
 }
 
 // npx prisma generate
