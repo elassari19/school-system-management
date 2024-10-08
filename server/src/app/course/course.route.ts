@@ -132,6 +132,6 @@ router.put(
  *         description: Internal server error
  */
 // @ts-ignore
-router.delete('/{id}', isAdminOrTeacher(), deleteCourse);
+router.delete('/', isAdminOrTeacher(), deleteCourse);
 
 export default router;

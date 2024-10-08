@@ -19,3 +19,7 @@ export const redisCacheHandler = async <T>(
     });
   });
 };
+
+export const redisCacheClear = (key: string) => {
+  redis.del(key);
+};
