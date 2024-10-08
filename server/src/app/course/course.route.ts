@@ -8,7 +8,7 @@ import {
 } from './course.controller';
 import { isAdminOrTeacher } from '../../middelwares/passport.middelware';
 import validateSchema from '../../middelwares/validateSchema';
-import { courseSchema } from './course.schema';
+import { courseSchema, updateCourseSchema } from './course.schema';
 
 const router = Router();
 
@@ -31,7 +31,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/{id}', getCourse);
+router.get('/', getCourse);
 
 /**
  * @swagger
@@ -103,9 +103,10 @@ router.post(
  *         description: Internal server error
  */
 router.put(
-  '/{id}',
-  isAdminOrTeacher,
-  validateSchema(courseSchema),
+  '/',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  validateSchema(updateCourseSchema),
   updateCourse
 );
 
@@ -130,6 +131,7 @@ router.put(
  *       500:
  *         description: Internal server error
  */
-router.delete('/{id}', isAdminOrTeacher, deleteCourse);
+// @ts-ignore
+router.delete('/{id}', isAdminOrTeacher(), deleteCourse);
 
 export default router;

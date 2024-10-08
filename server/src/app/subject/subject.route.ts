@@ -143,7 +143,7 @@ router.put(
 
 /**
  * @swagger
- * /subject/{id}:
+ * /subject:
  *   delete:
  *     summary: Delete a subject
  *     parameters:
@@ -159,6 +159,6 @@ router.put(
  *         description: Subject deleted successfully
  */
 // @ts-ignore
-router.delete('/delete/:id', isAdminOrTeacher, deleteSubject);
+router.delete('/', isAdminOrTeacher(), deleteSubject);
 
 export default router;

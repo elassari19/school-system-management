@@ -1,15 +1,29 @@
 import { Request, Response } from 'express';
-import { ExtendsSessionRequest } from '../auth/auth.types';
 import { prisma } from '../../utils/configs';
+import { redisCacheHandler } from '../../utils/redisCache';
+import { handleChaptersContent } from '../../utils/helper';
 
 export const getCourse = async (req: Request, res: Response) => {
   const { id } = req.query;
+  console.log('id:', id);
   try {
-    const resp = await prisma.course.findUnique({
-      where: {
-        id: id as string,
-      },
-    });
+    const resp = await redisCacheHandler(
+      id as string,
+      async () =>
+        await prisma.course.findUnique({
+          where: {
+            id: id as string,
+          },
+          include: {
+            chapters: {
+              include: {
+                content: true,
+              },
+            },
+            thumbnail: true,
+          },
+        })
+    );
     return res.send({ 'GET /api/courses/:id': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
@@ -19,7 +33,11 @@ export const getCourse = async (req: Request, res: Response) => {
 
 export const getAllCourses = async (req: Request, res: Response) => {
   try {
-    const resp = await prisma.course.findMany();
+    const resp = await prisma.course.findMany({
+      include: {
+        thumbnail: true,
+      },
+    });
 
     return res.send({ 'GET /api/courses': resp });
   } catch (error) {
@@ -39,6 +57,7 @@ export const createCourse = async (req: Request, res: Response) => {
     chapters,
     thumbnail,
   } = req.body;
+
   try {
     const resp = await prisma.course.create({
       data: {
@@ -48,31 +67,23 @@ export const createCourse = async (req: Request, res: Response) => {
         duration,
         level,
         tags,
-        chapters,
-        thumbnail, // @ts-ignore
+        chapters: { create: handleChaptersContent(chapters) },
+        thumbnail: { create: { url: thumbnail } }, // @ts-ignore
         user: { connect: { id: req.user?.id } },
         subject: { connect: { id: '6704458709b43b9869453240' } },
       },
     });
-    return res.send({ 'POST /api/courses': resp });
+    return res.send({ 'POST /api/course': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
-    res.status(500).send('Internal server error');
+    return res.status(500).send('Internal server error');
   }
 };
 
 export const updateCourse = async (req: Request, res: Response) => {
-  const {
-    title,
-    description,
-    instructor,
-    duration,
-    level,
-    tags,
-    chapters,
-    thumbnail,
-  } = req.body;
+  const { title, description, instructor, duration, level, tags } = req.body;
   const { id } = req.query;
+
   try {
     const resp = await prisma.course.update({
       where: {
@@ -85,11 +96,12 @@ export const updateCourse = async (req: Request, res: Response) => {
         duration,
         level,
         tags,
-        chapters,
-        thumbnail,
+      },
+      include: {
+        chapters: true,
       },
     });
-    return res.send({ 'PUT /api/courses/:id': resp });
+    return res.send({ 'PUT /api/course/:id': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
