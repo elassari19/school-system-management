@@ -6,11 +6,13 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import passport from 'passport';
 import sessionMiddelware from '../middelwares/session.middelware';
+import swaggerDocs from '../utils/swagger';
 
 /* ROUTE IMPORTS */
 import authRouter from './auth/auth.route';
 import userRouter from './user/user.route';
 import subjectRouter from './subject/subject.route';
+import courseRouter from './course/course.route';
 import { getStripePriceId } from './payment/payment.route';
 import { errorHandler, notFound } from '../middelwares';
 
@@ -32,9 +34,11 @@ export const creatApp = () => {
   app.use(passport.session());
 
   /* ROUTES */
+  swaggerDocs(app, Number(process.env.PORT) || 3001);
   app.use('/v1/api/auth', authRouter);
   app.use('/v1/api/user', userRouter);
   app.use('/v1/api/subject', subjectRouter);
+  app.use('/v1/api/course', courseRouter);
   app.use('/v1/api', getStripePriceId);
 
   app.use(notFound);

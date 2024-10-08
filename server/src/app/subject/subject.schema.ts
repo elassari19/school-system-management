@@ -11,3 +11,38 @@ export const createManySubjectsSchema = Joi.object({
 export const updateSubjectSchema = Joi.object({
   name: Joi.string().required(),
 });
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Course:
+ *       type: object
+ *       required:
+ *         - title
+ *         - description
+ *         - instructor
+ *         - duration
+ *         - level
+ *       properties:
+ *         title:
+ *           type: string
+ *         description:
+ *           type: string
+ *         instructor:
+ *           type: string
+ *         duration:
+ *           type: string
+ *         level:
+ *           type: string
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *         chapters:
+ *           type: array
+ *           items:
+ *             type: object
+ *         thumbnail:
+ *           type: string
+ */

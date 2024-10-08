@@ -132,16 +132,61 @@ model Subject {
 }
 
 model Course {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
+  instructor  String
+  duration    Int?
+  level       Level?
+  tags        String[]
+  chapters    Chapter[]
+  thumbnail   Thumbnail?
   grade       Grade[]
   exams       Exam[]
-  subjectId   String  @db.ObjectId
-  subject     Subject @relation(fields: [subjectId], references: [id])
-  userId      String  @db.ObjectId
-  user        User    @relation(fields: [userId], references: [id])
-  price       Float   @default(0)
+  subjectId   String     @db.ObjectId
+  subject     Subject    @relation(fields: [subjectId], references: [id])
+  userId      String     @db.ObjectId
+  user        User       @relation(fields: [userId], references: [id])
+  price       Float      @default(0)
+}
+
+model Chapter {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  duration    Int?
+  content     Content[]
+  course      Course    @relation(fields: [courseId], references: [id])
+  courseId    String    @db.ObjectId
+}
+
+model Content {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  type      ContentType
+  title     String
+  data      Json
+  chapter   Chapter     @relation(fields: [chapterId], references: [id])
+  chapterId String      @db.ObjectId
+}
+
+model Thumbnail {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  url      String
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String @unique @db.ObjectId
+}
+
+enum Level {
+  beginner
+  intermediate
+  advanced
+}
+
+enum ContentType {
+  video
+  text
+  quiz
+  image
 }
 
 model Exam {
