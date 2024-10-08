@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @swagger
- * /course/{id}:
+ * /course:
  *   get:
  *     summary: Get a course by ID
  *     tags: [Courses]
@@ -60,7 +60,7 @@ router.get('/all', getAllCourses);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Course'
+ *             $ref: '#/components/schemas/CourseInput'
  *     responses:
  *       200:
  *         description: Success
@@ -77,7 +77,7 @@ router.post(
 
 /**
  * @swagger
- * /course/{id}:
+ * /course:
  *   put:
  *     summary: Update a course
  *     tags: [Courses]
@@ -95,7 +95,7 @@ router.post(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Course'
+ *             $ref: '#/components/schemas/CourseInput'
  *     responses:
  *       200:
  *         description: Success
@@ -112,7 +112,7 @@ router.put(
 
 /**
  * @swagger
- * /course/{id}:
+ * /course:
  *   delete:
  *     summary: Delete a course
  *     tags: [Courses]

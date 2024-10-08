@@ -1,6 +1,6 @@
 import { Request, RequestHandler, Router } from 'express';
 import validateSchema from '../../middelwares/validateSchema';
-import { signInSchema, signUpSchema } from './auth.joi';
+import { signInSchema, signUpSchema } from './auth.schema';
 import { signIn, signOut, signUp } from './auth.controller';
 import passport from 'passport';
 import '../strategies/local-strategy';
@@ -10,22 +10,16 @@ const router = Router();
 /**
  * @openapi
  *  paths:
- *    /user/create:
+ *    /auth/create:
  *     post:
  *      summary: Create a new user
+ *      tags: [Auth]
  *      requestBody:
  *        required: true
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: string
- *                email:
- *                  type: string
- *                name:
- *                  type: string
+ *              $ref: '#/components/schemas/SignupInput'
  *      responses:
  *        201:
  *          description: User created successfully
@@ -43,20 +37,16 @@ export const createUser = router.post(
 /**
  * @openapi
  *  paths:
- *    /user/sign-in:
+ *    /auth/sign-in:
  *     post:
  *      summary: Sign in a user
+ *      tags: [Auth]
  *      requestBody:
  *        required: true
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              properties:
- *                email:
- *                  type: string
- *                password:
- *                  type: string
+ *              $ref: '#/components/schemas/SigninInput'
  *      responses:
  *        200:
  *          description: User signed in successfully
@@ -73,7 +63,30 @@ export const signInUser = router.post(
   signIn as any
 );
 
-export const signInUserWithPassport = router.post(
+/**
+ * @swagger
+ *  paths:
+ *    /auth/passport/sign-in:
+ *     post:
+ *      summary: Sign In a user
+ *      tags: [Auth]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/SigninInput'
+ *      responses:
+ *        200:
+ *          description: User signed in successfully
+ *        400:
+ *          description: Bad Request
+ *        401:
+ *          description: Invalid email or password
+ *        500:
+ *          description: Server error
+ */
+router.post(
   '/passport/sign-in',
   validateSchema(signInSchema),
   passport.authenticate('local', { session: true }),
@@ -86,17 +99,16 @@ export const signInUserWithPassport = router.post(
 /**
  * @openapi
  *  paths:
- *    /user/sign-out:
+ *    /auth/sign-out:
  *     post:
  *      summary: Sign out a user
+ *      tags: [Auth]
  *      responses:
  *        200:
  *          description: User signed out successfully
  *        500:
  *          description: Server error
  */
-export const signOutUser = router.get('/sign-out', (req, res) => {
-  signOut;
-});
+router.get('/sign-out', signOut);
 
 export default router;

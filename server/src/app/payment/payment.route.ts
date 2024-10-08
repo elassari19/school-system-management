@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/payment/get-price-id:
+ * /payment:
  *   get:
  *     summary: Get Stripe price ID
  *     tags: [Payment]
@@ -45,7 +45,7 @@ export const getStripePriceId = router.get('/get-price-id', getPriceId);
 
 /**
  * @swagger
- * /api/payment/create-session:
+ * /payment/create-session:
  *   post:
  *     summary: Create a Stripe checkout session
  *     tags: [Payment]
@@ -82,7 +82,7 @@ router.post('/create-session', getPaymentSession);
 
 /**
  * @swagger
- * /api/payment/create-payment-intent:
+ * /payment/create-payment-intent:
  *   post:
  *     summary: Create a payment intent
  *     tags: [Payment]
@@ -116,7 +116,7 @@ router.post('/create-payment-intent', createPaymentIntent);
 
 /**
  * @swagger
- * /api/payment/{paymentId}:
+ * /payment/{paymentId}:
  *   get:
  *     summary: Retrieve payment information
  *     tags: [Payment]
@@ -138,7 +138,7 @@ router.get('/:paymentId', retrievePayment);
 
 /**
  * @swagger
- * /api/payment/webhook:
+ * /payment/webhook:
  *   post:
  *     summary: Handle Stripe webhook events
  *     tags: [Payment]

@@ -20,7 +20,6 @@ export const getCourse = async (req: Request, res: Response) => {
                 content: true,
               },
             },
-            thumbnail: true,
           },
         })
     );
@@ -33,11 +32,7 @@ export const getCourse = async (req: Request, res: Response) => {
 
 export const getAllCourses = async (req: Request, res: Response) => {
   try {
-    const resp = await prisma.course.findMany({
-      include: {
-        thumbnail: true,
-      },
-    });
+    const resp = await prisma.course.findMany();
 
     return res.send({ 'GET /api/courses': resp });
   } catch (error) {
@@ -67,9 +62,9 @@ export const createCourse = async (req: Request, res: Response) => {
         duration,
         level,
         tags,
-        chapters: { create: handleChaptersContent(chapters) },
-        thumbnail: { create: { url: thumbnail } }, // @ts-ignore
+        thumbnail, // @ts-ignore
         user: { connect: { id: req.user?.id } },
+        // chapters: { create: handleChaptersContent(chapters) },
         subject: { connect: { id: '6704458709b43b9869453240' } },
       },
     });

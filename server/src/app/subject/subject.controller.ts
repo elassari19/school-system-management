@@ -71,24 +71,6 @@ export const createSubject = async (
   }
 };
 
-// create many subjects
-export const createManySubjects = async (req: Request, res: Response) => {
-  const { subjects } = req.body; // @ts-ignore
-  const { id } = req.user;
-  console.log('subjects', subjects);
-  try {
-    const result = await prisma.subject.createMany({
-      data: subjects.map((subject: string) => ({
-        name: subject,
-      })),
-    });
-    return res.send(result);
-  } catch (error) {
-    console.log('Error', error);
-    return res.status(500).send({ error });
-  }
-};
-
 // Update a subject
 export const updateSubject = async (
   req: ExtendsSessionRequest,

@@ -4,7 +4,6 @@ import {
   isAuthenticated,
 } from '../../middelwares/passport.middelware';
 import {
-  createManySubjects,
   createSubject,
   deleteSubject,
   getAllSubjects,
@@ -22,9 +21,10 @@ const router = Router();
 
 /**
  * @swagger
- * /subject/{id}:
+ * /subject:
  *   get:
  *     summary: Get a subject by ID
+ *     tags: [Subjects]
  *     parameters:
  *       - in: path
  *         name: id
@@ -45,6 +45,7 @@ router.get('/', isAuthenticated(), getSubject);
  * /subjects:
  *   get:
  *     summary: Get all subjects
+ *     tags: [Subjects]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -59,6 +60,7 @@ router.get('/all', isAuthenticated(), getAllSubjects);
  * /subject:
  *   post:
  *     summary: Create a new subject
+ *     tags: [Subjects]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -70,14 +72,12 @@ router.get('/all', isAuthenticated(), getAllSubjects);
  *             properties:
  *               name:
  *                 type: string
- *               createdBy:
- *                 type: string
  *     responses:
  *       200:
  *         description: Subject created successfully
  */
 router.post(
-  '/create',
+  '/',
   // @ts-ignore
   isAdminOrTeacher(),
   validateSchema(createSubjectSchema),
@@ -86,41 +86,10 @@ router.post(
 
 /**
  * @swagger
- * /subjects:
- *   post:
- *     summary: Create multiple subjects
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: array
- *             items:
- *               type: object
- *               properties:
- *                 name:
- *                   type: string
- *                 createdBy:
- *                   type: string
- *     responses:
- *       200:
- *         description: Subjects created successfully
- */
-router.post(
-  '/createMany',
-  // @ts-ignore
-  isAdminOrTeacher(),
-  validateSchema(createManySubjectsSchema),
-  createManySubjects
-);
-
-/**
- * @swagger
- * /subject/{id}:
+ * /subject:
  *   put:
  *     summary: Update a subject
+ *     tags: [Subjects]
  *     parameters:
  *       - in: path
  *         name: id
@@ -146,6 +115,7 @@ router.put(
  * /subject:
  *   delete:
  *     summary: Delete a subject
+ *     tags: [Subjects]
  *     parameters:
  *       - in: path
  *         name: id

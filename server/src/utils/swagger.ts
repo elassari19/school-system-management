@@ -30,7 +30,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: [`**/*.route.ts`],
+  apis: [`**/*.route.ts`, '**/*.yaml'],
 };
 
 // Initialize swagger-jsdoc

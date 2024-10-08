@@ -1,0 +1,75 @@
+components:
+  schemas:
+    ChapterInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        duration:
+          type: number
+      required:
+        - title
+        - description
+        - duration
+    CourseInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        instructor:
+          type: string
+        duration:
+          type: number
+        level:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        thumbnail:
+          type: string
+      required:
+        - title
+        - description
+        - instructor
+        - duration
+        - level
+        - tags
+        - thumbnail
+    SigninInput:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    SignupInput:
+      type: object
+      properties:
+        fullname:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, TEACHER, PARENT, STUDENT]
+        address:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        confirmPassword:
+          type: string
+      required:
+        - fullname
+        - role
+        - address
+        - email
+        - password
+        - confirmPassword
