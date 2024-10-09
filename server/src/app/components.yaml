@@ -73,3 +73,37 @@ components:
         - email
         - password
         - confirmPassword
+    ContentInput:
+      type: object
+      required:
+        - type
+        - title
+        - data
+      properties:
+        type:
+          type: string
+          enum: [video, text, quiz, image]
+        title:
+          type: string
+          minLength: 3
+          maxLength: 100
+        data:
+          oneOf:
+            - type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                duration:
+                  type: integer
+                  minimum: 1
+            - type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+            - type: object
