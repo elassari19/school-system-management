@@ -1,7 +1,10 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
-  testEnvironment: "node",
+  // clearMocks: true,
+  // preset: 'ts-jest',
+  testEnvironment: 'node',
   transform: {
-    "^.+.tsx?$": ["ts-jest",{}],
+    '^.+.tsx?$': ['ts-jest', {}],
   },
+  // setupFilesAfterEnv: ['<rootDir>/singleton.ts'],
 };
