@@ -15,6 +15,7 @@ import subjectRouter from './subject/subject.route';
 import courseRouter from './course/course.route';
 import chapterRouter from './chapter/chapter.route';
 import contentRouter from './content/content.route';
+import classRouter from './class/class.route';
 import { getStripePriceId } from './payment/payment.route';
 import { errorHandler, notFound } from '../middelwares';
 
@@ -43,6 +44,7 @@ export const creatApp = () => {
   app.use('/v1/api/course', courseRouter);
   app.use('/v1/api/chapter', chapterRouter);
   app.use('/v1/api/content', contentRouter);
+  app.use('/v1/api/class', classRouter);
   app.use('/v1/api', getStripePriceId);
 
   app.use(notFound);

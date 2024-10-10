@@ -7,7 +7,7 @@ import { redisCacheHandler } from '../../utils/redisCache';
 export const getSubject = async (req: Request, res: Response) => {
   console.log('req.params', req.params);
   try {
-    const subject = redisCacheHandler(
+    const subject = await redisCacheHandler(
       req.query.id as string,
       async () =>
         await prisma.subject.findUnique({
