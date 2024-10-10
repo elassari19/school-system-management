@@ -81,7 +81,8 @@ model User {
   experience Experience[] // teachers Experience
   session    Session[]
   account    Account[]
-  classes    Class[]
+  classId    String[]     @db.ObjectId
+  classes    Class[]      @relation(fields: [classId], references: [id])
   subjects   Subject[]
   courses    Course[]
   createdAt  DateTime?    @default(now())
@@ -114,8 +115,8 @@ model Class {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   students  Student[]
-  userId    String    @db.ObjectId
-  user      User      @relation(fields: [userId], references: [id])
+  userId    String[]  @db.ObjectId
+  users     User[]    @relation(fields: [userId], references: [id])
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }

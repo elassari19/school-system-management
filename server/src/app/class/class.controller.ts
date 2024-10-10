@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../utils/configs';
-import { ExtendsSessionRequest } from '../auth/auth.types';
 import { redisCacheClear, redisCacheHandler } from '../../utils/redisCache';
 
 // Get class by id
 export const getClass = async (req: Request, res: Response) => {
   try {
     const schoolClass = await redisCacheHandler(
-      req.query.id as string,
+      `class:${req.query.id}`,
       async () =>
         await prisma.class.findUnique({
           where: {
@@ -27,14 +26,13 @@ export const getClass = async (req: Request, res: Response) => {
 export const getAllClasses = async (req: Request, res: Response) => {
   try {
     const schoolClass = await redisCacheHandler(
-      'classes',
+      'class:',
       async () =>
         await prisma.class.findMany({
           orderBy: { createdAt: 'asc' },
         })
     );
 
-    console.log('class', schoolClass);
     return res.status(200).send(schoolClass);
   } catch (error) {
     return res.status(500).send({ error });
@@ -48,7 +46,7 @@ export const createClass = async (req: Request, res: Response) => {
     const { name } = req.body;
 
     if (!req.user) {
-      throw new Error('User not authenticated');
+      return res.status(401).send({ error: 'Unauthorized' });
     }
     const newCalss = await prisma.class.create({
       data: {
@@ -56,6 +54,7 @@ export const createClass = async (req: Request, res: Response) => {
         user: { connect: { id: req.user.id } },
       },
     });
+    redisCacheClear(`class:*`);
     return res.status(201).send(newCalss);
   } catch (error) {
     console.log('Error', error);
@@ -73,10 +72,11 @@ export const updateClass = async (req: Request, res: Response) => {
         id: req.query.id as string,
       },
       data: {
-        name: name,
-        user: { connect: { id } },
+        name,
+        users: { connect: { id } },
       },
     });
+    redisCacheClear(`class:*`);
     return res.status(200).send(resp);
   } catch (error) {
     console.log('Error', error);
@@ -92,6 +92,24 @@ export const deleteClass = async (req: Request, res: Response) => {
         id: req.query.id as string,
       },
     });
+    redisCacheClear(`class:*`);
+    return res.status(203).send(resp);
+  } catch (error) {
+    console.log('Error', error);
+    return res.status(500).send({ error });
+  }
+};
+
+// delete many classes
+export const deleteManyClasses = async (req: Request, res: Response) => {
+  const { ids } = req.body;
+  try {
+    const resp = await prisma.class.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+    redisCacheClear(`class:*`);
     return res.status(203).send(resp);
   } catch (error) {
     console.log('Error', error);
@@ -103,7 +121,7 @@ export const deleteClass = async (req: Request, res: Response) => {
 export const deleteAllClasses = async (req: Request, res: Response) => {
   try {
     const resp = await prisma.class.deleteMany({});
-    redisCacheClear('classes');
+    redisCacheClear('class:*');
     return res.status(203).send(resp);
   } catch (error) {
     console.log('Error', error);

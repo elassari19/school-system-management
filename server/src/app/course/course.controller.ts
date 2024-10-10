@@ -1,29 +1,20 @@
 import { Request, Response } from 'express';
-import { prisma } from '../../utils/configs';
-import { redisCacheHandler } from '../../utils/redisCache';
-import { handleChaptersContent } from '../../utils/helper';
+import { prisma, redis } from '../../utils/configs';
+import { redisCacheClear, redisCacheHandler } from '../../utils/redisCache';
 
 export const getCourse = async (req: Request, res: Response) => {
   const { id } = req.query;
-  console.log('id:', id);
   try {
     const resp = await redisCacheHandler(
-      id as string,
+      `course:${id}`,
       async () =>
         await prisma.course.findUnique({
           where: {
             id: id as string,
           },
-          include: {
-            chapters: {
-              include: {
-                content: true,
-              },
-            },
-          },
         })
     );
-    return res.send({ 'GET /api/courses/:id': resp });
+    return res.status(200).send({ 'GET /api/courses/:id': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -32,9 +23,12 @@ export const getCourse = async (req: Request, res: Response) => {
 
 export const getAllCourses = async (req: Request, res: Response) => {
   try {
-    const resp = await prisma.course.findMany();
+    const resp = await redisCacheHandler(
+      'course:',
+      async () => await prisma.course.findMany()
+    );
 
-    return res.send({ 'GET /api/courses': resp });
+    return res.status(200).send({ 'GET /api/courses': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -42,16 +36,8 @@ export const getAllCourses = async (req: Request, res: Response) => {
 };
 
 export const createCourse = async (req: Request, res: Response) => {
-  const {
-    title,
-    description,
-    instructor,
-    duration,
-    level,
-    tags,
-    chapters,
-    thumbnail,
-  } = req.body;
+  const { title, description, instructor, duration, level, tags, thumbnail } =
+    req.body;
 
   try {
     const resp = await prisma.course.create({
@@ -68,6 +54,7 @@ export const createCourse = async (req: Request, res: Response) => {
         subject: { connect: { id: '6704458709b43b9869453240' } },
       },
     });
+    redisCacheClear('course:*');
     return res.send({ 'POST /api/course': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
@@ -92,10 +79,8 @@ export const updateCourse = async (req: Request, res: Response) => {
         level,
         tags,
       },
-      include: {
-        chapters: true,
-      },
     });
+    redisCacheClear(`course:*`);
     return res.send({ 'PUT /api/course/:id': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
@@ -111,7 +96,39 @@ export const deleteCourse = async (req: Request, res: Response) => {
         id: id as string,
       },
     });
+    redisCacheClear(`course:*`);
     return res.send({ 'DELETE /api/courses/:id': resp });
+  } catch (error) {
+    console.log('Error in getCourse:', error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+// delete many courses
+export const deleteManyCourses = async (req: Request, res: Response) => {
+  const { ids } = req.body;
+  try {
+    const resp = await prisma.course.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+    redisCacheClear(`course:*`);
+    return res.send({ 'DELETE /api/courses': resp });
+  } catch (error) {
+    console.log('Error in getCourse:', error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+// delete all courses
+export const deleteAllCourses = async (req: Request, res: Response) => {
+  try {
+    const resp = await prisma.course.deleteMany({});
+    redisCacheClear(`course:*`);
+    return res.send({ 'DELETE /api/courses': resp });
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
