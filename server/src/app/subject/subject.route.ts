@@ -5,17 +5,15 @@ import {
 } from '../../middelwares/passport.middelware';
 import {
   createSubject,
+  deleteAllSubjects,
+  deleteManySubjects,
   deleteSubject,
   getAllSubjects,
   getSubject,
   updateSubject,
 } from './subject.controller';
 import validateSchema from '../../middelwares/validateSchema';
-import {
-  createManySubjectsSchema,
-  createSubjectSchema,
-  updateSubjectSchema,
-} from './subject.schema';
+import { subjectSchema } from './subject.schema';
 
 const router = Router();
 
@@ -37,8 +35,12 @@ const router = Router();
  *       200:
  *         description: Subject details
  */
-// @ts-ignore
-router.get('/', isAuthenticated(), getSubject);
+router.get(
+  '/',
+  // @ts-ignore
+  // isAuthenticated(),
+  getSubject
+);
 
 /**
  * @swagger
@@ -52,8 +54,12 @@ router.get('/', isAuthenticated(), getSubject);
  *       200:
  *         description: List of all subjects
  */
-// @ts-ignore
-router.get('/all', isAuthenticated(), getAllSubjects);
+router.get(
+  '/all',
+  // @ts-ignore
+  // isAuthenticated(),
+  getAllSubjects
+);
 
 /**
  * @swagger
@@ -79,8 +85,8 @@ router.get('/all', isAuthenticated(), getAllSubjects);
 router.post(
   '/',
   // @ts-ignore
-  isAdminOrTeacher(),
-  validateSchema(createSubjectSchema),
+  // isAdminOrTeacher(),
+  validateSchema(subjectSchema),
   createSubject
 );
 
@@ -103,10 +109,10 @@ router.post(
  *         description: Subject updated successfully
  */
 router.put(
-  '/put',
+  '/',
   // @ts-ignore
-  isAdminOrTeacher(),
-  // validateSchema(updateSubjectSchema),
+  // isAdminOrTeacher(),
+  validateSchema(subjectSchema),
   updateSubject
 );
 
@@ -128,7 +134,59 @@ router.put(
  *       200:
  *         description: Subject deleted successfully
  */
-// @ts-ignore
-router.delete('/', isAdminOrTeacher(), deleteSubject);
+router.delete(
+  '/',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteSubject
+);
+
+/**
+ * @swagger
+ * /subject/many:
+ *   delete:
+ *     summary: Delete many subjects
+ *     tags: [Subjects]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: array
+ *          items:
+ *            type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.delete(
+  '/many',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteManySubjects
+);
+
+/**
+ * @swagger
+ * /subjects:
+ *   delete:
+ *     summary: Delete all subjects
+ *     tags: [Subjects]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Subjects deleted successfully
+ */
+router.delete(
+  '/all',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteAllSubjects
+);
 
 export default router;

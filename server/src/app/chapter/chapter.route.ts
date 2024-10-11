@@ -3,6 +3,7 @@ import {
   createChapter,
   deleteAllChapter,
   deleteChapter,
+  deleteManyChapter,
   getAllChapter,
   getChapter,
   updateChapter,
@@ -130,6 +131,34 @@ router.delete(
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteChapter
+);
+
+/**
+ * @swagger
+ * /chapter/many:
+ *   delete:
+ *     summary: Delete many chapters
+ *     tags: [Chapters]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: array
+ *          items:
+ *            type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */ router.delete(
+  '/many',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteManyChapter
 );
 
 /**

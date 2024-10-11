@@ -44,15 +44,12 @@ export const createSubject = async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
 
-    if (!req.user) {
-      return res.status(401).send({ error: 'Unauthorized' });
-    }
     const newSubject = await prisma.subject.create({
       data: {
         name: name,
         createdBy: {
           // @ts-ignore
-          connect: { id: req.user.id },
+          connect: { id: req.user?.id },
         },
       },
     });
@@ -66,8 +63,8 @@ export const createSubject = async (req: Request, res: Response) => {
 
 // Update a subject
 export const updateSubject = async (req: Request, res: Response) => {
-  const { name } = req.body; // @ts-ignore
-  const { id } = req.user;
+  const { name } = req.body;
+
   try {
     const resp = await prisma.subject.update({
       where: {
@@ -76,7 +73,8 @@ export const updateSubject = async (req: Request, res: Response) => {
       data: {
         name: name,
         createdBy: {
-          connect: { id },
+          // @ts-ignore
+          connect: { id: req.user?.id },
         },
       },
     });
@@ -98,7 +96,7 @@ export const deleteSubject = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear(`subject:*`);
-    return res.send(resp);
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error', error);
     return res.status(500).send({ error });
@@ -117,7 +115,7 @@ export const deleteManySubjects = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear(`subject:*`);
-    return res.send(resp);
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error', error);
     return res.status(500).send({ error });
@@ -129,7 +127,7 @@ export const deleteAllSubjects = async (req: Request, res: Response) => {
   try {
     const resp = await prisma.subject.deleteMany({});
     redisCacheClear(`subject:*`);
-    return res.send(resp);
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error', error);
     return res.status(500).send({ error });

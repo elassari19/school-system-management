@@ -4,6 +4,7 @@ import {
   deleteAllContent,
   deleteChapterContent,
   deleteContent,
+  deleteManyContent,
   getAllChapterContent,
   getAllContent,
   getContent,
@@ -183,6 +184,34 @@ router.delete(
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteChapterContent
+);
+
+/**
+ * @swagger
+ * /content/many:
+ *   delete:
+ *     summary: Delete many contents
+ *     tags: [Contents]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: array
+ *          items:
+ *            type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */ router.delete(
+  '/many',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteManyContent
 );
 
 /**

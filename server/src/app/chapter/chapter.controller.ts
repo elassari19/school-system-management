@@ -14,7 +14,7 @@ export const getChapter = async (req: Request, res: Response) => {
           },
         })
     );
-    return res.status(200).send({ 'GET /api/chapter/:id': resp });
+    return res.status(200).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -28,7 +28,7 @@ export const getAllChapter = async (req: Request, res: Response) => {
       async () => await prisma.chapter.findMany()
     );
 
-    return res.status(200).send({ 'GET /api/courses': resp });
+    return res.status(200).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -48,7 +48,7 @@ export const createChapter = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear('chapter:*');
-    return res.status(201).send({ 'POST /api/course': resp });
+    return res.status(201).send(resp);
   } catch (error) {
     console.log('Error in createChapter:', error);
     return res.status(500).send('Internal server error');
@@ -75,7 +75,7 @@ export const updateChapter = async (req: Request, res: Response) => {
         })
     );
     redisCacheClear('chapter:*');
-    return res.status(203).send({ 'PUT /api/chapter/:id': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in updateChapter:', error);
     res.status(500).send('Internal server error');
@@ -85,22 +85,13 @@ export const updateChapter = async (req: Request, res: Response) => {
 export const deleteChapter = async (req: Request, res: Response) => {
   const { id } = req.query;
   try {
-    const chapter = await prisma.chapter.findUnique({
-      where: {
-        id: id as string,
-      },
-    });
-    if (!chapter) {
-      redisCacheClear(id as string);
-      return res.status(404).send('Chapter not found');
-    }
     const resp = await prisma.chapter.delete({
       where: {
         id: id as string,
       },
     });
     redisCacheClear('chapter:*');
-    return res.status(203).send({ 'DELETE /api/chapter/:id': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in deleteChapter:', error);
     res.status(500).send('Internal server error');
@@ -128,7 +119,7 @@ export const deleteAllChapter = async (req: Request, res: Response) => {
   try {
     const resp = await prisma.chapter.deleteMany({});
     redisCacheClear('chapter:*');
-    return res.status(203).send({ 'DELETE /api/chapter/all': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in deleteChapter:', error);
     res.status(500).send('Internal server error');

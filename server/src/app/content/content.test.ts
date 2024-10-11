@@ -1,7 +1,6 @@
 import request from 'supertest';
 import express from 'express';
 import contentRouter from './content.route';
-import * as contentController from './content.controller';
 import { prisma } from '../../utils/configs';
 import { creatApp } from '..';
 
@@ -49,7 +48,7 @@ describe('Content API', () => {
       const response = await request(app).get('/v1/api/content/?id=1');
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 'GET /api/content/:id': mockContent });
+      expect(response.body).toEqual(mockContent);
     });
 
     it('should return 200 content not found', async () => {
@@ -58,7 +57,7 @@ describe('Content API', () => {
       const response = await request(app).get('/v1/api/content/?id=2');
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 'GET /api/content/:id': null });
+      expect(response.body).toEqual({});
     });
   });
 
@@ -74,7 +73,7 @@ describe('Content API', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 'GET /api/courses': mockChapterContent });
+      expect(response.body).toEqual(mockChapterContent);
     });
   });
 
@@ -94,8 +93,8 @@ describe('Content API', () => {
         .post('/v1/api/content?chapterId=1')
         .send(newContent);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ 'POST /api/course': mockContent });
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(mockContent);
     });
   });
 
@@ -114,10 +113,8 @@ describe('Content API', () => {
         .send(updatedContent);
       console.log('jestresponse:', response.status, response.body);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        'PUT /api/content/:id': updatedContent,
-      });
+      expect(response.status).toBe(203);
+      expect(response.body).toEqual(updatedContent);
     });
   });
 
@@ -128,10 +125,8 @@ describe('Content API', () => {
 
       const response = await request(app).delete('/v1/api/content?id=1');
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        'DELETE /api/content/:id': mockContent,
-      });
+      expect(response.status).toBe(203);
+      expect(response.body).toEqual(mockContent);
     });
 
     it('should return 404 if content not found', async () => {
@@ -142,7 +137,35 @@ describe('Content API', () => {
       expect(response.status).toBe(404);
       expect(response.text).toBe('Content not found');
     });
-  });
 
-  // exisitng test
+    it('should delete many content', async () => {
+      const mockDeletedContent = [
+        { id: '1', name: 'Deleted Class 1' },
+        { id: '2', name: 'Deleted Class 2' },
+      ];
+      (prisma.content.deleteMany as jest.Mock).mockResolvedValue(
+        mockDeletedContent
+      );
+
+      const response = await request(app)
+        .delete('/v1/api/content/many')
+        .send({ ids: ['1', '2'] });
+
+      expect(response.status).toBe(203);
+      expect(response.body).toEqual(mockDeletedContent);
+    });
+
+    it('should delete all content', async () => {
+      const mockDeletedContent = [
+        { id: '1', name: 'Deleted Class 1' },
+        { id: '2', name: 'Deleted Class 2' },
+      ];
+      (prisma.content.deleteMany as jest.Mock).mockResolvedValue(
+        mockDeletedContent
+      );
+
+      const response = await request(app).delete('/v1/api/content/all');
+      console.log('response-delete', response.body);
+    });
+  });
 });

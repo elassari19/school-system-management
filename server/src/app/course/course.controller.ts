@@ -14,7 +14,7 @@ export const getCourse = async (req: Request, res: Response) => {
           },
         })
     );
-    return res.status(200).send({ 'GET /api/courses/:id': resp });
+    return res.status(200).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -28,7 +28,7 @@ export const getAllCourses = async (req: Request, res: Response) => {
       async () => await prisma.course.findMany()
     );
 
-    return res.status(200).send({ 'GET /api/courses': resp });
+    return res.status(200).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -55,7 +55,7 @@ export const createCourse = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear('course:*');
-    return res.send({ 'POST /api/course': resp });
+    return res.status(201).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     return res.status(500).send('Internal server error');
@@ -81,7 +81,7 @@ export const updateCourse = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear(`course:*`);
-    return res.send({ 'PUT /api/course/:id': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -97,7 +97,7 @@ export const deleteCourse = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear(`course:*`);
-    return res.send({ 'DELETE /api/courses/:id': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -116,7 +116,7 @@ export const deleteManyCourses = async (req: Request, res: Response) => {
       },
     });
     redisCacheClear(`course:*`);
-    return res.send({ 'DELETE /api/courses': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');
@@ -128,7 +128,7 @@ export const deleteAllCourses = async (req: Request, res: Response) => {
   try {
     const resp = await prisma.course.deleteMany({});
     redisCacheClear(`course:*`);
-    return res.send({ 'DELETE /api/courses': resp });
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error in getCourse:', error);
     res.status(500).send('Internal server error');

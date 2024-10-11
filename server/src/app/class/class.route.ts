@@ -7,6 +7,7 @@ import {
   createClass,
   deleteAllClasses,
   deleteClass,
+  deleteManyClasses,
   getAllClasses,
   getClass,
   updateClass,
@@ -110,8 +111,8 @@ router.post(
 router.put(
   '/',
   // @ts-ignore
-  isAdminOrTeacher(),
-  // validateSchema(updateSubjectSchema),
+  // isAdminOrTeacher(),
+  validateSchema(classSchema),
   updateClass
 );
 
@@ -133,8 +134,40 @@ router.put(
  *       200:
  *         description: Class deleted successfully
  */
-// @ts-ignore
-router.delete('/', isAdminOrTeacher(), deleteClass);
+router.delete(
+  '/',
+  // @ts-ignore
+  // sAdminOrTeacher(),
+  deleteClass
+);
+
+/**
+ * @swagger
+ * /class/many:
+ *   delete:
+ *     summary: Delete many classs
+ *     tags: [Classes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: array
+ *          items:
+ *            type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */ router.delete(
+  '/many',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteManyClasses
+);
 
 /**
  * @swagger
@@ -148,6 +181,11 @@ router.delete('/', isAdminOrTeacher(), deleteClass);
  *       200:
  *         description: List of all classes
  */
-router.delete('/all', deleteAllClasses);
+router.delete(
+  '/all',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteAllClasses
+);
 
 export default router;

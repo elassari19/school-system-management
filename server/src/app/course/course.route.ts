@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import {
   createCourse,
+  deleteAllCourses,
   deleteCourse,
+  deleteManyCourses,
   getAllCourses,
   getCourse,
   updateCourse,
@@ -70,7 +72,7 @@ router.get('/all', getAllCourses);
 router.post(
   '/',
   // @ts-ignore
-  isAdminOrTeacher(),
+  // isAdminOrTeacher(),
   validateSchema(courseSchema),
   createCourse
 );
@@ -131,7 +133,61 @@ router.put(
  *       500:
  *         description: Internal server error
  */
-// @ts-ignore
-router.delete('/', isAdminOrTeacher(), deleteCourse);
+router.delete(
+  '/',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteCourse
+);
+
+/**
+ * @swagger
+ * /course/many:
+ *   delete:
+ *     summary: Delete many courses
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *            type: array
+ *          items:
+ *            type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.delete(
+  '/many',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteManyCourses
+);
+
+/**
+ * @swagger
+ * /course/all:
+ *   delete:
+ *     summary: Delete all courses
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Internal server error
+ */
+router.delete(
+  '/all',
+  // @ts-ignore
+  // isAdminOrTeacher(),
+  deleteAllCourses
+);
 
 export default router;

@@ -45,13 +45,10 @@ export const createClass = async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
 
-    if (!req.user) {
-      return res.status(401).send({ error: 'Unauthorized' });
-    }
     const newCalss = await prisma.class.create({
       data: {
         name: name, // @ts-ignore
-        user: { connect: { id: req.user.id } },
+        user: { connect: { id: req.user?.id } },
       },
     });
     redisCacheClear(`class:*`);
@@ -64,20 +61,20 @@ export const createClass = async (req: Request, res: Response) => {
 
 // Update a class
 export const updateClass = async (req: Request, res: Response) => {
-  const { name } = req.body; // @ts-ignore
-  const { id } = req.user;
+  const { name } = req.body;
+
   try {
     const resp = await prisma.class.update({
       where: {
         id: req.query.id as string,
       },
       data: {
-        name,
-        users: { connect: { id } },
+        name, // @ts-ignore
+        users: { connect: { id: req.user?.id } },
       },
     });
     redisCacheClear(`class:*`);
-    return res.status(200).send(resp);
+    return res.status(203).send(resp);
   } catch (error) {
     console.log('Error', error);
     return res.status(500).send({ error });
