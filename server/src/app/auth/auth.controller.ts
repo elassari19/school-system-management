@@ -2,12 +2,16 @@ import { Request, Response } from 'express';
 import { compare, hash } from 'bcryptjs';
 import { prisma, redis } from '../../utils/configs';
 import { ExtendsSessionRequest } from './auth.types';
-import { redisCacheHandler } from '../../utils/redisCache';
+import { redisCacheClear, redisCacheHandler } from '../../utils/redisCache';
 import { User } from '@prisma/client';
 
 // signUp controller
 export const signUp = async (req: Request, res: Response) => {
   const { password, confirmPassword, ...rest } = req.body;
+  // Check if the password and confirmPassword match
+  if (password !== confirmPassword) {
+    return res.status(403).json({ error: 'Password not match' });
+  }
   // Hash the password with the salt
   const hashPassword = await hash(req.body.password, 12);
 
@@ -19,6 +23,7 @@ export const signUp = async (req: Request, res: Response) => {
       },
     });
 
+    redisCacheClear('course:*');
     res.status(201).json(user);
   } catch (error) {
     console.log('prisma error', error);
@@ -38,7 +43,7 @@ export const signIn = async (req: ExtendsSessionRequest, res: Response) => {
     )) as User;
 
     if (!user || !(await compare(req.body.password, user.password))) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(403).json({ error: 'Invalid email or password' });
     }
     const { password, ...rest } = user;
 

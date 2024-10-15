@@ -10,7 +10,7 @@ const router = Router();
 /**
  * @openapi
  *  paths:
- *    /auth/create:
+ *    /auth:
  *     post:
  *      summary: Create a new user
  *      tags: [Auth]
@@ -29,7 +29,7 @@ const router = Router();
  *          description: Server error
  */
 export const createUser = router.post(
-  '/sign-up',
+  '/',
   validateSchema(signUpSchema),
   signUp
 );

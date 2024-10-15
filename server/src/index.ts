@@ -1,6 +1,6 @@
-import { creatApp } from './app';
+import { createApp } from './app';
 
-const app = creatApp();
+const app = createApp();
 
 /* SERVER */
 const port = Number(process.env.PORT) || 3001;

@@ -19,7 +19,7 @@ import classRouter from './class/class.route';
 import { getStripePriceId } from './payment/payment.route';
 import { errorHandler, notFound } from '../middelwares';
 
-export const creatApp = () => {
+export const createApp = () => {
   /* CONFIGURATIONS */
   const app = express();
   app.use(express.json());

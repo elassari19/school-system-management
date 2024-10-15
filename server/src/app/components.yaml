@@ -69,7 +69,6 @@ components:
       required:
         - fullname
         - role
-        - address
         - email
         - password
         - confirmPassword
@@ -107,3 +106,33 @@ components:
                   type: string
                   format: uri
             - type: object
+    UserInput:
+      type: object
+      properties:
+        email:
+          type: string
+        fullname:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, TEACHER, PARENT, STUDENT]
+        password:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        gender:
+          type: string
+        image:
+          type: string
+        salary:
+          type: string
+        age:
+          type: string
+      require:
+        - email
+        - fullname
+        - role
+        - password
+        - gender

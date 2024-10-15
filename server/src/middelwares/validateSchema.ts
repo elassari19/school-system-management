@@ -9,7 +9,8 @@ const validateSchema = (schema: ObjectSchema) => {
   return (req: CustomRequest<any>, res: Response, next: NextFunction) => {
     const { error, value } = schema.validate(req.body);
     if (error) {
-      return res.status(400).json({ error: error.details[0].message });
+      console.log('error', error);
+      return res.status(403).json({ error: error.details });
     }
     req.value = value;
     next();
