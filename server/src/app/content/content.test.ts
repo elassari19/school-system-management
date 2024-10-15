@@ -1,8 +1,6 @@
 import request from 'supertest';
-import express from 'express';
-import contentRouter from './content.route';
 import { prisma } from '../../utils/configs';
-import { creatApp } from '..';
+import { createApp } from '..';
 
 jest.mock('../../utils/configs', () => ({
   prisma: {
@@ -25,9 +23,7 @@ jest.mock('../../utils/redisCache', () => ({
   redisCacheClear: jest.fn(),
 }));
 
-const app = creatApp();
-app.use(express.json());
-app.use('/v1/api/content', contentRouter);
+const app = createApp();
 
 describe('Content API', () => {
   afterEach(() => {

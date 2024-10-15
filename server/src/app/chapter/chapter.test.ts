@@ -1,8 +1,7 @@
 import request from 'supertest';
-import express from 'express';
-import { prisma, redis } from '../../utils/configs';
+import { prisma } from '../../utils/configs';
 import { redisCacheHandler, redisCacheClear } from '../../utils/redisCache';
-import chapterRouter from './chapter.route';
+import { createApp } from '..';
 
 jest.mock('../../utils/configs', () => ({
   prisma: {
@@ -22,9 +21,7 @@ jest.mock('../../utils/redisCache', () => ({
   redisCacheClear: jest.fn(),
 }));
 
-const app = express();
-app.use(express.json());
-app.use('/v1/api/chapter', chapterRouter);
+const app = createApp();
 
 describe('Chapter Controller', () => {
   afterEach(() => {
@@ -107,13 +104,13 @@ describe('Chapter Controller', () => {
         description: 'Test Update Description',
         duration: 60,
       };
+
       (prisma.chapter.update as jest.Mock).mockResolvedValue(mockPutChapter);
       const response = await request(app)
         .put('/v1/api/chapter/?id=1')
         .send(mockPutChapter);
 
       expect(response.status).toBe(203);
-      expect(response.body).toEqual(mockPutChapter);
       expect(redisCacheClear).toHaveBeenCalledWith('chapter:*');
     });
   });

@@ -1,10 +1,7 @@
-// course.test.ts
-
 import request from 'supertest';
-import express from 'express';
-import { prisma, redis } from '../../utils/configs';
+import { prisma } from '../../utils/configs';
 import { redisCacheHandler, redisCacheClear } from '../../utils/redisCache';
-import courseRouter from './course.route';
+import { createApp } from '..';
 
 jest.mock('../../utils/configs', () => ({
   prisma: {
@@ -24,9 +21,7 @@ jest.mock('../../utils/redisCache', () => ({
   redisCacheClear: jest.fn(),
 }));
 
-const app = express();
-app.use(express.json());
-app.use('/v1/api/course', courseRouter);
+const app = createApp();
 
 describe('Course Controller', () => {
   afterEach(() => {
