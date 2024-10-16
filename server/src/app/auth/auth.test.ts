@@ -142,4 +142,74 @@ describe('Auth Controller', () => {
       });
     });
   });
+
+  describe('forgot-password', () => {
+    const mockUser = {
+      id: 1,
+      email: 'test@gmail.com',
+      token: 'user-token',
+      password: 'password',
+    };
+    const mockPassword = 'new-password';
+    const mockToken = 'token';
+
+    it('Should forgot password, user not found', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+      const response = await request(app)
+        .post('/v1/api/auth/forgot-password')
+        .send({ email: mockUser.email });
+
+      expect(response.status).toBe(404);
+    });
+
+    it('Should forgot password, user found and Token sent', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+      const response = await request(app)
+        .post('/v1/api/auth/forgot-password')
+        .send({ email: mockUser.email });
+
+      console.log('response-auth', response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ message: 'Token sent to your email' });
+    });
+
+    it('Should reset password, Invalid token', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (redisCacheHandler as jest.Mock).mockResolvedValue(mockUser);
+
+      const response = await request(app)
+        .post('/v1/api/auth/reset-password')
+        .send({
+          token: mockToken,
+          password: mockPassword,
+          confirmPassword: mockPassword,
+        });
+
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ error: 'Invalid token' });
+    });
+
+    it('Should reset password', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+        ...mockUser,
+        confirmPassword: mockUser.password,
+      });
+      (redisCacheHandler as jest.Mock).mockResolvedValue(mockToken);
+
+      const response = await request(app)
+        .post('/v1/api/auth/reset-password')
+        .send({
+          token: mockUser.token,
+          password: mockPassword,
+          confirmPassword: mockPassword,
+        });
+
+      console.log('response-auth', response.body);
+
+      expect(response.status).toBe(200);
+    });
+  });
 });

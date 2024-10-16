@@ -67,3 +67,61 @@ export const signOut = async (req: Request, res: Response) => {
     .status(200)
     .json({ success: true, message: 'Logged out successfully' });
 };
+
+// forgotPassword controller
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    // Generate a random token
+    const token = Math.random().toString(36).substring(2);
+    // Set the token to the redis cache
+    // await redis.setex(`reset-password:${email}`, token, 60 * 60);
+    // Send the token to the user email
+    // @ts-ignore
+    // req.transporter.sendMail({
+    //   from: 'Anoal School Adminstration',
+    //   to: email,
+    //   subject: 'Reset Password',
+    //   text: `Your reset password token is <a href=/reset-password/?token=${token}>${token}<a>`,
+    // });
+
+    return res.status(200).json({ message: 'Token sent to your email' });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
+// resetPassword controller
+export const resetPassword = async (req: Request, res: Response) => {
+  const { email, token, password, confirmPassword } = req.body;
+  if (password !== confirmPassword) {
+    return res.status(403).json({ error: 'Password not match' });
+  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const resetToken = 'user-token';
+    if (resetToken !== token) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+    const hashPassword = await hash(password, 12);
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashPassword },
+    });
+    return res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};

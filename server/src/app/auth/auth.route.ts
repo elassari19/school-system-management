@@ -1,7 +1,13 @@
 import { Request, RequestHandler, Router } from 'express';
 import validateSchema from '../../middelwares/validateSchema';
 import { signInSchema, signUpSchema } from './auth.schema';
-import { signIn, signOut, signUp } from './auth.controller';
+import {
+  forgotPassword,
+  resetPassword,
+  signIn,
+  signOut,
+  signUp,
+} from './auth.controller';
 import passport from 'passport';
 import '../strategies/local-strategy';
 
@@ -110,5 +116,61 @@ router.post(
  *          description: Server error
  */
 router.get('/sign-out', signOut);
+
+/**
+ * @openapi
+ *  paths:
+ *    /auth/forgot-password:
+ *     post:
+ *      summary: Forgot password
+ *      tags: [Auth]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *      responses:
+ *        200:
+ *          description: Email sent successfully
+ *        400:
+ *          description: Bad Request
+ *        500:
+ *          description: Server error
+ */
+router.post('/forgot-password', forgotPassword);
+
+/**
+ * @openapi
+ *  paths:
+ *    /auth/reset-password:
+ *     post:
+ *      summary: Reset password
+ *      tags: [Auth]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                token:
+ *                  type: string
+ *                password:
+ *                  type: string
+ *      responses:
+ *        200:
+ *          description: Password reset successfully
+ *        400:
+ *          description: Bad Request
+ *        500:
+ *          description: Server error
+ */
+router.post('/reset-password', resetPassword);
 
 export default router;
