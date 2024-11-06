@@ -88,5 +88,26 @@
   "new students this year": "new students this year",
   "from last year": "from last year",
   "new parents this year": "new parents this year",
-  "School Anoul": "School Anoul"
+  "School Anoul": "School Anoul",
+  "academic": {
+    "Total": "Total",
+    "Students": "Students",
+    "Teachers": "Teachers",
+    "Parents": "Parents",
+    "Classes": "Classes",
+    "Curriculum": "Curriculum",
+    "Grades": "Grades",
+    "Attendance": "Attendance",
+    "Schedule": "Schedule",
+    "Events": "Events",
+    "new Students this year": "new Students this year",
+    "new Teachers this year": "new Teachers this year",
+    "new Parents this year": "new Parents this year",
+    "new Classes this year": "new Classes this year",
+    "Student Grades Distribution": "Student Grades Distribution",
+    "Student Attendance": "Student Attendance",
+    "Weekly Exams Performance": "Weekly Exams Performance",
+    "Monthly Exams": "Monthly Exams",
+    "Monthly Attendance": "Monthly Attendance"
+  }
 }

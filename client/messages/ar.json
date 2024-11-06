@@ -88,5 +88,26 @@
   "new students this year": "طلاب جدد هذا العام",
   "from last year": "من العام الماضي",
   "new parents this year": "آباء جدد هذا العام",
-  "School Anoul": "مدرسة أنول"
+  "School Anoul": "مدرسة أنول",
+  "academic": {
+    "Total": "الإجمالي",
+    "Students": "الطلاب",
+    "Teachers": "المعلمون",
+    "Parents": "الآباء",
+    "Classes": "الفصول",
+    "Curriculum": "المنهج الدراسي",
+    "Grades": "الدرجات",
+    "Attendance": "الحضور",
+    "Schedule": "الجدول",
+    "Events": "الفعاليات",
+    "new Students this year": "طلاب جدد هذا العام",
+    "new Teachers this year": "معلمون جدد هذا العام",
+    "new Parents this year": "آباء جدد هذا العام",
+    "new Classes this year": "فصول جديدة هذا العام",
+    "Student Grades Distribution": "توزيع درجات الطلاب",
+    "Student Attendance": "حضور الطلاب",
+    "Weekly Exams Performance": "أداء الامتحانات الأسبوعية",
+    "Monthly Exams": "الامتحانات الشهرية",
+    "Monthly Attendance": "الحضور الشهري"
+  }
 }

@@ -3,13 +3,13 @@
 import React from 'react';
 import {
   ResponsiveContainer,
+  Tooltip,
+  Legend,
+  Bar,
+  BarChart,
   CartesianGrid,
   XAxis,
   YAxis,
-  Tooltip,
-  Legend,
-  Line,
-  LineChart,
 } from 'recharts';
 
 interface IProps {
@@ -19,16 +19,15 @@ interface IProps {
 const Grade = ({ gradeData }: IProps) => {
   return (
     <div>
-      <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={gradeData}>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={gradeData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
+          <XAxis dataKey="grade" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="male" stroke="#8884d8" />
-          <Line type="monotone" dataKey="female" stroke="#82ca9d" />
-        </LineChart>
+          <Bar dataKey="count" fill="#8884d8" />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

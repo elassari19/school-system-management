@@ -1,5 +1,4 @@
 import { getTranslations } from 'next-intl/server';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Users, User } from 'lucide-react';
 import MonthlyFinanceChart from '@/components/charts/month-finance';
 import YearsFinancialChart from '@/components/charts/year-expenses';
@@ -8,6 +7,7 @@ import { PiExam } from 'react-icons/pi';
 import ParentChildTable from '@/components/tables/parents-tables';
 import { events, monthlyFinance, parentData } from '@/lib/dummy-data';
 import EventsCard from '@/components/cards/events-card';
+import OverviewCard from '@/components/cards/overview-card';
 
 interface IProps {}
 
@@ -15,7 +15,7 @@ export default async function Page({}: IProps) {
   const t = await getTranslations('');
 
   return (
-    <div className="h-full overflow-auto flex flex-col gap-4">
+    <div className="dashboard-page">
       {/* cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {[
@@ -44,19 +44,13 @@ export default async function Page({}: IProps) {
             pastValue: `+210 ${t('new parents this year')}`,
           },
         ].map(({ icon, title, currentValue, pastValue }) => (
-          <Card
+          <OverviewCard
             key={title}
-            className="flex-1 border-secondary/70 bg-gradient-to-b from-white to-secondary/10"
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
-              <CardTitle className="text-sm font-semibold">{title}</CardTitle>
-              {icon}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{currentValue}</div>
-              <p className="text-xs text-muted-foreground">{pastValue}</p>
-            </CardContent>
-          </Card>
+            icon={icon}
+            title={title}
+            currentValue={currentValue}
+            pastValue={pastValue}
+          />
         ))}
       </section>
 

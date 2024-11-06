@@ -1,3 +1,33 @@
+export const colors = [
+  '#13c4e9',
+  '#f7b924',
+  '#ff2442',
+  '#1bc5bd',
+  '#8950fc',
+  '#00c8e3',
+  '#0acf97',
+  '#ff5c75',
+  '#ff8d72',
+  '#0acf97',
+  '#f7b924',
+  '#13c4e9',
+];
+
+export const months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 export const parentData = [
   {
     id: 1,
@@ -170,11 +200,18 @@ export const genderData = [
 ];
 
 export const attendanceData = [
-  { name: 'Mon', male: 80, female: 75 },
-  { name: 'Tue', male: 85, female: 80 },
-  { name: 'Wed', male: 75, female: 85 },
-  { name: 'Thu', male: 90, female: 88 },
-  { name: 'Fri', male: 82, female: 79 },
+  { name: 'Jan', male: 90, female: 85 },
+  { name: 'Feb', male: 95, female: 90 },
+  { name: 'Mar', male: 85, female: 95 },
+  { name: 'Apr', male: 90, female: 99 },
+  { name: 'May', male: 92, female: 89 },
+  { name: 'Jui', male: 90, female: 85 },
+  { name: 'Jue', male: 95, female: 90 },
+  { name: 'Aut', male: 85, female: 95 },
+  { name: 'Sep', male: 90, female: 99 },
+  { name: 'Nov', male: 92, female: 89 },
+  { name: 'Oct', male: 90, female: 99 },
+  { name: 'Dec', male: 92, female: 89 },
 ];
 
 export const financeData = [
@@ -221,3 +258,32 @@ export const events = [
     type: 'course',
   },
 ];
+
+export const gradeData = [
+  { grade: 'A', count: 30 },
+  { grade: 'B', count: 45 },
+  { grade: 'C', count: 25 },
+  { grade: 'D', count: 15 },
+  { grade: 'F', count: 5 },
+];
+
+export const weeklyExams = [
+  { name: 'Week 1', week: 'Week 1', math: 78, science: 72, english: 85 },
+  { name: 'Week 2', week: 'Week 2', math: 82, science: 75, english: 88 },
+  { name: 'Week 3', week: 'Week 3', math: 75, science: 85, english: 82 },
+  { name: 'Week 4', week: 'Week 4', math: 85, science: 80, english: 90 },
+  { name: 'Week 5', week: 'Week 5', math: 80, science: 88, english: 85 },
+];
+
+export const monthlyExamsData = months.map((month) => {
+  const femaleGrade = Math.floor(Math.random() * (95 - 80) + 80);
+  const maleGrade = Math.floor(Math.random() * (90 - 75) + 75);
+  const averageGrade = Math.floor((femaleGrade + maleGrade) / 2);
+
+  return {
+    month,
+    averageGrade,
+    femaleGrade,
+    maleGrade,
+  };
+});
