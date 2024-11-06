@@ -90,4 +90,8 @@
   .recharts-layer.recharts-cartesian-axis-tick text:dir(rtl) {
     text-anchor: start !important;
   }
+
+  .dashboard-page {
+    @apply h-full overflow-auto flex flex-col gap-4;
+  }
 }

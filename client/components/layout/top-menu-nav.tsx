@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { FaPlus } from 'react-icons/fa6';
 import ListMenu from './list-menu';
 import { Menu } from 'lucide-react';
+import SelectLanguage from '../translations';
 
 const TopMenuNav = async () => {
   const t = await getTranslations();
@@ -40,6 +41,10 @@ const TopMenuNav = async () => {
         </div>
       </div>
       <div className="flex items-center gap-8">
+        <div className="self-end">
+          <SelectLanguage />
+        </div>
+
         {/* User Options */}
         <DropDountMenu
           menuContent={['null']}
