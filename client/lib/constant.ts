@@ -21,7 +21,7 @@ import {
   FaUserCheck,
 } from 'react-icons/fa6';
 import { AiFillNotification } from 'react-icons/ai';
-import { GrResources, GrTree } from 'react-icons/gr';
+import { GrTree } from 'react-icons/gr';
 import { GrWorkshop } from 'react-icons/gr';
 import { TbLayoutDashboardFilled } from 'react-icons/tb';
 import { FaBusAlt } from 'react-icons/fa';
@@ -128,27 +128,23 @@ export const menuList = [
     icon: GrTree,
     list: [
       {
-        title: 'Students',
+        title: 'Student',
         icon: 'icons',
       },
       {
-        title: 'Teachers',
+        title: 'Teacher',
         icon: 'icons',
       },
       {
-        title: 'Parents',
+        title: 'Parent',
         icon: 'icons',
       },
       {
-        title: 'Classes',
+        title: 'Classe',
         icon: 'icons',
       },
       {
-        title: 'Curriculum',
-        icon: 'icons',
-      },
-      {
-        title: 'Grades',
+        title: 'Subject',
         icon: 'icons',
       },
     ],
@@ -229,10 +225,6 @@ export const menuList = [
     title: 'Transport',
     icon: FaBusAlt,
     list: [
-      {
-        title: 'Routes',
-        icon: 'icons',
-      },
       {
         title: 'Vehicles',
         icon: 'icons',
