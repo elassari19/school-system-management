@@ -12,14 +12,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { parentType } from '@/lib/types';
 import { ChevronDown, ChevronRight } from 'lucide-react'; // Import icons
-import { useTranslations } from 'next-intl';
+import useIntlTranslations from '@/hooks/use-intl-translations';
 
 interface IProps {
   data: parentType[];
 }
 
 const ParentChildTable = ({ data }: IProps) => {
-  const t = useTranslations();
+  const { g } = useIntlTranslations();
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 
   const toggleRow = (id: string) => {
@@ -34,12 +34,12 @@ const ParentChildTable = ({ data }: IProps) => {
       <TableHeader>
         <TableRow>
           <TableHead></TableHead>
-          <TableHead>{t('Avatar')}</TableHead>
-          <TableHead>{t('Full Name')}</TableHead>
-          <TableHead>{t('Gender')}</TableHead>
-          <TableHead>{t('Address')}</TableHead>
-          <TableHead>{t('Children')}</TableHead>
-          <TableHead>{t('Expenses')}</TableHead>
+          <TableHead>{g('Avatar')}</TableHead>
+          <TableHead>{g('Full Name')}</TableHead>
+          <TableHead>{g('Gender')}</TableHead>
+          <TableHead>{g('Address')}</TableHead>
+          <TableHead>{g('Children')}</TableHead>
+          <TableHead>{g('Expenses')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -62,7 +62,7 @@ const ParentChildTable = ({ data }: IProps) => {
                 </Avatar>
               </TableCell>
               <TableCell>{parent.fullname}</TableCell>
-              <TableCell>{parent.gender}</TableCell>
+              <TableCell>{g(parent.gender)}</TableCell>
               <TableCell>{parent.address}</TableCell>
               <TableCell>{parent.children.length}</TableCell>
               <TableCell>${parent.expenses}</TableCell>
@@ -70,18 +70,18 @@ const ParentChildTable = ({ data }: IProps) => {
             {expandedRows[parent.id] && (
               <>
                 <TableRow className="bg-background">
-                  <TableHead>{t('Role')}</TableHead>
-                  <TableHead>{t('Avatar')}</TableHead>
-                  <TableHead>{t('Full Name')}</TableHead>
-                  <TableHead>{t('Gender')}</TableHead>
-                  <TableHead>{t('Class')}</TableHead>
-                  <TableHead>{t('Grade')}</TableHead>
-                  <TableHead>{t('Attendance')}</TableHead>
-                  <TableHead>{t('Status')}</TableHead>
+                  <TableHead>{g('Role')}</TableHead>
+                  <TableHead>{g('Avatar')}</TableHead>
+                  <TableHead>{g('Full Name')}</TableHead>
+                  <TableHead>{g('Gender')}</TableHead>
+                  <TableHead>{g('Class')}</TableHead>
+                  <TableHead>{g('Grade')}</TableHead>
+                  <TableHead>{g('Attendance')}</TableHead>
+                  <TableHead>{g('Status')}</TableHead>
                 </TableRow>
                 {parent.children.map((child) => (
                   <TableRow className="p-2 [&>*]:py-1 bg-background">
-                    <TableCell>{t('Student')}</TableCell>
+                    <TableCell>{g('Student')}</TableCell>
                     <TableCell>
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={child.avatar} />
@@ -89,11 +89,11 @@ const ParentChildTable = ({ data }: IProps) => {
                       </Avatar>
                     </TableCell>
                     <TableCell>{child.fullname}</TableCell>
-                    <TableCell>{t(child.gender)}</TableCell>
+                    <TableCell>{g(child.gender)}</TableCell>
                     <TableCell>{child.class}</TableCell>
                     <TableCell>{child.grade}</TableCell>
                     <TableCell>{child.attendance}%</TableCell>
-                    <TableCell>{t(child.status)}</TableCell>
+                    <TableCell>{g(child.status)}</TableCell>
                   </TableRow>
                 ))}
               </>

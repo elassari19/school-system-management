@@ -12,20 +12,19 @@ import {
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import RootCard from '../cards/root-card';
-import { colors } from '@/lib/dummy-data';
-import { useTranslations } from 'next-intl';
+import useIntlTranslations from '@/hooks/use-intl-translations';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   monthlyExamsData: any;
 }
 
 const ExamsChart = ({ monthlyExamsData, className }: IProps) => {
-  const t = useTranslations('academic');
-  console.log('monthlyExamsData', monthlyExamsData);
+  const { a, g } = useIntlTranslations();
+
   return (
     <RootCard
       className={cn('', className)}
-      title={t('Monthly Exams')}
+      title={a('Monthly Exams')}
       cardContent={
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={monthlyExamsData}>
@@ -38,19 +37,19 @@ const ExamsChart = ({ monthlyExamsData, className }: IProps) => {
               type="monotone"
               dataKey="femaleGrade"
               stroke="#FF69B4"
-              name="Female Students"
+              name={`${g('Female')} ${g('Grade')}`}
             />
             <Line
               type="monotone"
               dataKey="averageGrade"
               stroke="#82ca9d"
-              name="Average Grade"
+              name={`${g('Average')} ${g('Grade')}`}
             />
             <Line
               type="monotone"
               dataKey="maleGrade"
               stroke="#4169E1"
-              name="Male Students"
+              name={`${g('Male')} ${g('Grade')}`}
             />
           </LineChart>
         </ResponsiveContainer>

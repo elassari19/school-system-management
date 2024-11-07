@@ -8,6 +8,7 @@ import {
   CardContent,
 } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { getTranslations } from 'next-intl/server';
 
 interface IProps {
   event: {
@@ -21,7 +22,8 @@ interface IProps {
   };
 }
 
-const EventsCard = ({ event }: IProps) => {
+const EventsCard = async ({ event }: IProps) => {
+  const g = await getTranslations('global');
   return (
     <Card className="border-secondary/70 bg-gradient-to-b from-white to-secondary/10">
       <CardHeader>

@@ -3,27 +3,17 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-
-const signUpSchema = z
-  .object({
-    userType: z.enum(['student', 'parent', 'teacher'], {
-      required_error: 'Please select a user type',
-    }),
-    fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-
-type SignUpFormData = z.infer<typeof signUpSchema>;
+import useIntlTranslations from '@/hooks/use-intl-translations';
+import { signUpAction } from '../../app/api/auth';
+import toast from 'react-hot-toast';
+import { type SignUpFormData, signUpSchema } from '@/lib/zod-schema';
 
 const SignUp = () => {
+  const { g } = useIntlTranslations();
+
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -31,37 +21,49 @@ const SignUp = () => {
     watch,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { userType: 'student' },
+    // @ts-ignore
+    defaultValues: { role: g('Student') },
   });
 
-  const userType = watch('userType');
+  const role = watch('role');
 
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
-    // Handle sign-up logic here
-    console.log(data);
+    // Handle sign-up logic
+    setError(null);
+    try {
+      const response = await signUpAction(data);
+      if (response.faield) {
+        return toast.error('Email or Password wrong.');
+      }
+      return toast.success('Successfully signed in' + response.fullname);
+    } catch (err) {
+      toast.error('Failed to sign in. Please try again.');
+      setError('Failed to sign in. Please try again.');
+    }
+
     setIsLoading(false);
   };
 
   return (
     <>
       <div className="flex gap-1 mb-4 rounded-md overflow-hidden">
-        {['student', 'parent', 'teacher'].map((type) => (
+        {['Student', 'Parents', 'Teachers'].map((type) => (
           <label key={type} className="flex-1">
             <input
               type="radio"
-              value={type}
-              {...register('userType')}
+              value={g(type)}
+              {...register('role')}
               className="sr-only"
             />
             <div
               className={`text-center py-2 cursor-pointer ${
-                userType === type
+                role === g(type)
                   ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+              {g(type).charAt(0).toUpperCase() + g(type).slice(1)}
             </div>
           </label>
         ))}
@@ -69,10 +71,11 @@ const SignUp = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label htmlFor="fullName" className="block mb-1">
-            Full Name
+            {g('Full Name')}
           </label>
           <input
             id="fullName"
+            placeholder={g('Full Name')}
             {...register('fullName')}
             className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-1 focus:ring-primary"
           />
@@ -84,11 +87,12 @@ const SignUp = () => {
         </div>
         <div>
           <label htmlFor="email" className="block mb-1">
-            Email
+            {g('Email')}
           </label>
           <input
             id="email"
             type="email"
+            placeholder={g('Email')}
             {...register('email')}
             className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-1 focus:ring-primary"
           />
@@ -98,11 +102,12 @@ const SignUp = () => {
         </div>
         <div>
           <label htmlFor="password" className="block mb-1">
-            Password
+            {g('Password')}
           </label>
           <input
             id="password"
             type="password"
+            placeholder={g('Password')}
             {...register('password')}
             className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-1 focus:ring-primary"
           />
@@ -114,11 +119,12 @@ const SignUp = () => {
         </div>
         <div>
           <label htmlFor="confirmPassword" className="block mb-1">
-            Confirm Password
+            {g('Confirm Password')}
           </label>
           <input
             id="confirmPassword"
             type="password"
+            placeholder={g('Confirm Password')}
             {...register('confirmPassword')}
             className="w-full px-3 py-2 border border-primary rounded focus:outline-none focus:ring-1 focus:ring-primary"
           />
@@ -133,7 +139,7 @@ const SignUp = () => {
           disabled={isLoading}
           className="w-full bg-primary text-white py-2 rounded hover:bg-primary/90 disabled:opacity-50"
         >
-          {isLoading ? 'Signing up...' : 'Sign Up'}
+          {isLoading ? `${g('SignUp')}...` : g('SignUp')}
         </button>
       </form>
     </>

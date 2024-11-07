@@ -14,7 +14,7 @@ import { Menu } from 'lucide-react';
 import SelectLanguage from '../translations';
 
 const TopMenuNav = async () => {
-  const t = await getTranslations();
+  const g = await getTranslations('global');
   const auth = await getCookie('session');
 
   return (
@@ -28,7 +28,7 @@ const TopMenuNav = async () => {
         <div className="flex items-center bg-white rounded-full overflow-hidden">
           <Input
             type="text"
-            placeholder={t("Try Searching 'insights'")}
+            placeholder={g("Try Searching 'insights'")}
             className="flex-1 mx-4 md:max-w-64 bg-white border-none"
           />
           <Button
@@ -60,7 +60,7 @@ const TopMenuNav = async () => {
               </Avatar>{' '}
             </div>
           }
-          title={t('Notification')}
+          title={g('Notification')}
         />
         {/* user account */}
         {auth ? (
@@ -72,14 +72,14 @@ const TopMenuNav = async () => {
                   <FaPlus className="w-4 h-4 text-white" />
                 </div>
               }
-              title={t('User Account')}
+              title={g('User Account')}
               className="w-40 !self-end"
             />
           </div>
         ) : (
-          <Link href="/en/sign-in" className="font-bold">
-            SignIn
-          </Link>
+          <Button variant={'outline'} className="font-semibold" asChild>
+            <Link href="/en/sign-in">{g('SignIn')}</Link>
+          </Button>
         )}
       </div>
     </div>

@@ -8,7 +8,8 @@ import Grade from '@/components/charts/grade';
 import ExamsChart from '@/components/charts/exams-chart';
 
 const Page = async () => {
-  const t = await getTranslations('academic');
+  const g = await getTranslations('global');
+  const a = await getTranslations('academic');
 
   return (
     <div className="dashboard-page">
@@ -17,27 +18,27 @@ const Page = async () => {
         {[
           {
             icon: <GraduationCap className="h-6 w-6 text-secondary" />,
-            title: `${t('Total')} ${t('Students')}`,
+            title: `${g('Total')} ${g('Students')}`,
             currentValue: '2,634',
-            pastValue: `+22 ${t('new Students this year')}`,
+            pastValue: `+22 ${a('new Students this year')}`,
           },
           {
             icon: <UsersRound className="h-6 w-6 text-secondary" />,
-            title: `${t('Total')} ${t('Teachers')}`,
+            title: `${g('Total')} ${g('Teachers')}`,
             currentValue: '89',
-            pastValue: `+4 ${t('new Teachers this year')}`,
+            pastValue: `+4 ${a('new Teachers this year')}`,
           },
           {
             icon: <Users className="h-6 w-6 text-secondary" />,
-            title: `${t('Total')} ${t('Parents')}`,
+            title: `${g('Total')} ${g('Parents')}`,
             currentValue: '1,745',
-            pastValue: `+12 ${t('new Parents this year')}`,
+            pastValue: `+12 ${a('new Parents this year')}`,
           },
           {
             icon: <BookOpen className="h-6 w-6 text-secondary" />,
-            title: `${t('Total')} ${t('Classes')}`,
+            title: `${g('Total')} ${g('Classes')}`,
             currentValue: '45',
-            pastValue: `+6 ${t('new Classes this year')}`,
+            pastValue: `+6 ${a('new Classes this year')}`,
           },
         ].map(({ icon, title, currentValue, pastValue }) => (
           <OverviewCard
@@ -52,11 +53,8 @@ const Page = async () => {
 
       {/* Charts */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Student Grades Chart */}
-        <Grade gradeData={gradeData} />
-
         {/* Student AttendanceData Chart */}
-        <Attendence attendanceData={attendanceData} />
+        <Attendence attendanceData={attendanceData} className="col-span-full" />
 
         {/* Weekly Exams Chart */}
         <ExamsChart

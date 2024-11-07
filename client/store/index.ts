@@ -10,8 +10,11 @@ import {
   persistStore,
 } from 'redux-persist';
 import storage from './storage';
+import subjectReducer from './subjectSlice';
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  subject: subjectReducer,
+});
 
 const persistConfig = {
   key: 'root',

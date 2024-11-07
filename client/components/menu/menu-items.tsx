@@ -4,15 +4,14 @@ import { cn } from '@/lib/utils';
 import { menuList } from '@/lib/constant';
 import Link from 'next/link';
 import { AccordionMenu } from '../ui/accordion';
-import { useSearchParams, usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import useUrlPath from '@/hooks/use-urlPath';
+import useIntlTranslations from '@/hooks/use-intl-translations';
 
 const MenuTabs = () => {
-  const t = useTranslations();
-  const headersList = usePathname();
-  const params = useSearchParams().get('tab');
-  const path = headersList.split('/').at(-1);
-  console.log('path', headersList, params);
+  const { t, g } = useIntlTranslations();
+
+  const { param, basePath } = useUrlPath();
+  const params = param('tab');
 
   return (
     <div className="flex-1 w-full px-6 flex flex-col gap-4 py-4">
@@ -24,7 +23,7 @@ const MenuTabs = () => {
               href={item.title.toLocaleLowerCase()}
               className={cn(
                 'group flex items-center justify-between gap-4 font-semibold',
-                path === item.title.toLocaleLowerCase()
+                basePath === item.title.toLocaleLowerCase()
                   ? 'text-secondary'
                   : 'text-primary'
               )}
@@ -32,23 +31,24 @@ const MenuTabs = () => {
               <item.icon
                 className={cn(
                   'rounded-full p-2 w-8 h-8 bg-white group-hover:bg-secondary group-hover:text-white',
-                  path === item.title.toLocaleLowerCase()
+                  basePath === item.title.toLocaleLowerCase()
                     ? 'bg-secondary text-white'
                     : 'text-primary'
                 )}
               />
               <span className="group-hover:text-secondary text-sm">
-                {t(item.title)}
+                {g(item.title)}
               </span>
             </Link>
           }
           accordionContent={item.list?.map((subItem) => (
             <Link
               key={subItem.title}
-              href={`${path}/?tab=${subItem.title.toLocaleLowerCase()}`}
+              href={`${basePath}/?tab=${subItem.title.toLocaleLowerCase()}`}
+              locale={t('locale')}
               className={cn(
                 'hover:text-secondary flex items-center gap-8 ml-4 text-sm font-semibold border-primary/30',
-                t('loacle') == 'en' ? 'border-l-2' : 'border-r-2'
+                t('locale') == 'en' ? 'border-l-2' : 'border-r-2'
               )}
             >
               <div
@@ -67,7 +67,7 @@ const MenuTabs = () => {
                     : 'text-primary/50'
                 )}
               >
-                {t(subItem.title)}
+                {g(subItem.title)}
               </p>
             </Link>
           ))}

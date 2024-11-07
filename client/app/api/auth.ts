@@ -9,7 +9,8 @@ interface UserCredentials {
 }
 
 interface SignUpCredentials extends UserCredentials {
-  fullname: string;
+  fullName: string;
+  confirmPassword: string;
 }
 
 const API_URL =
@@ -37,7 +38,7 @@ export async function signInAction(credentials: UserCredentials) {
   }
 }
 
-export async function signUp(credentials: SignUpCredentials) {
+export async function signUpAction(credentials: SignUpCredentials) {
   const response = await fetch(`${API_URL}/auth/sign-up`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

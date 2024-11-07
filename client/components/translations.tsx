@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,10 +10,13 @@ import {
 import { Button } from './ui/button';
 import { Link } from '../i18n/routing';
 import { ChevronDown, ChevronUp } from 'lucide-react'; // Import icons
+import useUrlPath from '../hooks/use-urlPath';
+import useIntlTranslations from '@/hooks/use-intl-translations';
 
 export default function SelectLanguage() {
-  const t = useTranslations('');
+  const { t } = useIntlTranslations();
   const [isOpen, setIsOpen] = useState(false);
+  const { unLocalePath, pathname } = useUrlPath();
 
   return (
     <div className="mt-2">
@@ -30,12 +32,12 @@ export default function SelectLanguage() {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>
-            <Link href="/" locale="en">
+            <Link href={unLocalePath} locale="en">
               English
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href="/" locale="ar">
+            <Link href={unLocalePath} locale="ar">
               العربية
             </Link>
           </DropdownMenuItem>

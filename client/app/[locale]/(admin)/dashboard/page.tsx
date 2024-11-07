@@ -12,7 +12,8 @@ import OverviewCard from '@/components/cards/overview-card';
 interface IProps {}
 
 export default async function Page({}: IProps) {
-  const t = await getTranslations('');
+  const g = await getTranslations('global');
+  const d = await getTranslations('dashboard');
 
   return (
     <div className="dashboard-page">
@@ -21,27 +22,27 @@ export default async function Page({}: IProps) {
         {[
           {
             icon: <GiTeacher className="h-6 w-6 text-secondary" />,
-            title: `${t('Teachers')} ${t('Courses')}`,
+            title: `${g('Teachers')} ${g('Courses')}`,
             currentValue: '89',
-            pastValue: `+20.1% ${t('from last year')}`,
+            pastValue: `+20.1% ${d('from last year')}`,
           },
           {
             icon: <PiExam className="h-6 w-6 text-secondary" />,
-            title: t('Exams'),
+            title: g('Exams'),
             currentValue: '12',
-            pastValue: `+5.4% ${t('from last year')}`,
+            pastValue: `+5.4% ${d('from last year')}`,
           },
           {
             icon: <Users className="h-6 w-6 text-secondary" />,
-            title: t('Students'),
+            title: g('Students'),
             currentValue: '1,234',
-            pastValue: `+180 ${t('new students this year')}`,
+            pastValue: `+180 ${g('new students this year')}`,
           },
           {
             icon: <User className="h-6 w-6 text-secondary" />,
-            title: t('Parents'),
+            title: g('Parents'),
             currentValue: '2,345',
-            pastValue: `+210 ${t('new parents this year')}`,
+            pastValue: `+210 ${g('new parents this year')}`,
           },
         ].map(({ icon, title, currentValue, pastValue }) => (
           <OverviewCard

@@ -14,7 +14,7 @@ import {
   Area,
 } from 'recharts';
 import RootCard from '../cards/root-card';
-import { useTranslations } from 'next-intl';
+import useIntlTranslations from '@/hooks/use-intl-translations';
 
 const data = [
   { month: 'Jan 2022', income: 5000, expenses: 3000 },
@@ -44,34 +44,34 @@ const data = [
 ];
 
 const YearsFinancialChart = () => {
-  const t = useTranslations();
+  const { g } = useIntlTranslations();
+
   const totalIncome = data.reduce((sum, item) => sum + item.income, 0);
   const totalExpenses = data.reduce((sum, item) => sum + item.expenses, 0);
   const totalProfit = totalIncome - totalExpenses;
-  const tTotal = t('Total');
 
   return (
     <RootCard
       className="text-center"
-      title={`${t('yearlyFinance')} (2022-2023)`}
+      title={`${g('yearlyFinance')} (2022-2023)`}
       description={
         <div className="flex items-center justify-center gap-8 text-sm mt-2">
           <div>
             <p>${totalIncome}</p>
             <p className="text-sm font-semibold">
-              {tTotal} {t('Income')}
+              {g('Total')} {g('Income')}
             </p>
           </div>
           <div>
             <p>${totalExpenses}</p>
             <p className="text-sm font-semibold">
-              {tTotal} {t('Expenses')}
+              {g('Total')} {g('Expenses')}
             </p>
           </div>
           <div>
             <p>${totalProfit}</p>
             <p className="text-sm font-semibold">
-              {tTotal} {t('Profit')}
+              {g('Total')} {g('Profit')}
             </p>
           </div>
         </div>
@@ -89,12 +89,14 @@ const YearsFinancialChart = () => {
               dataKey="income"
               stroke="#8884d8"
               fill="#d9a8d7"
+              name={g('Income')}
             />
             <Area
               type="monotone"
               dataKey="expenses"
               stroke="#82ca9d"
               fill="#f8d7a9"
+              name={g('Expenses')}
             />
           </AreaChart>
         </ResponsiveContainer>

@@ -2,26 +2,21 @@
 
 import React from 'react';
 import { useState } from 'react';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { UserRole } from '../../lib/types';
+import { UserRole } from '@/lib/types';
 import { signInAction } from '../../app/api/auth';
 import toast from 'react-hot-toast';
-import { useTranslations } from 'next-intl';
-
-const signInSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-});
-
-type SignInFormData = z.infer<typeof signInSchema>;
+import useIntlTranslations from '@/hooks/use-intl-translations';
+import { type SignInFormData, signInSchema } from '@/lib/zod-schema';
 
 const SignIn = () => {
-  const t = useTranslations();
+  const { g, au } = useIntlTranslations();
   const [selectedRole, setSelectedRole] = useState<UserRole>('Student');
+
   const [error, setError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -57,14 +52,14 @@ const SignIn = () => {
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            {t(role)}
+            {g(role)}
           </button>
         ))}
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label htmlFor="email" className="block mb-1">
-            {t('Email')}
+            {g('Email')}
           </label>
           <input
             {...register('email')}
@@ -78,7 +73,7 @@ const SignIn = () => {
         </div>
         <div>
           <label htmlFor="password" className="block mb-1">
-            {t('Password')}
+            {g('Password')}
           </label>
           <input
             {...register('password')}
@@ -94,14 +89,14 @@ const SignIn = () => {
         </div>
         <div className="flex justify-end">
           <Link href={'/forgot-password'} className="text-sm font-bold">
-            {t('Forgot password')}?
+            {au('Forgot password?')}
           </Link>
         </div>
         <button
           type="submit"
           className="w-full bg-primary text-white py-2 rounded hover:bg-primary/90"
         >
-          {t('Sign In')}
+          {g('SignIn')}
         </button>
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}

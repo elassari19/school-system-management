@@ -12,19 +12,19 @@ import {
   YAxis,
 } from 'recharts';
 import RootCard from '../cards/root-card';
-import { cn } from '../../lib/utils';
-import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
+import useIntlTranslations from '@/hooks/use-intl-translations';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   attendanceData: any;
 }
 
 const Attendence = ({ attendanceData, className }: IProps) => {
-  const t = useTranslations('academic');
+  const { a, g } = useIntlTranslations();
   return (
     <RootCard
       className={cn('', className)}
-      title={t('Monthly Attendance')}
+      title={a('Monthly Attendance')}
       cardContent={
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={attendanceData}>
@@ -33,8 +33,8 @@ const Attendence = ({ attendanceData, className }: IProps) => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="male" fill="#8884d8" />
-            <Bar dataKey="female" fill="#82ca9d" />
+            <Bar dataKey="male" fill="#8884d8" name={g('Male')} />
+            <Bar dataKey="female" fill="#82ca9d" name={g('Female')} />
           </BarChart>
         </ResponsiveContainer>
       }
