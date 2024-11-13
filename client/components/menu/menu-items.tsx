@@ -43,8 +43,8 @@ const MenuTabs = () => {
           }
           accordionContent={item.list?.map((subItem) => (
             <Link
-              key={subItem.title}
-              href={`${basePath}/?tab=${subItem.title.toLocaleLowerCase()}`}
+              key={subItem}
+              href={`${basePath}/?tab=${subItem.toLocaleLowerCase()}`}
               locale={t('locale')}
               className={cn(
                 'hover:text-secondary flex items-center gap-8 ml-4 text-sm font-semibold border-primary/30',
@@ -54,7 +54,7 @@ const MenuTabs = () => {
               <div
                 className={cn(
                   'w-3 border',
-                  params === subItem.title.toLocaleLowerCase()
+                  params === subItem.toLocaleLowerCase()
                     ? 'border-b-primary'
                     : 'border-b-primary/50'
                 )}
@@ -62,12 +62,12 @@ const MenuTabs = () => {
               <p
                 className={cn(
                   'text-sm',
-                  params === subItem.title.toLocaleLowerCase()
+                  params === subItem.toLocaleLowerCase()
                     ? 'text-primary'
                     : 'text-primary/50'
                 )}
               >
-                {g(subItem.title)}
+                {g(subItem)}
               </p>
             </Link>
           ))}

@@ -126,145 +126,41 @@ export const menuList = [
   {
     title: 'Academic',
     icon: GrTree,
-    list: [
-      {
-        title: 'Student',
-        icon: 'icons',
-      },
-      {
-        title: 'Teacher',
-        icon: 'icons',
-      },
-      {
-        title: 'Parent',
-        icon: 'icons',
-      },
-      {
-        title: 'Classe',
-        icon: 'icons',
-      },
-      {
-        title: 'Subject',
-        icon: 'icons',
-      },
-    ],
+    list: ['Students', 'Teachers', 'Parents', 'Classes', 'Subjects'],
   },
   {
     title: 'Attendance',
     icon: IoCalendar,
-    list: [
-      {
-        title: 'Attendance',
-        icon: 'icons',
-      },
-      {
-        title: 'Schedule',
-        icon: 'icons',
-      },
-      {
-        title: 'Events',
-        icon: 'icons',
-      },
-    ],
+    list: ['Attendance', 'Schedule', 'Events'],
   },
   {
     title: 'Administration',
     icon: FaSwatchbook,
-    list: [
-      {
-        title: 'Staff Management',
-        icon: 'icons',
-      },
-      {
-        title: 'Payroll',
-        icon: 'icons',
-      },
-      {
-        title: 'Recruitment',
-        icon: 'icons',
-      },
-    ],
+    list: ['Staff Management', 'Payroll', 'Recruitment'],
   },
   {
     title: 'Resources',
     icon: FaPeopleCarryBox,
-    list: [
-      {
-        title: 'Library',
-        icon: 'icons',
-      },
-      {
-        title: 'E-Learning',
-        icon: 'icons',
-      },
-      {
-        title: 'Inventory',
-        icon: 'icons',
-      },
-    ],
+    list: ['Library', 'E-Learning', 'Inventory'],
   },
   {
     title: 'Finance',
     icon: FaChartPie,
-    list: [
-      {
-        title: 'Accounting',
-        icon: 'icons',
-      },
-      {
-        title: 'Fees Management',
-        icon: 'icons',
-      },
-      {
-        title: 'Expenses',
-        icon: 'icons',
-      },
-    ],
+    list: ['Accounting', 'Fees Management', 'Expenses'],
   },
   {
     title: 'Transport',
     icon: FaBusAlt,
-    list: [
-      {
-        title: 'Vehicles',
-        icon: 'icons',
-      },
-      {
-        title: 'Drivers',
-        icon: 'icons',
-      },
-    ],
+    list: ['Vehicles', 'Drivers'],
   },
   {
     title: 'Communication',
     icon: MdCallSplit,
-    list: [
-      {
-        title: 'Announcements',
-        icon: 'icons',
-      },
-      {
-        title: 'Messaging',
-        icon: 'icons',
-      },
-    ],
+    list: ['Announcements', 'Messaging'],
   },
   {
     title: 'Reports',
     icon: FaBook,
-    list: [
-      {
-        title: 'Academic Reports',
-        icon: 'icons',
-      },
-      {
-        title: 'Financial Reports',
-        icon: 'icons',
-      },
-      {
-        title: 'HR Reports',
-        icon: 'icons',
-      },
-    ],
+    list: ['Academic Reports', 'Financial Reports', 'HR Reports'],
   },
 ];
