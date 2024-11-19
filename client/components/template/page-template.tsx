@@ -1,22 +1,28 @@
-import React from "react";
-import { cn } from "@/lib/utils";
-import OverviewCard from "../cards/overview-card";
+import React from 'react';
+import { cn } from '@/lib/utils';
+import OverviewCard from '../cards/overview-card';
+import AttendenceChart from '../charts/attendence-chart';
+import GradeChart from '../charts/grade-chart';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   overviewData: any[];
-  LeftSideChart: React.ReactNode;
-  RithSideChart: React.ReactNode;
+  attendanceChartData: any[];
+  attendanceChartTitle: string;
+  gradeChartData: any[];
+  gradeChartTitle: string;
 }
 
-const DashboardTemplate = ({
+const PageTemplate = ({
   children,
   className,
   overviewData,
-  LeftSideChart,
-  RithSideChart,
+  attendanceChartData,
+  attendanceChartTitle,
+  gradeChartData,
+  gradeChartTitle,
 }: IProps) => {
   return (
-    <div className={cn("h-full overflow-auto flex flex-col gap-4", className)}>
+    <div className={cn('h-full overflow-auto flex flex-col gap-4', className)}>
       {/* Overview */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {overviewData.map(({ icon, title, currentValue, pastValue }) => (
@@ -32,22 +38,25 @@ const DashboardTemplate = ({
 
       {/* Charts */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {LeftSideChart}
-        {RithSideChart}
+        <AttendenceChart
+          data={attendanceChartData}
+          title={attendanceChartTitle}
+        />
+        <GradeChart data={gradeChartData} title={gradeChartTitle} />
       </section>
 
       {/* Grops card */}
-      <section className="grid grid-cols-1 gap-4">
+      <section>
         {/* 
           - Group card: Students
           - Group card: Teachers
           - Group card: Parents
           - Group card: Classes
          */}
-        {children}
       </section>
+      {children}
     </div>
   );
 };
 
-export default DashboardTemplate;
+export default PageTemplate;
