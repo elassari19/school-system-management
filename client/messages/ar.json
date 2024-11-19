@@ -87,7 +87,11 @@
     "new parents this year": "آباء جدد هذا العام",
     "Try Searching 'insights'": "جرب البحث عن 'رؤى'",
     "from last year": "من العام الماضي",
-    "School Anoul": " مدرسة أنول"
+    "School Anoul": " مدرسة أنول",
+    "Director": "المدير",
+    "General Custody": "الحراسة العامة",
+    "Accountant": "المحاسب",
+    "HR": "الموارد البشرية"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",
@@ -109,5 +113,10 @@
     "Weekly Exams Performance": "أداء الامتحانات الأسبوعية",
     "Monthly Exams": "الامتحانات الشهرية",
     "Monthly Attendance": "الحضور الشهري"
+  },
+  "administration": {
+    "new Staff this year": "موظفون جدد هذا العام",
+    "new Payroll this year": "كشوف المرتبات الجديدة هذا العام",
+    "new Recruitment this year": "توظيف جديد هذا العام"
   }
 }

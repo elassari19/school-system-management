@@ -87,7 +87,11 @@
     "new parents this year": "new parents this year",
     "Try Searching 'insights'": "Try Searching 'insights'",
     "from last year": "from last year",
-    "School Anoul": "School Anoul"
+    "School Anoul": "School Anoul",
+    "Director": "Director",
+    "General Custody": "General Custody",
+    "Accountant": "Accountant",
+    "HR": "HR"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",
@@ -109,5 +113,10 @@
     "Weekly Exams Performance": "Weekly Exams Performance",
     "Monthly Exams": "Monthly Exams",
     "Monthly Attendance": "Monthly Attendance"
+  },
+  "administration": {
+    "new Staff this year": "new Staff this year",
+    "new Payroll this year": "new Payroll this year",
+    "new Recruitment this year": "new Recruitment this year"
   }
 }

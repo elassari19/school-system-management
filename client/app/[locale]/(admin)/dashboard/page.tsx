@@ -7,62 +7,44 @@ import { PiExam } from 'react-icons/pi';
 import ParentChildTable from '@/components/tables/parents-tables';
 import { events, monthlyFinance, parentData } from '@/lib/dummy-data';
 import EventsCard from '@/components/cards/events-card';
-import OverviewCard from '@/components/cards/overview-card';
+import DashboardTemplate from '@/components/template/dashboard-template';
 
 interface IProps {}
 
 export default async function Page({}: IProps) {
   const g = await getTranslations('global');
-  const d = await getTranslations('dashboard');
 
   return (
-    <div className="dashboard-page">
-      {/* cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-        {[
-          {
-            icon: <GiTeacher className="h-6 w-6 text-secondary" />,
-            title: `${g('Teachers')} ${g('Courses')}`,
-            currentValue: '89',
-            pastValue: `+20.1% ${d('from last year')}`,
-          },
-          {
-            icon: <PiExam className="h-6 w-6 text-secondary" />,
-            title: g('Exams'),
-            currentValue: '12',
-            pastValue: `+5.4% ${d('from last year')}`,
-          },
-          {
-            icon: <Users className="h-6 w-6 text-secondary" />,
-            title: g('Students'),
-            currentValue: '1,234',
-            pastValue: `+180 ${g('new students this year')}`,
-          },
-          {
-            icon: <User className="h-6 w-6 text-secondary" />,
-            title: g('Parents'),
-            currentValue: '2,345',
-            pastValue: `+210 ${g('new parents this year')}`,
-          },
-        ].map(({ icon, title, currentValue, pastValue }) => (
-          <OverviewCard
-            key={title}
-            icon={icon}
-            title={title}
-            currentValue={currentValue}
-            pastValue={pastValue}
-          />
-        ))}
-      </section>
-
-      {/* charts */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        {/* monthly */}
-        <MonthlyFinanceChart data={monthlyFinance} />
-        {/* yearly */}
-        <YearsFinancialChart />
-      </section>
-
+    <DashboardTemplate
+      overviewData={[
+        {
+          icon: GiTeacher,
+          title: `${g('Teachers')} ${g('Courses')}`,
+          currentValue: '89',
+          pastValue: `+20.1% ${g('from last year')}`,
+        },
+        {
+          icon: PiExam,
+          title: g('Exams'),
+          currentValue: '12',
+          pastValue: `+5.4% ${g('from last year')}`,
+        },
+        {
+          icon: Users,
+          title: g('Students'),
+          currentValue: '1,234',
+          pastValue: `+180 ${g('new students this year')}`,
+        },
+        {
+          icon: User,
+          title: g('Parents'),
+          currentValue: '2,345',
+          pastValue: `+210 ${g('new parents this year')}`,
+        },
+      ]}
+      LeftSideChart={<MonthlyFinanceChart data={monthlyFinance} />}
+      RithSideChart={<YearsFinancialChart />}
+    >
       <section className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 h-40">
         {/* parend child general info */}
         <div className="lg:col-span-3">
@@ -75,6 +57,6 @@ export default async function Page({}: IProps) {
           ))}
         </div>
       </section>
-    </div>
+    </DashboardTemplate>
   );
 }
