@@ -15,6 +15,7 @@ interface IProps {
   cardContent: React.ReactNode;
   cardFooter?: React.ReactNode;
   className?: string;
+  flex?: boolean;
 }
 
 const RootCard = ({
@@ -23,15 +24,20 @@ const RootCard = ({
   cardContent,
   cardFooter,
   className,
+  flex,
 }: IProps) => {
   return (
     <Card
       className={cn(
-        'border-secondary/70 bg-gradient-to-b from-white to-secondary/10',
+        'border-secondary/70 bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc]',
         className
       )}
     >
-      <CardHeader>
+      <CardHeader
+        className={cn(
+          flex && 'flex flex-row items-center justify-between space-y-0'
+        )}
+      >
         {title && <CardTitle className="text-xl">{title}</CardTitle>}
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

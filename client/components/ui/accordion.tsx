@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronDown } from 'lucide-react';
+import { MinusIcon, PlusIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -25,13 +25,14 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        'flex flex-1 items-center justify-between font-medium transition-all [&[data-state=open]>svg]:rotate-180',
+        'flex flex-1 items-center justify-between font-medium transition-all [&[data-state=open]>svg.plus]:hidden [&[data-state=open]>svg.minus]:block',
         className
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+      <PlusIcon className='h-4 w-4 plus' />
+      <MinusIcon className='h-4 w-4 hidden minus' />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
@@ -43,10 +44,10 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+    className={cn("overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down", className)}
     {...props}
   >
-    <div className={cn('pb-4 pt-0', className)}>{children}</div>
+    <div className='pb-4 pt-0'>{children}</div>
   </AccordionPrimitive.Content>
 ));
 
@@ -57,6 +58,7 @@ interface AccordionMenuProps {
   accordionContent: React.ReactNode[];
   type?: 'single' | 'multiple';
   value: string;
+  active: boolean
 }
 
 const AccordionMenu = ({
@@ -64,6 +66,7 @@ const AccordionMenu = ({
   accordionContent,
   type = 'single',
   value,
+  active
 }: AccordionMenuProps) => {
   const router = useRouter();
 
@@ -76,10 +79,10 @@ const AccordionMenu = ({
 
   return (
     //@ts-ignore
-    <Accordion type={type} collapsible onValueChange={handleValueChange}>
+    <Accordion type={type} collapsible={!active} onValueChange={handleValueChange}>
       <AccordionItem value={value}>
         <AccordionTrigger>{accordionTrigger}</AccordionTrigger>
-        <AccordionContent>{accordionContent}</AccordionContent>
+        <AccordionContent className={cn(!active && 'animate-accordion-up')}>{accordionContent}</AccordionContent>
       </AccordionItem>
     </Accordion>
   );

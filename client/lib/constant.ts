@@ -126,17 +126,17 @@ export const menuList = [
   {
     title: 'Academic',
     icon: GrTree,
-    list: ['Students', 'Teachers', 'Parents', 'Classes', 'Subjects'],
+    list: ['Students', 'Teachers', 'Classes', 'Subjects', 'Events'],
   },
-  {
-    title: 'Attendance',
-    icon: IoCalendar,
-    list: ['Attendance', 'Schedule', 'Events'],
-  },
+  // {
+  //   title: 'Attendance',
+  //   icon: IoCalendar,
+  //   list: ['Attendance', 'Schedule', 'Events'],
+  // },
   {
     title: 'Administration',
     icon: FaSwatchbook,
-    list: ['Staff Management', 'Payroll', 'Recruitment'],
+    list: ['Director', 'General Custody', 'HR', 'Accountant', 'Parents'],
   },
   {
     title: 'Resources',
@@ -161,6 +161,12 @@ export const menuList = [
   {
     title: 'Reports',
     icon: FaBook,
-    list: ['Academic Reports', 'Financial Reports', 'HR Reports'],
+    list: [
+      'Academic Reports',
+      'Financial Reports',
+      'HR Reports',
+      'Attendance Reports',
+      'Teacher Reports',
+    ],
   },
 ];

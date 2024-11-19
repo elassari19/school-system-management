@@ -200,18 +200,18 @@ export const genderData = [
 ];
 
 export const attendanceData = [
-  { name: 'Jan', male: 90, female: 85 },
-  { name: 'Feb', male: 95, female: 90 },
-  { name: 'Mar', male: 85, female: 95 },
-  { name: 'Apr', male: 90, female: 99 },
-  { name: 'May', male: 92, female: 89 },
-  { name: 'Jui', male: 90, female: 85 },
-  { name: 'Jue', male: 95, female: 90 },
-  { name: 'Aut', male: 85, female: 95 },
-  { name: 'Sep', male: 90, female: 99 },
-  { name: 'Nov', male: 92, female: 89 },
-  { name: 'Oct', male: 90, female: 99 },
-  { name: 'Dec', male: 92, female: 89 },
+  { name: 'Jan', male: 90, female: 85, average: 87.5 },
+  { name: 'Feb', male: 95, female: 90, average: 92.5 },
+  { name: 'Mar', male: 85, female: 95, average: 90 },
+  { name: 'Apr', male: 90, female: 99, average: 94.5 },
+  { name: 'May', male: 92, female: 89, average: 90.5 },
+  { name: 'Jui', male: 90, female: 85, average: 87.5 },
+  { name: 'Jue', male: 95, female: 90, average: 92.5 },
+  { name: 'Aut', male: 85, female: 95, average: 90 },
+  { name: 'Sep', male: 90, female: 99, average: 94.5 },
+  { name: 'Oct', male: 90, female: 99, average: 94.5 },
+  { name: 'Nov', male: 92, female: 89, average: 90.5 },
+  { name: 'Dec', male: 92, female: 89, average: 90.5 },
 ];
 
 export const financeData = [

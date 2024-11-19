@@ -1,26 +1,28 @@
 import { title } from 'process';
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import RootCard from './root-card';
 
 interface IProps {
   title: string;
-  icon: React.ReactNode;
+  icon: React.JSXElementConstructor<any>;
   currentValue: string;
   pastValue: string;
 }
 
-const OverviewCard = ({ title, icon, currentValue, pastValue }: IProps) => {
+const OverviewCard = ({ title, currentValue, pastValue, ...props }: IProps) => {
   return (
-    <Card className="flex-1 border-secondary/70 bg-gradient-to-b from-white to-secondary/10">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
-        <CardTitle className="text-sm font-semibold">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{currentValue}</div>
-        <p className="text-xs text-muted-foreground">{pastValue}</p>
-      </CardContent>
-    </Card>
+    <RootCard
+      flex
+      title={title}
+      description={<props.icon className="h-6 w-6 text-secondary" />}
+      cardContent={
+        <>
+          <div className="text-2xl font-bold">{currentValue}</div>
+          <p className="text-xs text-muted-foreground">{pastValue}</p>
+        </>
+      }
+    />
   );
 };
 
