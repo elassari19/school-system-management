@@ -1,7 +1,7 @@
 import React from "react";
 import { UsersRound, GraduationCap, Users, BookOpen } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { attendanceData, monthlyExamsData } from "@/lib/dummy-data";
+import { attendanceData, monthlyExamsData, tags } from "@/lib/dummy-data";
 import DashboardTemplate from "@/components/template/dashboard-template";
 import AttendenceChart from "@/components/charts/attendence-chart";
 import GradeChart from "@/components/charts/grade-chart";
@@ -61,6 +61,7 @@ const Page = async () => {
         <GradeChart data={monthlyExamsData} title={a("Monthly Exams")} />
       }
     >
+      {/* students groups */}
       <RootCard
         className="w-full"
         title="Student Groups"
@@ -73,16 +74,47 @@ const Page = async () => {
                   members={members}
                   admin={members.find((u) => u.role === "ADMIN")}
                   user={user}
-                  subjectTags={[
-                    "Historic",
-                    "Morocco",
-                    "Historic",
-                    "Morocco",
-                    "Historic",
-                    "Morocco",
-                    "Historic",
-                    "Morocco",
-                  ]}
+                  subjectTags={tags}
+                />
+              )
+              .map((item) => item)}
+          />
+        }
+      />
+      {/* classes groups */}
+      <RootCard
+        className="w-full"
+        title="Classes Groups"
+        cardContent={
+          <DashboardCarousel
+            carousel={Array(10)
+              .fill(
+                <GroupCard
+                  groupName="Pixel Crafters"
+                  members={members}
+                  admin={members.find((u) => u.role === "ADMIN")}
+                  user={user}
+                  subjectTags={tags}
+                />
+              )
+              .map((item) => item)}
+          />
+        }
+      />
+      {/* parents groups */}
+      <RootCard
+        className="w-full"
+        title="Teachers and Parents Groups"
+        cardContent={
+          <DashboardCarousel
+            carousel={Array(10)
+              .fill(
+                <GroupCard
+                  groupName="Pixel Crafters"
+                  members={members}
+                  admin={members.find((u) => u.role === "ADMIN")}
+                  user={user}
+                  subjectTags={tags}
                 />
               )
               .map((item) => item)}

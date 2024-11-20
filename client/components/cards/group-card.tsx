@@ -5,12 +5,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { StaticImageData } from "next/image";
-import { BadgeCheckIcon, Group, ShareIcon } from "lucide-react";
+import { BadgeCheckIcon, ShareIcon } from "lucide-react";
 
 interface Member {
   id: string;
   name: string;
-  avatar: StaticImageData;
+  avatar: string;
   role: string;
 }
 
@@ -35,21 +35,18 @@ const GroupCard = ({
 }: IProps) => {
   return (
     <Card className="w-full max-w-sm border-secondary/70">
-      <CardContent className="pt-4 pb-2 flex flex-col items-center text-center gap-2">
+      <CardContent className="font-semibold text-muted-foreground py-4 flex flex-col items-center text-center gap-2">
         {/* Name and Verification */}
         <div className="flex items-center gap-1">
-          <h3 className="font-semibold text-lg">{groupName}</h3>
+          <h3 className="text-lg text-black">{groupName}</h3>
           {isVerified && <BadgeCheckIcon className="w-5 h-5 text-blue-500" />}
         </div>
 
-        {/* Group Subject */}
+        {/* Group Tags */}
         <div className="flex items-center gap-2 w-full overflow-auto">
           {subjectTags.map((item) => (
-            <div
-              key={item}
-              className="text-sm text-gray-600 p-2 bg-primary rounded-sm"
-            >
-              <span className="text-sm">{item}</span>
+            <div key={item} className="rounded-sm border border-secondary/70">
+              <span className="p-1 px-2 text-xs">{item}</span>
             </div>
           ))}
         </div>
@@ -63,7 +60,9 @@ const GroupCard = ({
                 {admin.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            <p className="text-sm text-muted-foreground mt-1">AMDIN</p>
+            <p className="text-xs font-semibold text-muted-foreground mt-1">
+              AMDIN
+            </p>
           </div>
           <div>
             <div className="flex -space-x-2 justify-center">
@@ -79,29 +78,31 @@ const GroupCard = ({
                 </Avatar>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground mt-1">MEMBERS</p>
+            <p className="text-xs font-semibold text-muted-foreground mt-1">
+              MEMBERS
+            </p>
           </div>
         </div>
 
         {/* Statistics */}
         <div className="grid grid-cols-3 gap-4 w-full">
           <div className="text-center">
-            <p className="text-lg font-semibold">
+            <p className="text-base font-semibold -mb-2">
               {members.filter((member) => member.role == "TEACHER").length}
             </p>
-            <p className="text-sm text-muted-foreground">Teachers</p>
+            <p className="text-xs text-muted-foreground">Teachers</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-semibold">
+            <p className="text-base font-semibold -mb-2">
               {members.filter((member) => member.role == "STUDENT").length}
             </p>
-            <p className="text-sm text-muted-foreground">Students</p>
+            <p className="text-xs text-muted-foreground">Students</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-semibold">
+            <p className="text-base font-semibold -mb-2">
               {members.filter((member) => member.role == "PARENT").length}
             </p>
-            <p className="text-sm text-muted-foreground">Parents</p>
+            <p className="text-xs text-muted-foreground">Parents</p>
           </div>
         </div>
       </CardContent>
