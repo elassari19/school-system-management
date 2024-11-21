@@ -65,28 +65,31 @@ model Session {
 }
 
 model User {
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  email      String       @unique
-  fullname   String?
-  phone      String?
-  password   String
-  role       Role         @default(PARENT)
-  children   Student[]
-  age        Int?
-  gender     String?
-  image      String?
-  address    String?
-  salary     Float?
-  education  Education[] // teachers Education
-  experience Experience[] // teachers Experience
-  session    Session[]
-  account    Account[]
-  classId    String[]     @db.ObjectId
-  classes    Class[]      @relation(fields: [classId], references: [id])
-  subjects   Subject[]
-  courses    Course[]
-  createdAt  DateTime?    @default(now())
-  updatedAt  DateTime?    @updatedAt
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  email       String            @unique
+  fullname    String?
+  phone       String?
+  password    String
+  role        Role              @default(PARENT)
+  children    Student[]
+  age         Int?
+  gender      String?
+  image       String?
+  address     String?
+  salary      Float?
+  education   Education[] // teachers Education
+  experience  Experience[] // teachers Experience
+  session     Session[]
+  account     Account[]
+  classId     String[]          @db.ObjectId
+  classes     Class[]           @relation(fields: [classId], references: [id])
+  subjects    Subject[]
+  courses     Course[]
+  group       Group[]
+  memberships GroupMembership[]
+  adminGroups GroupMembership[] @relation("AdminGroups")
+  createdAt   DateTime?         @default(now())
+  updatedAt   DateTime?         @updatedAt
 }
 
 model Student {
@@ -225,6 +228,33 @@ model Experience {
   to          DateTime
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
+}
+
+model Group {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  image       String?
+  tags        String[]
+  userId      String            @db.ObjectId
+  user        User              @relation(fields: [userId], references: [id])
+  memberships GroupMembership[]
+  admins      GroupMembership[] @relation("AdminGroups")
+  createdAt   DateTime?         @default(now())
+  updatedAt   DateTime?         @updatedAt
+}
+
+model GroupMembership {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String  @db.ObjectId
+  groupId    String  @db.ObjectId
+  isAdmin    Boolean
+  user       User    @relation(fields: [userId], references: [id])
+  group      Group   @relation(fields: [groupId], references: [id])
+  adminUser  User?   @relation("AdminGroups", fields: [userId], references: [id])
+  adminGroup Group?  @relation("AdminGroups", fields: [userId], references: [id])
+
+  @@unique([userId, groupId])
+  @@index([groupId])
 }
 
 // npx prisma generate
