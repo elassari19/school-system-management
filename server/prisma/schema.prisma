@@ -71,33 +71,53 @@ model User {
   phone       String?
   password    String
   role        Role              @default(PARENT)
-  children    Student[]
   age         Int?
   gender      String?
   image       String?
   address     String?
   salary      Float?
-  education   Education[] // teachers Education
-  experience  Experience[] // teachers Experience
-  session     Session[]
-  account     Account[]
-  classId     String[]          @db.ObjectId
-  classes     Class[]           @relation(fields: [classId], references: [id])
+  student     Student[]
+  teacher     Teacher[]
+  parent      Parent[]
+  classes     Class[]
   subjects    Subject[]
   courses     Course[]
   group       Group[]
   memberships GroupMembership[]
   adminGroups GroupMembership[] @relation("AdminGroups")
+  session     Session[]
+  account     Account[]
   createdAt   DateTime?         @default(now())
   updatedAt   DateTime?         @updatedAt
+}
+
+model Parent {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  payments  Payment[]
+  children  Student[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Teacher {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String       @db.ObjectId
+  user       User         @relation(fields: [userId], references: [id])
+  classId    String       @db.ObjectId
+  class      Class        @relation(fields: [classId], references: [id])
+  education  Education[] // teachers Education
+  experience Experience[] // teachers Experience
 }
 
 model Student {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   userId    String    @db.ObjectId
   user      User      @relation(fields: [userId], references: [id])
-  grade     Int?
-  payments  Payment[]
+  grade     Grade[]
+  parentId  String    @db.ObjectId
+  parent    Parent    @relation(fields: [parentId], references: [id])
   classId   String    @db.ObjectId
   class     Class     @relation(fields: [classId], references: [id])
   createdAt DateTime? @default(now())
@@ -108,8 +128,8 @@ model Payment {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
   signatureId String
   status      PaymentStatus @default(PENDING)
-  studentId   String        @db.ObjectId
-  student     Student       @relation(fields: [studentId], references: [id])
+  parentId    String        @db.ObjectId
+  parent      Parent        @relation(fields: [parentId], references: [id])
   createdAt   DateTime?     @default(now())
   updatedAt   DateTime?     @updatedAt
 }
@@ -118,8 +138,9 @@ model Class {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   students  Student[]
+  teachers  Teacher[]
   userId    String[]  @db.ObjectId
-  users     User[]    @relation(fields: [userId], references: [id])
+  users     User      @relation(fields: [userId], references: [id])
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
@@ -195,12 +216,14 @@ model Exam {
 }
 
 model Grade {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  score    Int
-  courseId String? @db.ObjectId
-  examId   String? @db.ObjectId
-  course   Course? @relation(fields: [courseId], references: [id])
-  exam     Exam?   @relation(fields: [examId], references: [id])
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  score     Int
+  studentId String  @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id])
+  courseId  String? @db.ObjectId
+  examId    String? @db.ObjectId
+  course    Course? @relation(fields: [courseId], references: [id])
+  exam      Exam?   @relation(fields: [examId], references: [id])
 }
 
 model Education {
@@ -209,8 +232,8 @@ model Education {
   degree    String
   image     String?
   field     String
-  userId    String    @db.ObjectId
-  user      User      @relation(fields: [userId], references: [id])
+  teacherId String    @db.ObjectId
+  teacher   Teacher   @relation(fields: [teacherId], references: [id])
   from      DateTime
   to        DateTime
   createdAt DateTime? @default(now())
@@ -222,8 +245,8 @@ model Experience {
   company     String
   position    String
   certificate String?
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
+  teacherId   String    @db.ObjectId
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
   from        DateTime
   to          DateTime
   createdAt   DateTime? @default(now())
