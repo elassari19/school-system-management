@@ -68,7 +68,7 @@ brew install redis
 
 Start Redis server:
 
-```bash
+```
 brew services start redis
 ```
 
@@ -78,21 +78,44 @@ MP2 (Process Manager 2) is recommended for production deployment. Here's how to 
 
 1. Install PM2 globally:
 
-````bash
+```
 npm install -g pm2
+```
 
 2. Start the application with PM2:
-```bash
+
+```
 pm2 start ecosystem.config.js
+```
 
 3. Basic PM2 commands:
-- View logs: ```bash
+
+- View logs:
+
+```
   pm2 logs
-- Monitor processes: ```bash
+```
+
+- Monitor processes:
+
+```
   pm2 monit
-- List processes: ```bash
+```
+
+- List processes:
+
+```
   pm2 list
-- Restart application: ```bash
+```
+
+- Restart application:
+
+```
   pm2 restart ecosystem.config.js
-- Stop application: ```bash pm2 stop ecosystem.config.js
-````
+```
+
+- Stop application:
+
+```
+  pm2 stop ecosystem.config.js
+```
