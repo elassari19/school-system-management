@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createCourse,
   deleteAllCourses,
@@ -7,10 +7,10 @@ import {
   getAllCourses,
   getCourse,
   updateCourse,
-} from './course.controller';
-import { isAdminOrTeacher } from '../../middelwares/passport.middelware';
-import validateSchema from '../../middelwares/validateSchema';
-import { courseSchema, updateCourseSchema } from './course.schema';
+} from "./course.controller";
+import { isAdminOrTeacher } from "../../middelwares/passport.middelware";
+import validateSchema from "../../middelwares/validateSchema";
+import { courseSchema, updateCourseSchema } from "./course.schema";
 
 const router = Router();
 
@@ -33,7 +33,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/', getCourse);
+router.get("/", getCourse);
 
 /**
  * @swagger
@@ -47,7 +47,7 @@ router.get('/', getCourse);
  *       500:
  *         description: Internal server error
  */
-router.get('/all', getAllCourses);
+router.get("/all", getAllCourses);
 
 /**
  * @swagger
@@ -70,7 +70,7 @@ router.get('/all', getAllCourses);
  *         description: Internal server error
  */
 router.post(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(courseSchema),
@@ -105,7 +105,7 @@ router.post(
  *         description: Internal server error
  */
 router.put(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(updateCourseSchema),
@@ -134,7 +134,7 @@ router.put(
  *         description: Internal server error
  */
 router.delete(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteCourse
@@ -154,8 +154,8 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
@@ -163,7 +163,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/many',
+  "/many",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteManyCourses
@@ -184,7 +184,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteAllCourses

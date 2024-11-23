@@ -80,7 +80,7 @@ router.get(
  *             properties:
  *               name:
  *                 type: string
- *               tags
+ *               tags:
  *                 type: array
  *     responses:
  *       200:
@@ -159,8 +159,8 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success

@@ -1,9 +1,9 @@
-import { createApp } from './app';
+import { createApp } from "./app";
 
 const app = createApp();
 
 /* SERVER */
 const port = Number(process.env.PORT) || 3001;
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port ${port}`);
 });

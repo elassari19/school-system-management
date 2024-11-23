@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   isAdminOrTeacher,
   isAuthenticated,
-} from '../../middelwares/passport.middelware';
+} from "../../middelwares/passport.middelware";
 import {
   createSubject,
   deleteAllSubjects,
@@ -11,9 +11,9 @@ import {
   getAllSubjects,
   getSubject,
   updateSubject,
-} from './subject.controller';
-import validateSchema from '../../middelwares/validateSchema';
-import { subjectSchema } from './subject.schema';
+} from "./subject.controller";
+import validateSchema from "../../middelwares/validateSchema";
+import { subjectSchema } from "./subject.schema";
 
 const router = Router();
 
@@ -36,7 +36,7 @@ const router = Router();
  *         description: Subject details
  */
 router.get(
-  '/',
+  "/",
   // @ts-ignore
   // isAuthenticated(),
   getSubject
@@ -55,7 +55,7 @@ router.get(
  *         description: List of all subjects
  */
 router.get(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAuthenticated(),
   getAllSubjects
@@ -83,7 +83,7 @@ router.get(
  *         description: Subject created successfully
  */
 router.post(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(subjectSchema),
@@ -109,7 +109,7 @@ router.post(
  *         description: Subject updated successfully
  */
 router.put(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(subjectSchema),
@@ -135,7 +135,7 @@ router.put(
  *         description: Subject deleted successfully
  */
 router.delete(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteSubject
@@ -155,8 +155,8 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
@@ -164,7 +164,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/many',
+  "/many",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteManySubjects
@@ -183,7 +183,7 @@ router.delete(
  *         description: Subjects deleted successfully
  */
 router.delete(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteAllSubjects

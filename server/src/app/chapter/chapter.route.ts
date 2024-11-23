@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createChapter,
   deleteAllChapter,
@@ -7,10 +7,10 @@ import {
   getAllChapter,
   getChapter,
   updateChapter,
-} from './chapter.controller';
-import { isAdminOrTeacher } from '../../middelwares/passport.middelware';
-import validateSchema from '../../middelwares/validateSchema';
-import { chapterSchema } from './chapter.schema';
+} from "./chapter.controller";
+import { isAdminOrTeacher } from "../../middelwares/passport.middelware";
+import validateSchema from "../../middelwares/validateSchema";
+import { chapterSchema } from "./chapter.schema";
 
 const router = Router();
 
@@ -32,7 +32,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/', getChapter);
+router.get("/", getChapter);
 
 /**
  * @swagger
@@ -46,7 +46,7 @@ router.get('/', getChapter);
  *       500:
  *         description: Internal server error
  */
-router.get('/all', getAllChapter);
+router.get("/all", getAllChapter);
 
 /**
  * @swagger
@@ -67,7 +67,7 @@ router.get('/all', getAllChapter);
  *         description: Internal server error
  */
 router.post(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(chapterSchema),
@@ -99,7 +99,7 @@ router.post(
  *         description: Internal server error
  */
 router.put(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(chapterSchema),
@@ -127,7 +127,7 @@ router.put(
  *         description: Internal server error
  */
 router.delete(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteChapter
@@ -147,15 +147,15 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
  *       500:
  *         description: Internal server error
  */ router.delete(
-  '/many',
+  "/many",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteManyChapter
@@ -174,7 +174,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteAllChapter

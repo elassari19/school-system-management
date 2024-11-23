@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createContent,
   deleteAllContent,
@@ -9,10 +9,10 @@ import {
   getAllContent,
   getContent,
   updateContent,
-} from './content.controller';
-import { isAdminOrTeacher } from '../../middelwares/passport.middelware';
-import validateSchema from '../../middelwares/validateSchema';
-import { contentSchema } from './content.schema';
+} from "./content.controller";
+import { isAdminOrTeacher } from "../../middelwares/passport.middelware";
+import validateSchema from "../../middelwares/validateSchema";
+import { contentSchema } from "./content.schema";
 
 const router = Router();
 
@@ -34,7 +34,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get('/', getContent);
+router.get("/", getContent);
 
 /**
  * @swagger
@@ -54,7 +54,7 @@ router.get('/', getContent);
  *       500:
  *         description: Internal server error
  */
-router.get('/chapter', getAllChapterContent);
+router.get("/chapter", getAllChapterContent);
 
 /**
  * @swagger
@@ -68,7 +68,7 @@ router.get('/chapter', getAllChapterContent);
  *       500:
  *         description: Internal server error
  */
-router.get('/all', getAllContent);
+router.get("/all", getAllContent);
 
 /**
  * @swagger
@@ -95,7 +95,7 @@ router.get('/all', getAllContent);
  *         description: Internal server error
  */
 router.post(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(contentSchema),
@@ -127,7 +127,7 @@ router.post(
  *         description: Internal server error
  */
 router.put(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(contentSchema),
@@ -155,7 +155,7 @@ router.put(
  *         description: Internal server error
  */
 router.delete(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteContent
@@ -180,7 +180,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/chapter',
+  "/chapter",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteChapterContent
@@ -200,15 +200,15 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
  *       500:
  *         description: Internal server error
  */ router.delete(
-  '/many',
+  "/many",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteManyContent
@@ -227,7 +227,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteAllContent

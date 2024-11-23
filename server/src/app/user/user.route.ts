@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { isAuthenticated } from '../../middelwares/passport.middelware';
+import { Router } from "express";
+import { isAuthenticated } from "../../middelwares/passport.middelware";
 import {
   createUser,
   deleteAllUsers,
@@ -8,9 +8,9 @@ import {
   getAllUsers,
   getUser,
   updateUser,
-} from './user.controller';
-import validateSchema from '../../middelwares/validateSchema';
-import { userSchema } from './user.schema';
+} from "./user.controller";
+import validateSchema from "../../middelwares/validateSchema";
+import { userSchema } from "./user.schema";
 
 const router = Router();
 
@@ -46,7 +46,7 @@ const router = Router();
  *          description: Server error
  */
 router.get(
-  '/',
+  "/",
   // @ts-ignore
   // isAuthenticated(),
   getUser
@@ -79,7 +79,7 @@ router.get(
  *          description: Server error
  */
 router.get(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAuthenticated(),
   getAllUsers
@@ -87,24 +87,24 @@ router.get(
 
 /**
  * @swagger
- * /user:
- *   post:
- *     summary: Create a new user
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserInput'
- *     responses:
- *       200:
- *         description: Subject created successfully
+ *  /user:
+ *    post:
+ *      summary: Create a new user
+ *      tags: [Users]
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/UserInput'
+ *      responses:
+ *        200:
+ *          description: Subject created successfully
  */
 router.post(
-  '/',
+  "/",
   // @ts-ignore
   // isAuthenticated(),
   validateSchema(userSchema),
@@ -113,24 +113,24 @@ router.post(
 
 /**
  * @swagger
- * /user:
- *   post:
- *     summary: Create a new user
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserInput'
- *     responses:
- *       200:
- *         description: Subject created successfully
+ *  /user:
+ *    post:
+ *      summary: Create a new user
+ *      tags: [Users]
+ *      security:
+ *        - bearerAuth: []
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            $ref:
+ *              '#/components/schemas/UserInput'
+ *      responses:
+ *        200:
+ *          description: Subject created successfully
  */
 router.put(
-  '/',
+  "/",
   // @ts-ignore
   // isAuthenticated(),
   validateSchema(userSchema),
@@ -161,7 +161,7 @@ router.put(
  *          description: Server error
  */
 router.delete(
-  '/',
+  "/",
   // @ts-ignore
   // isAuthenticated(),
   deleteUser
@@ -181,8 +181,8 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
@@ -190,7 +190,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/many',
+  "/many",
   // @ts-ignore
   // isAuthenticated(),
   deleteManyUsers
@@ -211,7 +211,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAuthenticated(),
   deleteAllUsers

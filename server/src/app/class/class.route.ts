@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   isAdminOrTeacher,
   isAuthenticated,
-} from '../../middelwares/passport.middelware';
+} from "../../middelwares/passport.middelware";
 import {
   createClass,
   deleteAllClasses,
@@ -11,9 +11,9 @@ import {
   getAllClasses,
   getClass,
   updateClass,
-} from './class.controller';
-import validateSchema from '../../middelwares/validateSchema';
-import { classSchema } from './class.schema';
+} from "./class.controller";
+import validateSchema from "../../middelwares/validateSchema";
+import { classSchema } from "./class.schema";
 
 const router = Router();
 
@@ -36,7 +36,7 @@ const router = Router();
  *         description: Class details
  */
 router.get(
-  '/',
+  "/",
   // @ts-ignore
   // isAuthenticated(),
   getClass
@@ -55,7 +55,7 @@ router.get(
  *         description: List of all classes
  */
 router.get(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAuthenticated(),
   getAllClasses
@@ -83,7 +83,7 @@ router.get(
  *         description: Class created successfully
  */
 router.post(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(classSchema),
@@ -109,7 +109,7 @@ router.post(
  *         description: Class updated successfully
  */
 router.put(
-  '/',
+  "/",
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(classSchema),
@@ -135,7 +135,7 @@ router.put(
  *         description: Class deleted successfully
  */
 router.delete(
-  '/',
+  "/",
   // @ts-ignore
   // sAdminOrTeacher(),
   deleteClass
@@ -155,15 +155,15 @@ router.delete(
  *         application/json:
  *           schema:
  *            type: array
- *          items:
- *            type: string
+ *            items:
+ *              type: string
  *     responses:
  *       200:
  *         description: Success
  *       500:
  *         description: Internal server error
  */ router.delete(
-  '/many',
+  "/many",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteManyClasses
@@ -182,7 +182,7 @@ router.delete(
  *         description: List of all classes
  */
 router.delete(
-  '/all',
+  "/all",
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteAllClasses
