@@ -1,12 +1,13 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 // Define the schema for creating new course
 export const courseSchema = Joi.object({
+  subjectId: Joi.string().required(),
   title: Joi.string().required().min(3).max(100),
   description: Joi.string().required().min(10).max(1000),
   instructor: Joi.string().required(),
   duration: Joi.number().integer().min(1),
-  level: Joi.string().valid('beginner', 'intermediate', 'advanced'),
+  level: Joi.string().valid("beginner", "intermediate", "advanced"),
   tags: Joi.array().items(Joi.string()),
 
   chapters: Joi.array().items(
@@ -16,17 +17,17 @@ export const courseSchema = Joi.object({
       duration: Joi.number().integer().min(1),
       content: Joi.array().items(
         Joi.object({
-          type: Joi.string().valid('video', 'text', 'quiz', 'image').required(),
+          type: Joi.string().valid("video", "text", "quiz", "image").required(),
           title: Joi.string().required().min(3).max(100),
           data: Joi.alternatives()
-            .conditional('type', {
-              is: 'video',
+            .conditional("type", {
+              is: "video",
               then: Joi.object({
                 url: Joi.string().uri().required(),
                 duration: Joi.number().integer().min(1),
               }),
-              otherwise: Joi.alternatives().conditional('type', {
-                is: 'image',
+              otherwise: Joi.alternatives().conditional("type", {
+                is: "image",
                 then: Joi.object({
                   url: Joi.string().uri().required(),
                 }),
@@ -48,6 +49,6 @@ export const updateCourseSchema = Joi.object({
   description: Joi.string().required().min(10).max(1000),
   instructor: Joi.string().required(),
   duration: Joi.number().integer().min(1),
-  level: Joi.string().valid('beginner', 'intermediate', 'advanced'),
+  level: Joi.string().valid("beginner", "intermediate", "advanced"),
   tags: Joi.array().items(Joi.string()),
 });
