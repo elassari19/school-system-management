@@ -1,9 +1,7 @@
 import { Router } from "express";
+import { isAdminOrTeacher, isAuthenticated } from "../../middelwares/passport.middelware";
 import {
-  isAdminOrTeacher,
-  isAuthenticated,
-} from "../../middelwares/passport.middelware";
-import {
+  countSubject,
   createSubject,
   deleteAllSubjects,
   deleteManySubjects,
@@ -60,6 +58,27 @@ router.get(
   // isAuthenticated(),
   getAllSubjects
 );
+
+/**
+ * @openapi
+ *  paths:
+ *    /users:
+ *     get:
+ *      summary: Get all users
+ *      tags: [Users]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *      responses:
+ *        200:
+ *          description: Success
+ *        500:
+ *          description: Server error
+ */
+router.get("/count", countSubject);
 
 /**
  * @swagger

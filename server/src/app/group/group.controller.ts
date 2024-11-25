@@ -50,6 +50,13 @@ export const getAllGroups = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
+export const countGroup = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const count = await prisma.group.count({
+    ...option,
+  });
+  return res.status(200).send(count);
+};
 export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Extract the name and tags from the request body

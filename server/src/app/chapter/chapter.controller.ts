@@ -46,6 +46,14 @@ export const getAllChapter = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const countChapter = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const count = await prisma.chapter.count({
+    ...option,
+  });
+  return res.status(200).send(count);
+};
+
 export const createChapter = async (req: Request, res: Response, next: NextFunction) => {
   const { title, description, duration } = req.body;
 

@@ -44,6 +44,14 @@ export const getAllClasses = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const countClass = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const count = await prisma.class.count({
+    ...option,
+  });
+  return res.status(200).send(count);
+};
+
 export const createClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name } = req.body;

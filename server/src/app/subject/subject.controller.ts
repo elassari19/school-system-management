@@ -49,6 +49,14 @@ export const getAllSubjects = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+export const countSubject = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const count = await prisma.subject.count({
+    ...option,
+  });
+  return res.status(200).send(count);
+};
+
 export const createSubject = async (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.body;
   try {

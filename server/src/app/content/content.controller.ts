@@ -74,6 +74,14 @@ export const getAllContent = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const countContent = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const count = await prisma.content.count({
+    ...option,
+  });
+  return res.status(200).send(count);
+};
+
 export const createContent = async (req: Request, res: Response, next: NextFunction) => {
   const { title, type, data } = req.body;
   const { chapterId } = req.query;

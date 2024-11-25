@@ -58,6 +58,15 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
+export const countUsers = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const users = await prisma.user.count({
+    ...option,
+  });
+
+  return res.status(200).send(users);
+};
+
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { password, ...rest } = req.body;
 

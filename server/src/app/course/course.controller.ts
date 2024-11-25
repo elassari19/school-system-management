@@ -44,6 +44,14 @@ export const getAllCourses = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const countCourse = async (req: Request, res: Response, next: NextFunction) => {
+  const { option } = req.body;
+  const count = await prisma.course.count({
+    ...option,
+  });
+  return res.status(200).send(count);
+};
+
 export const createCourse = async (req: Request, res: Response, next: NextFunction) => {
   const { subjectId, ...cours } = req.body;
 
