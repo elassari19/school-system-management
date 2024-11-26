@@ -9,20 +9,7 @@ async function main() {
 
   console.log("Starting seeding...");
 
-  // 1. First generate classes (10 classes)
-
-  // for (let c = 1; c <= 7; c++) {
-  //   for (let k = 1; k <= 4; k++) {
-  //     const class_ = await prisma.class.create({
-  //       data: {
-  //         name: `Class ${c}-${k}`,
-  //       },
-  //     });
-  //     console.log(`Create ${class_.name} classe group is DONE`);
-  //   }
-  // }
-  // 2. Generate parents students users and connect them
-  for (let n = 0; n < 323; n++) {
+  for (let n = 0; n < 493; n++) {
     // Generate parent
     const parent = {
       email: faker.internet.email(),
@@ -60,8 +47,7 @@ async function main() {
       // Generate parent child
       const student = {
         email: faker.internet.email(),
-        fullname:
-          faker.person.firstName() + " " + parent.fullname.split(" ").at(-1),
+        fullname: faker.person.firstName() + " " + parent.fullname.split(" ").at(-1),
         phone: faker.phone.number(),
         password: hashedPassword,
         role: Role.STUDENT,
@@ -97,24 +83,6 @@ async function main() {
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
-
-// async function main() {
-//   await prisma.user.deleteMany({
-//     where: {
-//       email: {
-//         not: "admin@gmail.com",
-//       },
-//     },
-//   });
-// }
 // main()
 //   .catch((e) => {
 //     console.error(e);
@@ -123,3 +91,66 @@ main()
 //   .finally(async () => {
 //     await prisma.$disconnect();
 //   });
+
+// async function classes() {
+//   console.log("Starting seeding...");
+
+//   for (let c = 1; c <= 7; c++) {
+//     for (let k = 1; k <= 4; k++) {
+//       const class_ = await prisma.class.create({
+//         data: {
+//           name: `Class ${c}-${k}`,
+//         },
+//       });
+//       console.log(`Create ${class_.name} classe group is DONE`);
+//     }
+//   }
+// }
+
+// classes()
+// .catch((e) => {
+//   console.error(e);
+//   process.exit(1);
+// })
+// .finally(async () => {
+//   await prisma.$disconnect();
+// });
+
+async function conectStudentWithClass() {
+  const student = await prisma.student.findMany({
+    where: {
+      user: {
+        age: 17,
+      },
+    },
+    include: {
+      user: true,
+    },
+    take: 210,
+  });
+  console.log("student", student.length);
+  const classes = await prisma.class.findMany({
+    where: { name: { endsWith: "4" } },
+  });
+
+  let row = 0;
+  for (let i = 0; i < student.length; i++) {
+    await prisma.student.update({
+      where: { id: student[i].id },
+      data: { class: { connect: { id: classes[row].id } } },
+    });
+    if (i !== 0 && i % 30 === 0) {
+      row += 1;
+      console.log("classes", classes[row], "row", row);
+    }
+  }
+}
+
+conectStudentWithClass()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
