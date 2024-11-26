@@ -118,5 +118,20 @@
     "new Staff this year": "new Staff this year",
     "new Payroll this year": "new Payroll this year",
     "new Recruitment this year": "new Recruitment this year"
+  },
+  "subject": {
+    "Islamic education": "Islamic education",
+    "English": "English",
+    "Arabic": "Arabic",
+    "Mathematics": "Mathematics",
+    "Science": "Science",
+    "History": "History",
+    "Geography": "Geography",
+    "Physics": "Physics",
+    "Chemistry": "Chemistry",
+    "Biology": "Biology",
+    "Phylosophy": "Phylosophy",
+    "Arts and Crafts": "Arts and Crafts",
+    "Social Studies": "Social Studies"
   }
 }

@@ -118,5 +118,20 @@
     "new Staff this year": "موظفون جدد هذا العام",
     "new Payroll this year": "كشوف المرتبات الجديدة هذا العام",
     "new Recruitment this year": "توظيف جديد هذا العام"
+  },
+  "subject": {
+    "Islamic education": "التربية الإسلامية",
+    "English": "الانجليزية",
+    "Arabic": "العربية",
+    "Mathematics": "الرياضيات",
+    "Science": "العلوم",
+    "History": "التاريخ",
+    "Geography": "الجغرافية",
+    "Physics": "الفيزياء",
+    "Chemistry": "الكيمياء",
+    "Biology": "البيولوجيا",
+    "Phylosophy": "الفلسفة",
+    "Arts and Crafts": "الفنون والحرف اليدوية",
+    "Social Studies": "التنمية الاجتماعية"
   }
 }
