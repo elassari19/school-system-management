@@ -102,11 +102,10 @@ model Parent {
 }
 
 model Teacher {
-  id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String       @db.ObjectId
-  user       User         @relation(fields: [userId], references: [id])
-  classId    String       @db.ObjectId
-  class      Class        @relation(fields: [classId], references: [id])
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String           @db.ObjectId
+  user       User             @relation(fields: [userId], references: [id])
+  classes    TeacherClasses[]
   education  Education[] // teachers Education
   experience Experience[] // teachers Experience
 }
@@ -135,14 +134,25 @@ model Payment {
 }
 
 model Class {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   students  Student[]
-  teachers  Teacher[]
-  userId    String[]  @db.ObjectId
-  users     User      @relation(fields: [userId], references: [id])
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  teachers  TeacherClasses[] @relation("Classes")
+  userId    String[]         @db.ObjectId
+  users     User             @relation(fields: [userId], references: [id])
+  createdAt DateTime?        @default(now())
+  updatedAt DateTime?        @updatedAt
+}
+
+model TeacherClasses {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  teacherId String  @db.ObjectId
+  classId   String  @db.ObjectId
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  class     Class   @relation("Classes", fields: [classId], references: [id])
+
+  @@unique([teacherId, classId])
+  @@index([classId])
 }
 
 model Subject {
