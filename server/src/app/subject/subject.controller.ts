@@ -54,7 +54,7 @@ export const countSubject = async (req: Request, res: Response, next: NextFuncti
   const count = await prisma.subject.count({
     ...option,
   });
-  return res.status(200).send(count);
+  return res.status(200).json(count);
 };
 
 export const createSubject = async (req: Request, res: Response, next: NextFunction) => {

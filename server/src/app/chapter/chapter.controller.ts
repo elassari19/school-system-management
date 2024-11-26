@@ -51,7 +51,7 @@ export const countChapter = async (req: Request, res: Response, next: NextFuncti
   const count = await prisma.chapter.count({
     ...option,
   });
-  return res.status(200).send(count);
+  return res.status(200).json(count);
 };
 
 export const createChapter = async (req: Request, res: Response, next: NextFunction) => {

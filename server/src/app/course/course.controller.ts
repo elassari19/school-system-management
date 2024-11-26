@@ -49,7 +49,7 @@ export const countCourse = async (req: Request, res: Response, next: NextFunctio
   const count = await prisma.course.count({
     ...option,
   });
-  return res.status(200).send(count);
+  return res.status(200).json(count);
 };
 
 export const createCourse = async (req: Request, res: Response, next: NextFunction) => {

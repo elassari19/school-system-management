@@ -55,7 +55,7 @@ export const countGroup = async (req: Request, res: Response, next: NextFunction
   const count = await prisma.group.count({
     ...option,
   });
-  return res.status(200).send(count);
+  return res.status(200).json(count);
 };
 export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
   try {

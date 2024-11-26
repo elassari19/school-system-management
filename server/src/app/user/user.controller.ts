@@ -63,8 +63,8 @@ export const countUsers = async (req: Request, res: Response, next: NextFunction
   const users = await prisma.user.count({
     ...option,
   });
-
-  return res.status(200).send(users);
+  console.log("users", users);
+  return res.status(200).json(users);
 };
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {

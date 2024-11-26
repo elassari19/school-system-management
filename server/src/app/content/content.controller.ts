@@ -79,7 +79,7 @@ export const countContent = async (req: Request, res: Response, next: NextFuncti
   const count = await prisma.content.count({
     ...option,
   });
-  return res.status(200).send(count);
+  return res.status(200).json(count);
 };
 
 export const createContent = async (req: Request, res: Response, next: NextFunction) => {
