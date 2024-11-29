@@ -92,20 +92,20 @@ async function main() {
 //     await prisma.$disconnect();
 //   });
 
-// async function classes() {
-//   console.log("Starting seeding...");
+async function classes() {
+  console.log("Starting seeding...");
 
-//   for (let c = 1; c <= 7; c++) {
-//     for (let k = 1; k <= 4; k++) {
-//       const class_ = await prisma.class.create({
-//         data: {
-//           name: `Class ${c}-${k}`,
-//         },
-//       });
-//       console.log(`Create ${class_.name} classe group is DONE`);
-//     }
-//   }
-// }
+  for (let c = 1; c <= 7; c++) {
+    for (let k = 1; k <= 4; k++) {
+      const class_ = await prisma.class.create({
+        data: {
+          name: `Class ${c}-${k}`,
+        },
+      });
+      console.log(`Create ${class_.name} classe group is DONE`);
+    }
+  }
+}
 
 // classes()
 // .catch((e) => {
@@ -146,7 +146,242 @@ async function conectStudentWithClass() {
   }
 }
 
-conectStudentWithClass()
+// conectStudentWithClass()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
+
+async function createSubjects() {
+  // subjects
+  const subjects = [
+    "Islamic education",
+    "English",
+    "Arabic",
+    "Mathematics",
+    "Science",
+    "History",
+    "Geography",
+    "Physics",
+    "Chemistry",
+    "Biology",
+    "Phylosophy",
+    "Arts and Crafts",
+    "Social Studies",
+  ];
+
+  for (let subj = 0; subj < subjects.length; subj++) {
+    const resp = await prisma.subject.create({
+      data: {
+        name: subjects[subj],
+      },
+    });
+    if (!resp.id) {
+      throw "error create subject";
+    }
+    console.log(`Create ${resp.name} subject is DONE`);
+  }
+}
+
+// createSubjects()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
+
+async function teacherRole() {
+  const hashedPassword = await hash("44444444", 10);
+
+  for (let teach = 0; teach < 56; teach++) {
+    const teacher = await prisma.user.create({
+      data: {
+        email: faker.internet.email(),
+        fullname: faker.person.firstName() + " " + faker.person.lastName(),
+        phone: faker.phone.number(),
+        password: hashedPassword,
+        role: Role.TEACHER,
+        age: faker.number.int({ min: 28, max: 60 }),
+        gender: faker.person.sex(),
+        image: faker.image.avatar(),
+        address: faker.location.streetAddress(true),
+        createdAt: faker.date.past(),
+        updatedAt: new Date(),
+      },
+    });
+    if (!teacher.id) {
+      console.log("error teacher");
+      throw "error create teacher";
+    }
+  }
+}
+
+// teacherRole()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
+
+async function connectUserTeachers() {
+  const users = await prisma.user.findMany({
+    where: {
+      role: Role.TEACHER,
+    },
+  });
+  console.log("users", users.length);
+
+  for (let i = 0; i < users.length; i++) {
+    const newTeacher = await prisma.teacher.create({
+      data: {
+        user: { connect: { id: users[i].id } },
+      },
+    });
+    console.log("newTeacher", newTeacher);
+  }
+}
+
+// connectUserTeachers()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
+
+async function teachersExpeEduc() {
+  const subjects = await prisma.subject.findMany({});
+  if (!subjects.length) {
+    console.log("No subjects found. Please run the createSubjects() function first.");
+    return;
+  }
+
+  const teachers = await prisma.user.findMany({
+    where: { role: Role.TEACHER },
+  });
+  if (!teachers.length) {
+    console.log("No teachers found. Please run the createTeachers() function first.");
+    return;
+  }
+
+  let sub = 0;
+  for (let teach = 0; teach < 56; teach++) {
+    const education = await prisma.education.create({
+      data: {
+        school: faker.company.name(),
+        degree: faker.number.int({ min: 92, max: 97 }),
+        field: subjects[sub].name,
+        image: faker.image.avatar(),
+        from: faker.date.past({ years: teachers[teach].age - 19 }),
+        to: faker.date.past({ years: teachers[teach].age - 23 }),
+        teacherId: teachers[teach].id,
+      },
+    });
+    if (!education.id) {
+      console.log("error education");
+      throw "error create education";
+    }
+
+    const experience = await prisma.experience.create({
+      data: {
+        company: faker.company.name(),
+        position: subjects[sub].name,
+        from: faker.date.past({
+          years: teachers[teach].age > 33 ? teachers[teach].age - 28 : 1,
+        }),
+        to: faker.date.past({
+          years: teachers[teach].age > 33 ? teachers[teach].age - 28 : 1,
+        }),
+        certificate: faker.image.avatar(),
+        teacherId: teachers[teach].id,
+      },
+    });
+    if (!experience.id) {
+      console.log("error experience");
+      throw "error create experience";
+    }
+
+    if (teach % subjects.length === 0) {
+      sub += 1;
+    }
+
+    console.log("teacher connecting done");
+  }
+}
+
+// teachersExpeEduc()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
+
+async function teacherSubject() {
+  const teachers = await prisma.teacher.findMany({});
+  const subjects = await prisma.subject.findMany({});
+
+  let sub = 0;
+  for (let i = 0; i < teachers.length; i++) {
+    const teacherSubjectClass = await prisma.teacher.update({
+      where: { id: teachers[i].id },
+      data: {
+        subjectId: subjects[sub].id,
+      },
+    });
+    if (!teacherSubjectClass.id) {
+      console.log("error teacherSubjectClass");
+      throw "error create teacherSubjectClass";
+    }
+    if (sub !== 0 && i % subjects.length === 0) {
+      sub += 1;
+    }
+  }
+}
+
+// teacherSubject()
+//   .catch((e) => {
+//     console.error(e);
+//     process.exit(1);
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
+
+async function teacherClass() {
+  const teachers = await prisma.teacher.findMany({});
+  const classes = await prisma.class.findMany({});
+
+  let sub = 0;
+  for (let i = 28; i < teachers.length; i++) {
+    for (let j = 0; j < 4; j++) {
+      const teacherClassConnection = await prisma.teacherClasses.create({
+        data: {
+          teacherId: teachers[i].id,
+          classId: classes[j + sub].id,
+        },
+      });
+
+      if (!teacherClassConnection.id) {
+        console.log("error teacherSubjectClass");
+        throw "error create teacherSubjectClass";
+      }
+    }
+    sub += 4;
+    console.log("Teacher connected to class: sub", sub);
+  }
+}
+
+teacherClass()
   .catch((e) => {
     console.error(e);
     process.exit(1);

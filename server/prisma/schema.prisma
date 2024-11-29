@@ -103,9 +103,11 @@ model Parent {
 
 model Teacher {
   id         String           @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String           @db.ObjectId
-  user       User             @relation(fields: [userId], references: [id])
+  userId     String?          @db.ObjectId
+  user       User?            @relation(fields: [userId], references: [id])
   classes    TeacherClasses[]
+  subjectId  String?          @db.ObjectId
+  subject    Subject?         @relation(fields: [subjectId], references: [id])
   education  Education[] // teachers Education
   experience Experience[] // teachers Experience
 }
@@ -138,6 +140,7 @@ model Class {
   name      String
   students  Student[]
   teachers  TeacherClasses[] @relation("Classes")
+  subject   SubjectClasses[] @relation("SubjectClasses")
   userId    String[]         @db.ObjectId
   users     User             @relation(fields: [userId], references: [id])
   createdAt DateTime?        @default(now())
@@ -156,13 +159,26 @@ model TeacherClasses {
 }
 
 model Subject {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String    @unique
-  userId    String?   @db.ObjectId
-  createdBy User?     @relation(fields: [userId], references: [id])
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  name      String           @unique
+  userId    String?          @db.ObjectId
+  createdBy User?            @relation(fields: [userId], references: [id])
   courses   Course[]
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  teacher   Teacher[]
+  classes   SubjectClasses[]
+  createdAt DateTime?        @default(now())
+  updatedAt DateTime?        @updatedAt
+}
+
+model SubjectClasses {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  subjectId String  @db.ObjectId
+  classId   String  @db.ObjectId
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  class     Class   @relation("SubjectClasses", fields: [classId], references: [id])
+
+  @@unique([subjectId, classId])
+  @@index([classId])
 }
 
 model Course {
@@ -239,11 +255,11 @@ model Grade {
 model Education {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   school    String
-  degree    String
+  degree    Int
   image     String?
   field     String
-  teacherId String    @db.ObjectId
-  teacher   Teacher   @relation(fields: [teacherId], references: [id])
+  teacherId String?   @db.ObjectId
+  teacher   Teacher?  @relation(fields: [teacherId], references: [id])
   from      DateTime
   to        DateTime
   createdAt DateTime? @default(now())
@@ -255,8 +271,8 @@ model Experience {
   company     String
   position    String
   certificate String?
-  teacherId   String    @db.ObjectId
-  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+  teacherId   String?   @db.ObjectId
+  teacher     Teacher?  @relation(fields: [teacherId], references: [id])
   from        DateTime
   to          DateTime
   createdAt   DateTime? @default(now())
