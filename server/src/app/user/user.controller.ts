@@ -59,9 +59,10 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 };
 
 export const countUsers = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
+  console.log("query", query);
   const users = await prisma.user.count({
-    ...option,
+    ...query,
   });
   console.log("users", users);
   return res.status(200).json(users);

@@ -105,7 +105,7 @@ router.get(
  *        500:
  *          description: Server error
  */
-router.get("/count", countUsers);
+router.post("/count", countUsers);
 
 /**
  * @swagger

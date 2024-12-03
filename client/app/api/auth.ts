@@ -1,7 +1,8 @@
-'use server';
+"use server";
 
-import { deleteCookie, setCookie } from '@/lib/cookies-handler';
-import { revalidatePath } from 'next/cache';
+import { deleteCookie, setCookie } from "@/lib/cookies-handler";
+import { API_URL } from "@/lib/functions-helper";
+import { revalidatePath } from "next/cache";
 
 interface UserCredentials {
   email: string;
@@ -13,24 +14,21 @@ interface SignUpCredentials extends UserCredentials {
   confirmPassword: string;
 }
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/v1/api';
-
 export async function signInAction(credentials: UserCredentials) {
   try {
     const response = await fetch(`${API_URL}/auth/passport/sign-in`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
 
     if (!response.ok) {
       return { faield: response.statusText };
-      throw new Error('Failed to sign in');
+      throw new Error("Failed to sign in");
     }
 
     const data = await response.json();
-    setCookie('session', data.user);
+    setCookie("session", data.user);
 
     return data.user;
   } catch (error) {
@@ -40,19 +38,19 @@ export async function signInAction(credentials: UserCredentials) {
 
 export async function signUpAction(credentials: SignUpCredentials) {
   const response = await fetch(`${API_URL}/auth/sign-up`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to sign up');
+    throw new Error("Failed to sign up");
   }
 
   const data = await response.json();
-  setCookie('token', data.token, {
+  setCookie("token", data.token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
   });
 
   return data.user;
@@ -61,19 +59,19 @@ export async function signUpAction(credentials: SignUpCredentials) {
 export async function signOut() {
   try {
     const response = await fetch(`${API_URL}/auth/sign-out`, {
-      method: 'GET',
+      method: "GET",
     });
 
     if (!response.ok) {
-      console.log('signOut', response.statusText);
+      console.log("signOut", response.statusText);
     }
     const data = await response.json();
-    console.log('signOut', data);
+    console.log("signOut", data);
 
-    deleteCookie('session');
-    revalidatePath(`/`, 'page');
+    deleteCookie("session");
+    revalidatePath(`/`, "page");
     return data;
   } catch (error) {
-    return 'error';
+    return "error";
   }
 }
