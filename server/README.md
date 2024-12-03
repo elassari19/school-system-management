@@ -72,6 +72,28 @@ Start Redis server:
 brew services start redis
 ```
 
+```
+# get data by key
+GET {key}
+```
+
+```
+# get all keys
+KEY *
+```
+
+```
+# delete specefic data by key
+redis-cli
+DEL {key}
+```
+
+```
+# delete all data
+redis-cli
+flushall
+```
+
 ### MP2 Setup and Configuration
 
 MP2 (Process Manager 2) is recommended for production deployment. Here's how to set it up:
