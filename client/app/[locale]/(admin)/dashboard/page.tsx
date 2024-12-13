@@ -48,7 +48,7 @@ export default async function Page({}: IProps) {
         },
       ]}
       LeftSideChart={<MonthlyFinanceChart data={monthlyFinance} />}
-      RithSideChart={<YearsFinancialChart />}
+      RigthSideChart={<YearsFinancialChart />}
     >
       <section className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 h-40">
         {/* parend child general info */}

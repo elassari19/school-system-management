@@ -73,7 +73,7 @@ const Page = async () => {
         },
       ]}
       LeftSideChart={<AttendenceChart data={attendanceData} title={a("Monthly Attendance")} />}
-      RithSideChart={<GradeChart data={monthlyExamsData} title={a("Monthly Exams")} />}
+      RigthSideChart={<GradeChart data={monthlyExamsData} title={a("Monthly Exams")} />}
     >
       {/* students groups */}
       <RootCard
