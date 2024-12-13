@@ -10,7 +10,7 @@ import { BadgeCheckIcon, ShareIcon } from "lucide-react";
 interface Member {
   id: string;
   name: string;
-  avatar: string;
+  avatar: any;
   role: string;
 }
 
@@ -56,21 +56,14 @@ const GroupCard = ({
           <div className="flex flex-col items-center justify-center">
             <Avatar className="border-2 border-background w-6 h-6">
               <AvatarImage src={admin.avatar} alt={admin.name} />
-              <AvatarFallback className="text-sm">
-                {admin.name?.charAt(0)}
-              </AvatarFallback>
+              <AvatarFallback className="text-sm">{admin.name?.charAt(0)}</AvatarFallback>
             </Avatar>
-            <p className="text-xs font-semibold text-muted-foreground mt-1">
-              AMDIN
-            </p>
+            <p className="text-xs font-semibold text-muted-foreground mt-1">AMDIN</p>
           </div>
           <div>
             <div className="flex -space-x-2 justify-center">
               {members.map((member) => (
-                <Avatar
-                  key={member.id}
-                  className="border-2 border-background w-6 h-6"
-                >
+                <Avatar key={member.id} className="border-2 border-background w-6 h-6">
                   <AvatarImage src={member.avatar} alt={member.name} />
                   <AvatarFallback className="text-sm">
                     {member?.name?.charAt(0)}
@@ -78,9 +71,7 @@ const GroupCard = ({
                 </Avatar>
               ))}
             </div>
-            <p className="text-xs font-semibold text-muted-foreground mt-1">
-              MEMBERS
-            </p>
+            <p className="text-xs font-semibold text-muted-foreground mt-1">MEMBERS</p>
           </div>
         </div>
 
@@ -110,23 +101,17 @@ const GroupCard = ({
       <CardFooter className="justify-center gap-6">
         <Button
           variant={
-            members.find((member) => member.name == user?.name)
-              ? "outline"
-              : "secondary"
+            members.find((member) => member.name == user?.name) ? "outline" : "secondary"
           }
           className="px-8 py-2 text-sm"
           onClick={onJoin}
         >
-          {members.find((member) => member.name == user?.name)
-            ? "Joined"
-            : "Join"}
+          {members.find((member) => member.name == user?.name) ? "Joined" : "Join"}
         </Button>
         <Button
           className="px-8 py-2"
           variant={
-            members.find((member) => member.name == user?.name)
-              ? "outline"
-              : "secondary"
+            members.find((member) => member.name == user?.name) ? "outline" : "secondary"
           }
         >
           <ShareIcon className="w-4 h-4 mr-2" />

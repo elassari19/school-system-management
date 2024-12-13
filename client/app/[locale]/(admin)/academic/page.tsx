@@ -10,6 +10,7 @@ import userAvatar from "@/app/public/assets/user.png";
 import { getCookie } from "@/lib/cookies-handler";
 import { DashboardCarousel } from "@/components/ui/carousel";
 import RootCard from "@/components/cards/root-card";
+import { countAllUsers } from "@/app/api/dashboard";
 
 const members = [
   { id: "1", name: "John Doe", avatar: userAvatar, role: "TEACHER" },
@@ -23,43 +24,56 @@ const Page = async () => {
   const g = await getTranslations("global");
   const a = await getTranslations("academic");
 
+  const totalFemal = await countAllUsers({
+    role: "STUDENT",
+    gender: "female",
+  });
+
+  const totalMale = await countAllUsers({
+    role: "STUDENT",
+    gender: "male",
+  });
+
+  const totalTeachers = await countAllUsers({
+    role: "TEACHER",
+  });
+
+  const totalParents = await countAllUsers({
+    role: "PARENT",
+  });
+
+  const totalClasses = await countAllUsers({}, "class");
+
   return (
     <DashboardTemplate
       overviewData={[
         {
           icon: GraduationCap,
           title: `${g("Total")} ${g("Students")}`,
-          currentValue: "2,634",
-          pastValue: `+22 ${a("new Students this year")}`,
+          currentValue: totalFemal + totalMale,
+          pastValue: `+17 ${a("new Students this year")}`,
         },
         {
           icon: UsersRound,
           title: `${g("Total")} ${g("Teachers")}`,
-          currentValue: "89",
+          currentValue: totalTeachers,
           pastValue: `+4 ${a("new Teachers this year")}`,
         },
         {
           icon: Users,
           title: `${g("Total")} ${g("Parents")}`,
-          currentValue: "1,745",
+          currentValue: totalParents,
           pastValue: `+12 ${a("new Parents this year")}`,
         },
         {
           icon: BookOpen,
           title: `${g("Total")} ${g("Classes")}`,
-          currentValue: "45",
+          currentValue: totalClasses,
           pastValue: `+6 ${a("new Classes this year")}`,
         },
       ]}
-      LeftSideChart={
-        <AttendenceChart
-          data={attendanceData}
-          title={a("Monthly Attendance")}
-        />
-      }
-      RithSideChart={
-        <GradeChart data={monthlyExamsData} title={a("Monthly Exams")} />
-      }
+      LeftSideChart={<AttendenceChart data={attendanceData} title={a("Monthly Attendance")} />}
+      RithSideChart={<GradeChart data={monthlyExamsData} title={a("Monthly Exams")} />}
     >
       {/* students groups */}
       <RootCard

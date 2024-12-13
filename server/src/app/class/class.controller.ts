@@ -3,7 +3,7 @@ import { prisma } from "../../utils/configs";
 import { redisCacheClear, redisCacheHandler } from "../../utils/redisCache";
 
 export const getClass = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
   try {
     // Look up class in cache
     const schoolClass = await redisCacheHandler(
@@ -14,7 +14,7 @@ export const getClass = async (req: Request, res: Response, next: NextFunction) 
           where: {
             id: req.query.id as string,
           },
-          ...option, // @ts-ignore
+          ...query, // @ts-ignore
         })
     );
 
@@ -27,14 +27,14 @@ export const getClass = async (req: Request, res: Response, next: NextFunction) 
 };
 
 export const getAllClasses = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
   try {
     const schoolClass = await redisCacheHandler(
       "class:", // The key to store the result in Redis
       async () =>
         await prisma.class.findMany({
           orderBy: { createdAt: "asc" },
-          ...option,
+          ...query,
         })
     );
 
@@ -45,9 +45,9 @@ export const getAllClasses = async (req: Request, res: Response, next: NextFunct
 };
 
 export const countClass = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
   const count = await prisma.class.count({
-    ...option,
+    ...query,
   });
   return res.status(200).json(count);
 };

@@ -3,15 +3,15 @@
 import { API_URL } from "@/lib/functions-helper";
 
 // fetch all users
-export async function getAllUsers() {
+export async function countAllUsers(query: {}, target = "user") {
   try {
-    const response = await fetch(`${API_URL}/user/count`, {
+    const response = await fetch(`${API_URL}/${target}/count`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: {
           where: {
-            role: "TEACHER",
+            ...query,
           },
         },
       }),
