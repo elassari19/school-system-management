@@ -5,7 +5,7 @@ import YearsFinancialChart from "@/components/charts/year-expenses";
 import { GiTeacher } from "react-icons/gi";
 import { PiExam } from "react-icons/pi";
 import ParentChildTable from "@/components/tables/parents-tables";
-import { events, monthlyFinance, parentData } from "@/lib/dummy-data";
+import { events, monthlyFinance } from "@/lib/dummy-data";
 import EventsCard from "@/components/cards/events-card";
 import DashboardTemplate from "@/components/template/dashboard-template";
 import { getAllUsersByRole } from "@/app/api/dashboard";
@@ -53,7 +53,7 @@ export default async function Page({}: IProps) {
       <section className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 h-40">
         {/* parend child general info */}
         <div className="lg:col-span-3">
-          <ParentChildTable data={parentData} />
+          <ParentChildTable pages={Math.ceil(totalParents / 5)} />
         </div>
         {/* coming events */}
         <div className="lg:col-span-1 h-full overflow-auto grid grid-cols-1 gap-4">

@@ -47,10 +47,43 @@ export async function getAllUsersByRole(role: string) {
       throw new Error("Failed to fetch users");
     }
     const data = await response.json();
-    console.log("data", data);
     return data;
   } catch (error) {
     console.log("error", error);
     return;
   }
+}
+
+export async function getParentsWithChidren(page: number) {
+  const res = await fetch(`${API_URL}/user/all`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: {
+        where: {
+          role: "PARENT",
+        },
+        include: {
+          parent: {
+            include: {
+              children: {
+                include: {
+                  class: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+        skip: page * 5,
+        take: 5,
+      },
+    }),
+  });
+  const data = await res.json();
+  return data;
 }

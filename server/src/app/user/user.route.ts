@@ -46,7 +46,7 @@ const router = Router();
  *        500:
  *          description: Server error
  */
-router.get(
+router.post(
   "/",
   // @ts-ignore
   // isAuthenticated(),
@@ -79,7 +79,7 @@ router.get(
  *        500:
  *          description: Server error
  */
-router.get(
+router.post(
   "/all",
   // @ts-ignore
   // isAuthenticated(),

@@ -5,7 +5,7 @@ import { hash } from "bcryptjs";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
-  const { option } = req.body;
+  const { query } = req.body;
 
   if (!id) {
     return res.status(400).send("No user ID provided");
@@ -17,7 +17,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
       async () =>
         await prisma.user.findUnique({
           where: { id },
-          ...option,
+          ...query,
         })
     );
 
@@ -32,24 +32,18 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
   try {
-    // Attempt to retrieve all users from cache, or database if cache is empty
-    const users = await redisCacheHandler(`user:`, async () => {
-      // If cache is empty, get all users from database
-      const usersInDb = await prisma.user.findMany({
-        ...option,
-      });
-      // Check for null pointer references
-      if (!usersInDb) {
-        throw new Error("No users found");
-      }
-      return usersInDb;
+    // If cache is empty, get all users from database
+    const users = await prisma.user.findMany({
+      ...query,
     });
-    // Send response back to the client
+    // Check for null pointer references
     if (!users) {
-      throw new Error("Error fetching users");
+      throw new Error("No users found");
     }
+
+    // console.log("users", users);
     return res.status(200).send(users);
   } catch (error) {
     console.log("error", error);
@@ -60,7 +54,6 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 
 export const countUsers = async (req: Request, res: Response, next: NextFunction) => {
   const { query } = req.body;
-  console.log("query", query);
   const users = await prisma.user.count({
     ...query,
   });
