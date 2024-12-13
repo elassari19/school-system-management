@@ -5,7 +5,7 @@ import OverviewCard from "../cards/overview-card";
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   overviewData: any[];
   LeftSideChart: React.ReactNode;
-  RithSideChart: React.ReactNode;
+  RigthSideChart: React.ReactNode;
 }
 
 const DashboardTemplate = ({
@@ -13,7 +13,7 @@ const DashboardTemplate = ({
   className,
   overviewData,
   LeftSideChart,
-  RithSideChart,
+  RigthSideChart,
 }: IProps) => {
   return (
     <div className={cn("h-full overflow-auto flex flex-col gap-4", className)}>
@@ -33,7 +33,7 @@ const DashboardTemplate = ({
       {/* Charts */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {LeftSideChart}
-        {RithSideChart}
+        {RigthSideChart}
       </section>
 
       {/* Grops card */}

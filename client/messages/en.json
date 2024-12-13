@@ -94,7 +94,8 @@
     "Director": "Director",
     "General Custody": "General Custody",
     "Accountant": "Accountant",
-    "HR": "HR"
+    "HR": "HR",
+    "Age": "Age"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",
@@ -115,7 +116,10 @@
     "Student Attendance": "Student Attendance",
     "Weekly Exams Performance": "Weekly Exams Performance",
     "Monthly Exams": "Monthly Exams",
-    "Monthly Attendance": "Monthly Attendance"
+    "Monthly Attendance": "Monthly Attendance",
+    "Students average age this year": "Students average age this year",
+    "Teachers average age this year": "Teachers average age this year",
+    "Parents average age this year": "Parents average age this year"
   },
   "administration": {
     "new Staff this year": "new Staff this year",

@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { StaticImageData } from "next/image";
 import { BadgeCheckIcon, ShareIcon } from "lucide-react";
 
 interface Member {
@@ -44,8 +43,8 @@ const GroupCard = ({
 
         {/* Group Tags */}
         <div className="flex items-center gap-2 w-full overflow-auto">
-          {subjectTags.map((item) => (
-            <div key={item} className="rounded-sm border border-secondary/70">
+          {subjectTags.map((item, idx) => (
+            <div key={idx} className="rounded-sm border border-secondary/70">
               <span className="p-1 px-2 text-xs">{item}</span>
             </div>
           ))}
@@ -62,8 +61,8 @@ const GroupCard = ({
           </div>
           <div>
             <div className="flex -space-x-2 justify-center">
-              {members.map((member) => (
-                <Avatar key={member.id} className="border-2 border-background w-6 h-6">
+              {members.map((member, idx) => (
+                <Avatar key={idx} className="border-2 border-background w-6 h-6">
                   <AvatarImage src={member.avatar} alt={member.name} />
                   <AvatarFallback className="text-sm">
                     {member?.name?.charAt(0)}

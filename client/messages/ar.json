@@ -94,7 +94,8 @@
     "Director": "المدير",
     "General Custody": "الحراسة العامة",
     "Accountant": "المحاسب",
-    "HR": "الموارد البشرية"
+    "HR": "الموارد البشرية",
+    "Age": "العمر"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",
@@ -115,7 +116,10 @@
     "Student Attendance": "حضور الطلاب",
     "Weekly Exams Performance": "أداء الامتحانات الأسبوعية",
     "Monthly Exams": "الامتحانات الشهرية",
-    "Monthly Attendance": "الحضور الشهري"
+    "Monthly Attendance": "الحضور الشهري",
+    "Students average age this year": "متوسط ​​أعمار الطلاب هذا العام",
+    "Teachers average age this year": "متوسط ​​أعمار المعلمين هذا العام",
+    "Parents average age this year": "متوسط ​​أعمار الاباء هذا العام"
   },
   "administration": {
     "new Staff this year": "موظفون جدد هذا العام",
