@@ -52,7 +52,7 @@ router.get(
  *       200:
  *         description: List of all classes
  */
-router.get(
+router.post(
   "/all",
   // @ts-ignore
   // isAuthenticated(),

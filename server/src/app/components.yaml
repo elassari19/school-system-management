@@ -136,3 +136,26 @@ components:
         - role
         - password
         - gender
+
+    StudentInput:
+      type: object
+      properties:
+        - userId:
+          type: string
+        - classId:
+          type: string
+        - parentId:
+          type: string
+        - attendence:
+          type: number
+        - status:
+          type: string
+        - grade:
+          type: array
+          items:
+            type: object
+            properties:
+              subjectId:
+                type: string
+              score:
+                type: number

@@ -11,6 +11,7 @@ import swaggerDocs from "../utils/swagger";
 /* ROUTE IMPORTS */
 import authRouter from "./auth/auth.route";
 import userRouter from "./user/user.route";
+import studentRouter from "./student/student.route";
 import subjectRouter from "./subject/subject.route";
 import courseRouter from "./course/course.route";
 import chapterRouter from "./chapter/chapter.route";
@@ -41,6 +42,7 @@ export const createApp = () => {
   swaggerDocs(app, Number(process.env.PORT) || 3001);
   app.use("/v1/api/auth", authRouter);
   app.use("/v1/api/user", userRouter);
+  app.use("/v1/api/student", studentRouter);
   app.use("/v1/api/subject", subjectRouter);
   app.use("/v1/api/course", courseRouter);
   app.use("/v1/api/chapter", chapterRouter);
