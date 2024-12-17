@@ -17,7 +17,7 @@ const geistMono = localFont({
 });
 interface IProps {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 export const metadata: Metadata = {
@@ -25,10 +25,17 @@ export const metadata: Metadata = {
   description: 'School Dashboard App',
 };
 
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: IProps) {
+export default async function LocaleLayout(props: IProps) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
+  const {
+    children
+  } = props;
+
   const messages = await getMessages();
 
   return (
