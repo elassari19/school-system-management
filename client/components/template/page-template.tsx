@@ -1,28 +1,28 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
-import OverviewCard from '../cards/overview-card';
-import AttendenceChart from '../charts/attendence-chart';
-import GradeChart from '../charts/grade-chart';
+import React from "react";
+import { cn } from "@/lib/utils";
+import OverviewCard from "../cards/overview-card";
+import { Button } from "../ui/button";
+import { getTranslations } from "next-intl/server";
+import { Modal } from "../ui/dialog";
+import SearchInput from "../inputs/search-input";
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   overviewData: any[];
-  attendanceChartData: any[];
-  attendanceChartTitle: string;
-  gradeChartData: any[];
-  gradeChartTitle: string;
+  placeholder: string;
+  actionTarget: string;
+  modalForm: React.ReactNode;
 }
 
-const PageTemplate = ({
+const PageTemplate = async ({
   children,
   className,
   overviewData,
-  attendanceChartData,
-  attendanceChartTitle,
-  gradeChartData,
-  gradeChartTitle,
+  placeholder,
+  modalForm,
 }: IProps) => {
+  const g = await getTranslations("global");
   return (
-    <div className={cn('h-full overflow-auto flex flex-col gap-4', className)}>
+    <div className={cn("h-full overflow-auto flex flex-col gap-4", className)}>
       {/* Overview */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {overviewData.map(({ icon, title, currentValue, pastValue }) => (
@@ -36,13 +36,15 @@ const PageTemplate = ({
         ))}
       </section>
 
-      {/* Charts */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AttendenceChart
-          data={attendanceChartData}
-          title={attendanceChartTitle}
+      {/* Action => search input, add button */}
+      <section className="flex justify-between items-center">
+        <SearchInput placeholder={placeholder} className="max-w-64" />
+
+        <Modal
+          modalTrigger={`${g("Add")} ${g("Student")}`}
+          modalTitle={`${g("Create")} ${g("Student")}`}
+          modalContent={modalForm}
         />
-        <GradeChart data={gradeChartData} title={gradeChartTitle} />
       </section>
 
       {/* Grops card */}

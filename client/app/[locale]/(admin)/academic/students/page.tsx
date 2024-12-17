@@ -1,20 +1,22 @@
-import { countAllUsers, getUsers } from "@/app/api/dashboard";
-import DashboardTemplate from "@/components/template/dashboard-template";
+import { getUsers } from "@/app/api/dashboard";
+import AddStudentForm from "@/components/forms/student-form";
+import PageTemplate from "@/components/template/page-template";
 import { ChartLine, GraduationCap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import React from "react";
 
 interface IProps {
-  params: {
+  params: Promise<{
     page: number;
-  };
+  }>;
 }
 
-export default async function page({ params }: IProps) {
+export default async function page(props: IProps) {
+  const params = await props.params;
+  const { page } = params;
+
   const a = await getTranslations("academic");
   const g = await getTranslations("global");
-
-  const { page } = params;
 
   const student: any[] = await getUsers({
     where: {
@@ -61,7 +63,7 @@ export default async function page({ params }: IProps) {
   // console.log("student", femaleStudents);
 
   return (
-    <DashboardTemplate
+    <PageTemplate
       overviewData={[
         {
           icon: GraduationCap,
@@ -88,18 +90,11 @@ export default async function page({ params }: IProps) {
           pastValue: `-0.03% ${a("Students average age this year")}`,
         },
       ]}
-      LeftSideChart={[]}
-      RigthSideChart={[]}
+      // student search input + student add
+      placeholder={`${g("Search")} ${g("Student")}...`}
+      actionTarget="student"
+      modalForm={<AddStudentForm />}
     >
-      student page
-      {/*
-      overview cards
-      - male students
-      - female students
-      - male average age
-      - female average age
-    */}
-      {/* student search input + student add */}
       {/* 
       table
       - student name
@@ -118,6 +113,6 @@ export default async function page({ params }: IProps) {
       - student print
       - student pagination
      */}
-    </DashboardTemplate>
+    </PageTemplate>
   );
 }
