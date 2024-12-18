@@ -1,4 +1,4 @@
-import { getUsers } from "@/app/api/dashboard";
+import { findStudent, getAllStudent, getStudentByGender } from "@/app/api/academic";
 import AddStudentForm from "@/components/forms/student-form";
 import PageTemplate from "@/components/template/page-template";
 import { ChartLine, GraduationCap } from "lucide-react";
@@ -6,61 +6,44 @@ import { getTranslations } from "next-intl/server";
 import React from "react";
 
 interface IProps {
-  params: Promise<{
+  searchParams: Promise<{
     page: number;
+    q?: string;
   }>;
 }
 
 export default async function page(props: IProps) {
-  const params = await props.params;
-  const { page } = params;
+  const searchParams = await props.searchParams;
+  const { page, q } = searchParams;
 
   const a = await getTranslations("academic");
   const g = await getTranslations("global");
 
-  const student: any[] = await getUsers({
-    where: {
-      role: "STUDENT",
-    },
-    include: {
-      student: {
-        include: {
-          class: true,
-          grade: true,
-          parent: true,
-        },
-      },
-    },
-    skip: page ? 10 * page : 0,
-    take: 5,
-  });
+  const students: any[] = await getAllStudent(page);
 
-  const maleStudents: any[] = await getUsers({
-    where: {
-      role: "STUDENT",
-      gender: "male",
-    },
-    select: {
-      age: true,
-    },
-  });
+  const searchStudent: any[] = await findStudent(page, q || "");
+  console.log("searchStudent", searchStudent);
 
-  const femaleStudents: any[] = await getUsers({
-    where: {
-      role: "STUDENT",
-      gender: "female",
-    },
-    select: {
-      age: true,
-    },
-  });
+  const maleStudents = await getStudentByGender("male");
 
-  const maleAverageAge =
-    maleStudents.reduce((a: number, b: any) => a + b.age, 0) / maleStudents.length;
-  const femaleAverageAge =
-    femaleStudents.reduce((a: number, b: any) => a + b.age, 0) / femaleStudents.length;
+  const femaleStudents = await getStudentByGender("female");
 
-  // console.log("student", femaleStudents);
+  const handleTableData = (data: any[]) => {
+    const result = data.map((std: any) => ({
+      avatar: std.user.image,
+      fullname: std.user.fullname,
+      age: std.user.age,
+      gender: std.user.gender,
+      parents: std.parent.user.fullname,
+      email: std.user.email,
+      phone: std.user.phone,
+      attendance: std.attendence,
+      class: std.class.name,
+      status: std.status,
+    }));
+
+    return result;
+  };
 
   return (
     <PageTemplate
@@ -80,13 +63,13 @@ export default async function page(props: IProps) {
         {
           icon: ChartLine,
           title: `${g("Male")} ${g("Average")} ${g("Age")}`,
-          currentValue: maleAverageAge.toFixed(4),
+          currentValue: maleStudents.average.toFixed(4),
           pastValue: `+0.28% ${a("Students average age this year")}`,
         },
         {
           icon: ChartLine,
           title: `${g("Female")} ${g("Average")} ${g("Age")}`,
-          currentValue: femaleAverageAge.toFixed(4),
+          currentValue: femaleStudents.average.toFixed(4),
           pastValue: `-0.03% ${a("Students average age this year")}`,
         },
       ]}
@@ -94,25 +77,12 @@ export default async function page(props: IProps) {
       placeholder={`${g("Search")} ${g("Student")}...`}
       actionTarget="student"
       modalForm={<AddStudentForm />}
-    >
-      {/* 
-      table
-      - student name
-      - student parents
-      - student class
-      - student age
-      - student average grade
-      - student average attendance
-      - student messages
-      - student subscription bill
-      - student reviews
-      - student status
-      - student profile
-      - student edit
-      - student delete
-      - student print
-      - student pagination
-     */}
-    </PageTemplate>
+      tableData={q?.length! > 2 ? handleTableData(searchStudent) : handleTableData(students)}
+      pages={Math.ceil(
+        q?.length! > 2
+          ? students.length / 5
+          : (maleStudents.length + femaleStudents.length) / 5
+      )}
+    ></PageTemplate>
   );
 }

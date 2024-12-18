@@ -121,7 +121,8 @@
     "edited successfully": "edited successfully",
     "edited failed": "edited failed",
     "saved successfully": "saved successfully",
-    "saved failed": "saved failed"
+    "saved failed": "saved failed",
+    "No Data": "No Data"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",

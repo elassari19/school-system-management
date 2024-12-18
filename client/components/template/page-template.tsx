@@ -5,12 +5,15 @@ import { Button } from "../ui/button";
 import { getTranslations } from "next-intl/server";
 import { Modal } from "../ui/dialog";
 import SearchInput from "../inputs/search-input";
+import PageTable from "../tables/page-table";
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   overviewData: any[];
   placeholder: string;
   actionTarget: string;
   modalForm: React.ReactNode;
+  tableData: any[];
+  pages: number;
 }
 
 const PageTemplate = async ({
@@ -19,8 +22,11 @@ const PageTemplate = async ({
   overviewData,
   placeholder,
   modalForm,
+  tableData,
+  pages,
 }: IProps) => {
   const g = await getTranslations("global");
+
   return (
     <div className={cn("h-full overflow-auto flex flex-col gap-4", className)}>
       {/* Overview */}
@@ -44,6 +50,25 @@ const PageTemplate = async ({
           modalTrigger={`${g("Add")} ${g("Student")}`}
           modalTitle={`${g("Create")} ${g("Student")}`}
           modalContent={modalForm}
+        />
+      </section>
+
+      <section>
+        <PageTable
+          headCell={[
+            "Avatar",
+            "Full Name",
+            "Age",
+            "Gender",
+            "Parents",
+            "Email",
+            "Phone",
+            "Attendance",
+            "Class",
+            "Status",
+          ]}
+          bodyCell={tableData}
+          pages={pages}
         />
       </section>
 

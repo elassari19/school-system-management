@@ -121,7 +121,8 @@
     "edited successfully": "تم التعديل بنجاح",
     "edited failed": "فشل في التعديل",
     "saved successfully": "تم الحفظ بنجاح",
-    "saved failed": "فشل في الحفظ"
+    "saved failed": "فشل في الحفظ",
+    "No Data": "لا يوجد بيانات"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",

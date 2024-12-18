@@ -1,44 +1,103 @@
 "use server";
 
-import { API_URL } from "@/lib/functions-helper";
+import { fetchData } from "@/lib/utils";
 import { addStudentType } from "@/lib/zod-schema";
 
 export async function createStudent(data: addStudentType) {
   const { _class, parent, image, age, ...rest } = data;
 
   // create user with role of student
-  const res = await fetch(`${API_URL}/user/create`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      ...rest,
-      age: parseInt(age),
-    }),
+  const user = await fetchData(`user/create`, "POST", {
+    ...rest,
+    age: parseInt(age),
   });
 
-  // check if user was created
-  if (!res.ok) {
-    console.log("error", res);
-    return { error: res.statusText };
+  if (user.error) {
+    console.log("user/create", user.error);
+    return user.error;
   }
-  const user = await res.json();
 
   // create and connect user, parent, class to student
-  const student = await fetch(`${API_URL}/student/create`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      classId: _class,
-      parentId: parent,
-      userId: user.id,
-    }),
+  const student = await fetchData(`student/create`, "POST", {
+    classId: _class,
+    parentId: parent,
+    userId: user.id,
   });
 
-  // check if student was created
-  if (!student.ok) {
-    return { error: res.statusText };
+  if (student.error) {
+    console.log("student/create", student.error);
+    return student.error;
   }
-  const result = await student.json();
 
-  return result;
+  return student;
+}
+
+export async function getAllStudent(page: number) {
+  const student = await fetchData(`student/all`, "POST", {
+    include: {
+      user: true,
+      parent: {
+        include: { user: { select: { fullname: true, id: true } } },
+      },
+      class: true,
+    },
+    skip: page ? 10 * page : 0,
+    take: 5,
+  });
+
+  if (student.error) {
+    console.log("student/create", student.error);
+    return student.error;
+  }
+
+  return student;
+}
+
+export async function findStudent(page: number, query: any) {
+  const student = await fetchData(`student/all`, "POST", {
+    where: {
+      user: {
+        fullname: {
+          contains: query,
+          mode: "insensitive", // Case-insensitive search
+        },
+      },
+    },
+    include: {
+      user: true,
+      parent: {
+        include: { user: { select: { fullname: true, id: true } } },
+      },
+      class: true,
+    },
+    skip: page ? 10 * page : 0,
+    take: 5,
+  });
+
+  if (student.error) {
+    console.log("student/create", student.error);
+    return student.error;
+  }
+
+  return student;
+}
+
+export async function getStudentByGender(gender: "male" | "female") {
+  const student = await fetchData(`student/all`, "POST", {
+    where: { user: { gender: gender } },
+    include: {
+      user: {
+        select: { age: true, gender: true },
+      },
+    },
+  });
+
+  if (student.error) {
+    console.log("student/create", student.error);
+    return student.error;
+  }
+
+  const totalAge = student.reduce((sum: number, std: any) => sum + std.user.age, 0);
+  const averageAge = student.length ? totalAge / student.length : 0;
+  return { length: student.length, average: averageAge };
 }
