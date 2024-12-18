@@ -63,13 +63,14 @@ export const countStudents = async (req: Request, res: Response, next: NextFunct
 
 export const createStudent = async (req: Request, res: Response, next: NextFunction) => {
   const { userId, classId, parentId, ...data } = req.body;
+  console.log("student", userId, classId, parentId);
   try {
     // Attempt to create a new Student in the database
     const student = await prisma.student.create({
       data: {
-        student: { connect: { id: userId } },
-        parent: { connect: { id: parentId } },
-        class: { connect: { id: classId } },
+        userId,
+        parentId,
+        classId,
         ...data,
       },
     });

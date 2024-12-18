@@ -109,7 +109,7 @@ router.post("/count", countStudents);
 
 /**
  * @swagger
- *  /student:
+ *  /student/create:
  *    post:
  *      summary: Create a new student
  *      tags: [Students]
@@ -126,7 +126,7 @@ router.post("/count", countStudents);
  *          description: Subject created successfully
  */
 router.post(
-  "/",
+  "/create",
   // @ts-ignore
   // isAuthenticated(),
   validateSchema(studentSchema),

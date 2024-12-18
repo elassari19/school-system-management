@@ -109,7 +109,7 @@ router.post("/count", countUsers);
 
 /**
  * @swagger
- *  /user:
+ *  /user/create:
  *    post:
  *      summary: Create a new user
  *      tags: [Users]
@@ -126,7 +126,7 @@ router.post("/count", countUsers);
  *          description: Subject created successfully
  */
 router.post(
-  "/",
+  "/create",
   // @ts-ignore
   // isAuthenticated(),
   validateSchema(userSchema),

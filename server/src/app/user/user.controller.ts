@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../utils/configs";
 import { redisCacheClear, redisCacheHandler } from "../../utils/redisCache";
 import { hash } from "bcryptjs";
+import { faker } from "@faker-js/faker";
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
@@ -62,7 +63,14 @@ export const countUsers = async (req: Request, res: Response, next: NextFunction
 };
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { password, ...rest } = req.body;
+  const { password, image, ...rest } = req.body;
+
+  const existUser = await prisma.user.findUnique({
+    where: { email: rest.email },
+  });
+  if (existUser) {
+    return res.status(302).send("User already exist");
+  }
 
   if (!password) {
     return res.status(400).send("Password is required");
@@ -77,6 +85,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       data: {
         ...rest,
         password: hashPassword,
+        image: faker.image.avatar(),
       },
     });
 
