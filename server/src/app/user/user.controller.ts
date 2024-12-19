@@ -34,6 +34,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   const { query } = req.body;
+  console.log("query", query);
   try {
     // If cache is empty, get all users from database
     const users = await prisma.user.findMany({

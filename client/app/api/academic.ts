@@ -32,28 +32,7 @@ export async function createStudent(data: addStudentType) {
   return student;
 }
 
-export async function getAllStudent(page: number) {
-  const student = await fetchData(`student/all`, "POST", {
-    include: {
-      user: true,
-      parent: {
-        include: { user: { select: { fullname: true, id: true } } },
-      },
-      class: true,
-    },
-    skip: page ? 10 * page : 0,
-    take: 5,
-  });
-
-  if (student.error) {
-    console.log("student/create", student.error);
-    return student.error;
-  }
-
-  return student;
-}
-
-export async function findStudent(page: number, query: any) {
+export async function getAllStudent(page: number, query: any) {
   const student = await fetchData(`student/all`, "POST", {
     where: {
       user: {
@@ -70,16 +49,31 @@ export async function findStudent(page: number, query: any) {
       },
       class: true,
     },
-    skip: page ? 10 * page : 0,
+    skip: page ? 5 * page : 0,
     take: 5,
   });
 
   if (student.error) {
-    console.log("student/create", student.error);
+    console.log("student/find", student.error);
     return student.error;
   }
 
-  return student;
+  const count = await fetchData(`user/count`, "POST", {
+    where: {
+      role: "STUDENT",
+      fullname: {
+        contains: query,
+        mode: "insensitive", // Case-insensitive search
+      },
+    },
+  });
+
+  if (count.error) {
+    console.log("student/count", count.error);
+    return count.error;
+  }
+
+  return { student, count };
 }
 
 export async function getStudentByGender(gender: "male" | "female") {

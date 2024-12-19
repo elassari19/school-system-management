@@ -71,7 +71,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
 
       <Table
         className={cn(
-          "border border-secondary rounded-lg bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc]",
+          "border border-secondary rounded-md bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc]",
           className
         )}
       >
@@ -90,7 +90,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                 headCell.map((cell, idx) => {
                   if (item?.[cell] === "Avatart") {
                     return (
-                      <TableCell key={idx} className="max-w-28 overflow-scroll text-sm">
+                      <TableCell key={idx} className="max-w-16 overflow-scroll text-sm">
                         <Avatar>
                           <AvatarImage src={item.fullname[0]} />
                           <AvatarFallback>{item.fullname[0]}</AvatarFallback>

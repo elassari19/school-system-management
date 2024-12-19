@@ -1,4 +1,4 @@
-import { findStudent, getAllStudent, getStudentByGender } from "@/app/api/academic";
+import { getAllStudent, getStudentByGender } from "@/app/api/academic";
 import AddStudentForm from "@/components/forms/student-form";
 import PageTemplate from "@/components/template/page-template";
 import { ChartLine, GraduationCap } from "lucide-react";
@@ -13,23 +13,17 @@ interface IProps {
 }
 
 export default async function page(props: IProps) {
-  const searchParams = await props.searchParams;
-  const { page, q } = searchParams;
+  const { page, q = "" } = await props.searchParams;
+  const [a, g] = await Promise.all([getTranslations("academic"), getTranslations("global")]);
 
-  const a = await getTranslations("academic");
-  const g = await getTranslations("global");
+  const [maleStudents, femaleStudents, searchStudent] = await Promise.all([
+    getStudentByGender("male"),
+    getStudentByGender("female"),
+    getAllStudent(page, q),
+  ]);
 
-  const students: any[] = await getAllStudent(page);
-
-  const searchStudent: any[] = await findStudent(page, q || "");
-  console.log("searchStudent", searchStudent);
-
-  const maleStudents = await getStudentByGender("male");
-
-  const femaleStudents = await getStudentByGender("female");
-
-  const handleTableData = (data: any[]) => {
-    const result = data.map((std: any) => ({
+  const handleTableData = (data: any[]) =>
+    data.map((std: any) => ({
       avatar: std.user.image,
       fullname: std.user.fullname,
       age: std.user.age,
@@ -41,9 +35,6 @@ export default async function page(props: IProps) {
       class: std.class.name,
       status: std.status,
     }));
-
-    return result;
-  };
 
   return (
     <PageTemplate
@@ -73,16 +64,11 @@ export default async function page(props: IProps) {
           pastValue: `-0.03% ${a("Students average age this year")}`,
         },
       ]}
-      // student search input + student add
       placeholder={`${g("Search")} ${g("Student")}...`}
       actionTarget="student"
       modalForm={<AddStudentForm />}
-      tableData={q?.length! > 2 ? handleTableData(searchStudent) : handleTableData(students)}
-      pages={Math.ceil(
-        q?.length! > 2
-          ? students.length / 5
-          : (maleStudents.length + femaleStudents.length) / 5
-      )}
-    ></PageTemplate>
+      tableData={handleTableData(searchStudent.student)}
+      pages={Math.ceil(searchStudent.count / 5)}
+    />
   );
 }
