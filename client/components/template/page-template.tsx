@@ -54,7 +54,7 @@ const PageTemplate = async ({
   };
 
   return (
-    <div className={cn("h-full overflow-auto flex flex-col gap-4", className)}>
+    <div className={cn("h-full overflow-auto flex flex-col gap-6", className)}>
       {/* Overview */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {overviewCards}
@@ -62,12 +62,13 @@ const PageTemplate = async ({
 
       {/* Action => search input, add button */}
       <section className="flex justify-between items-center">
-        <SearchInput placeholder={placeholder} className="max-w-64" />
+        <SearchInput placeholder={placeholder} className="max-w-64 z-[1]" />
 
         <Modal
           modalTrigger={`${g("Add")} ${g("Student")}`}
           modalTitle={`${g("Create")} ${g("Student")}`}
           modalContent={modalForm}
+          className="z-[1]"
         />
       </section>
 

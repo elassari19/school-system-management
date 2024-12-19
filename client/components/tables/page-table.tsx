@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,9 @@ import useIntlTranslations from "@/hooks/use-intl-translations";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import useUrlPath from "@/hooks/use-urlPath";
+import { Modal } from "../ui/dialog";
+import { TbEdit } from "react-icons/tb";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   headCell: string[];
@@ -38,9 +41,9 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
   };
 
   return (
-    <div>
+    <div className="-mt-14">
       {/* pagination */}
-      <div className="w-full flex justify-end items-center gap-2 py-2">
+      <div className="w-full flex justify-center items-center gap-2 py-2">
         <Button
           size={"sm"}
           onClick={() => handlePage(page > 0 ? page - 1 : page)}
@@ -80,6 +83,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
             {headCell.map((item, index) => (
               <TableHead key={index}>{g(item)}</TableHead>
             ))}
+            <TableHead>{g("More")}</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -108,6 +112,20 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                 <div className="text-xl w-full h-36 flex justify-center items-center">
                   <p>{g("No Data")}</p>
                 </div>
+              )}
+              {headCell.length > 0 && (
+                <TableCell className="max-w-28 overflow-scroll text-sm flex items-center gap-2">
+                  <Modal
+                    modalTitle={`Edit ${item.fullname} Data`}
+                    modalTrigger={<TbEdit size={14} />}
+                    modalContent={<div className="flex flex-col gap-2"></div>}
+                  />
+                  <Modal
+                    modalTitle={`Delete ${item.fullname} Data`}
+                    modalTrigger={<RiDeleteBin6Line size={14} />}
+                    modalContent={<div className="flex flex-col gap-2"></div>}
+                  />
+                </TableCell>
               )}
             </TableRow>
           ))}

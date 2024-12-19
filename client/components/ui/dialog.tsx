@@ -111,7 +111,7 @@ const Modal = ({
 
   return (
     <Dialog>
-      <DialogTrigger className="bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md">
+      <DialogTrigger className="bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md z-[1]">
         {modalTrigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
