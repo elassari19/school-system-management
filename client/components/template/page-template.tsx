@@ -1,7 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import OverviewCard from "../cards/overview-card";
-import { Button } from "../ui/button";
 import { getTranslations } from "next-intl/server";
 import { Modal } from "../ui/dialog";
 import SearchInput from "../inputs/search-input";
@@ -27,19 +26,38 @@ const PageTemplate = async ({
 }: IProps) => {
   const g = await getTranslations("global");
 
+  const overviewCards = overviewData.map(({ icon, title, currentValue, pastValue }) => (
+    <OverviewCard
+      key={title}
+      icon={icon}
+      title={title}
+      currentValue={currentValue}
+      pastValue={pastValue}
+    />
+  ));
+
+  const pageTableProps = {
+    headCell: [
+      "Avatar",
+      "Full Name",
+      "Age",
+      "Gender",
+      "Parents",
+      "Email",
+      "Phone",
+      "Attendance",
+      "Class",
+      "Status",
+    ],
+    bodyCell: tableData,
+    pages,
+  };
+
   return (
     <div className={cn("h-full overflow-auto flex flex-col gap-4", className)}>
       {/* Overview */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-        {overviewData.map(({ icon, title, currentValue, pastValue }) => (
-          <OverviewCard
-            key={title}
-            icon={icon}
-            title={title}
-            currentValue={currentValue}
-            pastValue={pastValue}
-          />
-        ))}
+        {overviewCards}
       </section>
 
       {/* Action => search input, add button */}
@@ -53,35 +71,11 @@ const PageTemplate = async ({
         />
       </section>
 
-      <section>
-        <PageTable
-          headCell={[
-            "Avatar",
-            "Full Name",
-            "Age",
-            "Gender",
-            "Parents",
-            "Email",
-            "Phone",
-            "Attendance",
-            "Class",
-            "Status",
-          ]}
-          bodyCell={tableData}
-          pages={pages}
-        />
-      </section>
+      {/* Page table */}
+      <PageTable {...pageTableProps} />
 
       {/* Grops card */}
-      <section>
-        {/* 
-          - Group card: Students
-          - Group card: Teachers
-          - Group card: Parents
-          - Group card: Classes
-         */}
-      </section>
-      {children}
+      <section>{children}</section>
     </div>
   );
 };
