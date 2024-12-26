@@ -13,7 +13,7 @@ interface IProps {
 }
 
 export default async function page(props: IProps) {
-  const { page, q = "" } = await props.searchParams;
+  const { page = 0, q = "" } = await props.searchParams;
   const [a, g] = await Promise.all([getTranslations("academic"), getTranslations("global")]);
 
   const [maleStudents, femaleStudents, searchStudent] = await Promise.all([
@@ -21,19 +21,15 @@ export default async function page(props: IProps) {
     getStudentByGender("female"),
     getAllStudent(page, q),
   ]);
-
+  console.log("searchStudent", searchStudent);
   const handleTableData = (data: any[]) =>
     data.map((std: any) => ({
       avatar: std.user.image,
       fullname: std.user.fullname,
       age: std.user.age,
       gender: std.user.gender,
-      parents: std.parent.user.fullname,
-      email: std.user.email,
-      phone: std.user.phone,
-      attendance: std.attendence,
       class: std.class.name,
-      status: std.status,
+      attendance: std.attendence,
     }));
 
   return (

@@ -82,6 +82,9 @@
     font-family: Arial, Helvetica, sans-serif;
     max-height: 100vh;
   }
+  .gradient {
+    @apply border border-secondary rounded-md bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc];
+  }
   .recharts-legend-item-text {
     font-size: medium !important;
     font-weight: 600 !important;

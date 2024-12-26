@@ -37,18 +37,7 @@ const PageTemplate = async ({
   ));
 
   const pageTableProps = {
-    headCell: [
-      "Avatar",
-      "Full Name",
-      "Age",
-      "Gender",
-      "Parents",
-      "Email",
-      "Phone",
-      "Attendance",
-      "Class",
-      "Status",
-    ],
+    headCell: ["Avatar", "Full Name", "Age", "Gender", "Class", "Attendance"],
     bodyCell: tableData,
     pages,
   };

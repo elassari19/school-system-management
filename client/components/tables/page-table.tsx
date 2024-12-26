@@ -17,6 +17,8 @@ import useUrlPath from "@/hooks/use-urlPath";
 import { Modal } from "../ui/dialog";
 import { TbEdit } from "react-icons/tb";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { BiMessageDetail } from "react-icons/bi";
+import Image from "next/image";
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   headCell: string[];
@@ -39,6 +41,14 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
     setPage(p);
     setParams("page", p.toString());
   };
+
+  if (tableData.length === 0) {
+    return (
+      <div className="gradient text-xl w-full h-36 flex justify-center items-center">
+        <p className="font-bold">{g("No Data")}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="-mt-14">
@@ -72,12 +82,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
         </Button>
       </div>
 
-      <Table
-        className={cn(
-          "border border-secondary rounded-md bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc]",
-          className
-        )}
-      >
+      <Table className={cn("gradient", className)}>
         <TableHeader>
           <TableRow>
             {headCell.map((item, index) => (
@@ -88,17 +93,14 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
         </TableHeader>
 
         <TableBody>
-          {tableData.map((item, index) => (
-            <TableRow key={index}>
-              {headCell.length > 0 ? (
-                headCell.map((cell, idx) => {
+          {tableData &&
+            tableData.map((item, index) => (
+              <TableRow key={index}>
+                {headCell.map((cell, idx) => {
                   if (item?.[cell] === "Avatart") {
                     return (
                       <TableCell key={idx} className="max-w-16 overflow-scroll text-sm">
-                        <Avatar>
-                          <AvatarImage src={item.fullname[0]} />
-                          <AvatarFallback>{item.fullname[0]}</AvatarFallback>
-                        </Avatar>
+                        <Image src={item.avatar} alt="avatar" width={30} height={30} />
                       </TableCell>
                     );
                   }
@@ -107,28 +109,29 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                       {item?.[cell.replace(" ", "").toLocaleLowerCase()]}
                     </TableCell>
                   );
-                })
-              ) : (
-                <div className="text-xl w-full h-36 flex justify-center items-center">
-                  <p>{g("No Data")}</p>
-                </div>
-              )}
-              {headCell.length > 0 && (
-                <TableCell className="max-w-28 overflow-scroll text-sm flex items-center gap-2">
-                  <Modal
-                    modalTitle={`Edit ${item.fullname} Data`}
-                    modalTrigger={<TbEdit size={14} />}
-                    modalContent={<div className="flex flex-col gap-2"></div>}
-                  />
-                  <Modal
-                    modalTitle={`Delete ${item.fullname} Data`}
-                    modalTrigger={<RiDeleteBin6Line size={14} />}
-                    modalContent={<div className="flex flex-col gap-2"></div>}
-                  />
-                </TableCell>
-              )}
-            </TableRow>
-          ))}
+                })}
+
+                {headCell.length > 0 && (
+                  <TableCell className="overflow-scroll text-sm flex items-center gap-2">
+                    <Modal
+                      modalTitle={`Edit ${item.fullname} Data`}
+                      modalTrigger={<TbEdit size={14} />}
+                      modalContent={<div className="flex flex-col gap-2"></div>}
+                    />
+                    <Modal
+                      modalTitle={`Delete ${item.fullname} Data`}
+                      modalTrigger={<RiDeleteBin6Line size={14} />}
+                      modalContent={<div className="flex flex-col gap-2"></div>}
+                    />
+                    <Modal
+                      modalTitle={`Send Message to ${item.fullname}`}
+                      modalTrigger={<BiMessageDetail size={14} />}
+                      modalContent={<div className="flex flex-col gap-2"></div>}
+                    />
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
 

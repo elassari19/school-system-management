@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
@@ -6,8 +6,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../ui/card';
-import { cn } from '../../lib/utils';
+} from "../ui/card";
+import { cn } from "../../lib/utils";
 
 interface IProps {
   title?: React.ReactNode;
@@ -29,14 +29,12 @@ const RootCard = ({
   return (
     <Card
       className={cn(
-        'border-secondary/70 bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc]',
+        "border-secondary/70 bg-gradient-to-b from-[#fef2eb] to-[#f3f3fc]",
         className
       )}
     >
       <CardHeader
-        className={cn(
-          flex && 'flex flex-row items-center justify-between space-y-0'
-        )}
+        className={cn(flex && "flex flex-row items-center justify-between space-y-0")}
       >
         {title && <CardTitle className="text-xl">{title}</CardTitle>}
         {description && <CardDescription>{description}</CardDescription>}

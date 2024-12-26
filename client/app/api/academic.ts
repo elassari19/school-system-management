@@ -32,7 +32,7 @@ export async function createStudent(data: addStudentType) {
   return student;
 }
 
-export async function getAllStudent(page: number, query: any) {
+export async function getAllStudent(page: number = 1, query: any) {
   const student = await fetchData(`student/all`, "POST", {
     where: {
       user: {
@@ -49,7 +49,7 @@ export async function getAllStudent(page: number, query: any) {
       },
       class: true,
     },
-    skip: page ? 5 * page : 0,
+    skip: page > 0 ? (page - 1) * 5 : 0,
     take: 5,
   });
 

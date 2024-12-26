@@ -45,21 +45,22 @@ const AddStudentForm: React.FC<AddStudentFormProps> = ({}) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isLoading, isSubmitting, isValid },
   } = useForm<addStudentType>({
     resolver: zodResolver(addStudentSchema),
   });
 
   const onSubmit = async (data: addStudentType) => {
-    console.log("submit", isValid, isSubmitting, isLoading);
-    // const res = await createStudent(data);
-    // if (res.error) {
-    //   toast.error(`${g("Student")} ${data.fullname} ${g("created failed")}`);
-    //   console.log("error", res.error);
-    //   return;
-    // }
-    // toast.success(`${g("Student")} ${data.fullname} ${g("created successfully")}`);
-    // console.log("res", res);
+    const res = await createStudent(data);
+    if (res.error) {
+      toast.error(`${g("Student")} ${data.fullname} ${g("created failed")}`);
+      console.log("error", res.error);
+      return;
+    }
+    toast.success(`${g("Student")} ${data.fullname} ${g("created successfully")}`);
+    reset();
+    console.log("res", res);
   };
 
   return (
