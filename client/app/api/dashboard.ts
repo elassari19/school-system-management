@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { API_URL } from "@/lib/functions-helper";
+import { API_URL } from '@/lib/functions-helper';
 
 // fetch all users
-export async function countAllUsers(query: {}, target = "user") {
+export async function countAllUsers(query: {}, target = 'user') {
   try {
     const response = await fetch(`${API_URL}/${target}/count`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: {
           where: {
@@ -18,13 +18,13 @@ export async function countAllUsers(query: {}, target = "user") {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch users");
+      throw new Error('Failed to fetch users');
     }
     const data = await response.json();
-    console.log("data", data);
+    console.log('data', data);
     return data;
   } catch (error) {
-    console.log("error", error);
+    console.log('error', error);
     return;
   }
 }
@@ -32,8 +32,8 @@ export async function countAllUsers(query: {}, target = "user") {
 export async function getAllUsersByRole(role: string) {
   try {
     const response = await fetch(`${API_URL}/user/count`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: {
           where: {
@@ -44,24 +44,24 @@ export async function getAllUsersByRole(role: string) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch users");
+      throw new Error('Failed to fetch users');
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("error", error);
+    console.log('error', error);
     return;
   }
 }
 
 export async function getParentsWithChidren(page: number) {
   const res = await fetch(`${API_URL}/user/all`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       query: {
         where: {
-          role: "PARENT",
+          role: 'PARENT',
         },
         include: {
           parent: {
@@ -88,10 +88,10 @@ export async function getParentsWithChidren(page: number) {
   return data;
 }
 
-export async function getUsers(query: {}, target = "user") {
+export async function getUsers(query: {}, target = 'user') {
   const res = await fetch(`${API_URL}/${target}/all`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       query,
     }),

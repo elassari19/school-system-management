@@ -6,6 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import useIntlTranslations from '../../hooks/use-intl-translations';
 
 const Sheet = SheetPrimitive.Root;
 
@@ -38,9 +39,9 @@ const sheetVariants = cva(
         top: 'inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
         bottom:
           'inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-        left: 'inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm',
+        left: 'inset-y-0 left-0 h-full w-full border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm',
         right:
-          'inset-y-0 right-0 h-full w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
+          'inset-y-0 right-0 h-full w-full  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
       },
     },
     defaultVariants: {
@@ -74,29 +75,17 @@ const SheetContent = React.forwardRef<
 ));
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
-const SheetHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'flex flex-col space-y-2 text-center sm:text-left',
-      className
-    )}
+    className={cn('flex flex-col space-y-2 text-center sm:text-left', className)}
     {...props}
   />
 );
 SheetHeader.displayName = 'SheetHeader';
 
-const SheetFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
+const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className
-    )}
+    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)}
     {...props}
   />
 );
@@ -108,7 +97,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
-    className={cn('text-lg font-semibold text-foreground', className)}
+    className={cn('text-lg font-semibold', className)}
     {...props}
   />
 ));
@@ -118,13 +107,48 @@ const SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Description
-    ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
-    {...props}
-  />
+  <SheetPrimitive.Description ref={ref} className={cn('text-sm', className)} {...props} />
 ));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
+
+interface IProps extends React.HTMLAttributes<HTMLDivElement> {
+  sheetTrigger: React.ReactNode;
+  sheetTitle?: React.ReactNode;
+  sheetDescription?: React.ReactNode;
+  sheetContent: React.ReactNode;
+}
+
+export const SheetDrawer = ({
+  sheetTrigger,
+  sheetTitle,
+  sheetContent,
+  sheetDescription,
+  className,
+}: IProps) => {
+  const { g } = useIntlTranslations();
+
+  return (
+    <Sheet>
+      <SheetTrigger className="bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md z-[1]">
+        {sheetTrigger}
+      </SheetTrigger>
+      <SheetContent className={cn('py-4', className)}>
+        {sheetTitle && (
+          <SheetHeader>
+            <SheetTitle>{sheetTitle}</SheetTitle>
+            <SheetDescription>{sheetDescription}</SheetDescription>
+          </SheetHeader>
+        )}
+        <div className={cn('h-[90%] overflow-auto', className)}>{sheetContent}</div>
+        <SheetFooter className="flex justify-between p-4">
+          <SheetClose className="px-4 bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md">
+            {g('Cancel')}
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+};
 
 export {
   Sheet,

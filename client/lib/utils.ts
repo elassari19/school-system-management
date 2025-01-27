@@ -1,6 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { API_URL } from "@/lib/functions-helper";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { API_URL } from '@/lib/functions-helper';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export const fetchData = async (target: string, method: string, query: any) => {
   const resp = await fetch(`${API_URL}/${target}`, {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       query,
     }),

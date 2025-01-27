@@ -1,5 +1,5 @@
-import { getUsers } from "@/app/api/dashboard";
-import React from "react";
+import { getUsers } from '@/app/api/dashboard';
+import React from 'react';
 
 interface IProps {
   params: Promise<{
@@ -9,11 +9,11 @@ interface IProps {
 
 async function page(props: IProps) {
   const params = await props.params;
-  console.log("params", params);
+  console.log('params', params);
 
   const student = await getUsers({
     where: {
-      role: "STUDENT",
+      role: 'STUDENT',
     },
     include: {
       student: {

@@ -1,10 +1,10 @@
-import React from "react";
-import { cn } from "@/lib/utils";
-import OverviewCard from "../cards/overview-card";
-import { getTranslations } from "next-intl/server";
-import { Modal } from "../ui/dialog";
-import SearchInput from "../inputs/search-input";
-import PageTable from "../tables/page-table";
+import React from 'react';
+import { cn } from '@/lib/utils';
+import OverviewCard from '../cards/overview-card';
+import { getTranslations } from 'next-intl/server';
+import SearchInput from '../inputs/search-input';
+import PageTable from '../tables/page-table';
+import { SheetDrawer } from '../ui/sheet';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   overviewData: any[];
@@ -24,7 +24,7 @@ const PageTemplate = async ({
   tableData,
   pages,
 }: IProps) => {
-  const g = await getTranslations("global");
+  const g = await getTranslations('global');
 
   const overviewCards = overviewData.map(({ icon, title, currentValue, pastValue }) => (
     <OverviewCard
@@ -37,13 +37,13 @@ const PageTemplate = async ({
   ));
 
   const pageTableProps = {
-    headCell: ["Avatar", "Full Name", "Age", "Gender", "Class", "Attendance"],
+    headCell: ['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance'],
     bodyCell: tableData,
     pages,
   };
 
   return (
-    <div className={cn("h-full overflow-auto flex flex-col gap-6", className)}>
+    <div className={cn('h-full overflow-auto flex flex-col gap-6', className)}>
       {/* Overview */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {overviewCards}
@@ -53,11 +53,11 @@ const PageTemplate = async ({
       <section className="flex justify-between items-center">
         <SearchInput placeholder={placeholder} className="max-w-64 z-[1]" />
 
-        <Modal
-          modalTrigger={`${g("Add")} ${g("Student")}`}
-          modalTitle={`${g("Create")} ${g("Student")}`}
-          modalContent={modalForm}
-          className="z-[1]"
+        <SheetDrawer
+          sheetTrigger={`${g('Add')} ${g('Student')}`}
+          sheetTitle={`${g('Add')} ${g('Student')}`}
+          sheetContent={modalForm}
+          className=""
         />
       </section>
 

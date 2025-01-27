@@ -1,6 +1,7 @@
 import { getAllStudent, getStudentByGender } from "@/app/api/academic";
 import AddStudentForm from "@/components/forms/student-form";
 import PageTemplate from "@/components/template/page-template";
+import { addStudentType } from "@/lib/zod-schema";
 import { ChartLine, GraduationCap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import React from "react";
@@ -21,8 +22,8 @@ export default async function page(props: IProps) {
     getStudentByGender("female"),
     getAllStudent(page, q),
   ]);
-  console.log("searchStudent", searchStudent);
-  const handleTableData = (data: any[]) =>
+
+  const handleTableData = (data: addStudentType[]) =>
     data.map((std: any) => ({
       avatar: std.user.image,
       fullname: std.user.fullname,
