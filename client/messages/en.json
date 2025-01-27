@@ -4,6 +4,7 @@
   "ar": "Arabic",
   "language": "language",
   "global": {
+    "All": "All",
     "Notification": "Notification",
     "User Account": "User Account",
     "Email": "Email",
@@ -45,6 +46,7 @@
     "Announcements": "Announcements",
     "Messaging": "Messaging",
     "Reports": "Reports",
+    "Pages": "Pages",
     "Academic Reports": "Academic Reports",
     "Financial Reports": "Financial Reports",
     "HR Reports": "HR Reports",

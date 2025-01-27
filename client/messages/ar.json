@@ -4,6 +4,7 @@
   "ar": "العربية",
   "language": "اللغة",
   "global": {
+    "All": "كل",
     "Notification": "إشعار",
     "User Account": "حساب المستخدم",
     "Email": "البريد الإلكتروني",
@@ -45,6 +46,7 @@
     "Announcements": "الإعلانات",
     "Messaging": "الرسائل",
     "Reports": "التقارير",
+    "Pages": "الصفحات",
     "Academic Reports": "التقارير الأكاديمية",
     "Financial Reports": "التقارير المالية",
     "HR Reports": "تقارير الموارد البشرية",
