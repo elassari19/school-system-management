@@ -11,7 +11,7 @@ import {
   updateUser,
 } from "./user.controller";
 import validateSchema from "../../middelwares/validateSchema";
-import { userSchema } from "./user.schema";
+import { userSchema, userUpdateSchema } from "./user.schema";
 
 const router = Router();
 
@@ -155,7 +155,7 @@ router.put(
   "/",
   // @ts-ignore
   // isAuthenticated(),
-  validateSchema(userSchema),
+  validateSchema(userUpdateSchema),
   updateUser
 );
 

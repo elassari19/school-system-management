@@ -7,20 +7,15 @@ import { faker } from "@faker-js/faker";
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
   const { query } = req.body;
-
   if (!id) {
     return res.status(400).send("No user ID provided");
   }
 
   try {
-    const user = await redisCacheHandler(
-      `user:${id}`,
-      async () =>
-        await prisma.user.findUnique({
-          where: { id },
-          ...query,
-        })
-    );
+    const user = await prisma.user.findUnique({
+      where: { id },
+      ...query,
+    });
 
     if (!user) {
       return res.status(404).send("User not found");
@@ -107,9 +102,9 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
-  const updateData = req.body;
+  const { password, ...updateData } = req.body;
 
-  if (!id) {
+  if (!id || id == undefined || id == null) {
     return res.status(400).send("No user ID provided");
   }
 
@@ -122,8 +117,16 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     const existingUser = await prisma.user.findUnique({
       where: { id: id as string },
     });
+
     // If the user is not found, send a 404 response
-    if (!existingUser) return res.status(404).send("Not found");
+    if (!existingUser) return res.status(404).send("User Not found");
+    const { id: _, ...userWithoutId } = existingUser;
+
+    // If the password is provided, hash it with the salt
+    if (password !== undefined && password !== null && password !== "") {
+      const hashPassword = await hash(password, 12);
+      updateData.password = hashPassword;
+    }
 
     // Update the user in the database
     const updatedUser = await prisma.user.update({
@@ -131,17 +134,18 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       data: {
         // Use the spread operator to combine the existing user data
         // with the new data
-        ...existingUser,
+        ...userWithoutId,
         ...updateData,
+        password: userWithoutId.password,
       },
     });
     // Clear the cache of the user
     await redisCacheClear(`user:*`);
     // Return the updated user data to the client
     return res.status(203).send(updatedUser);
-  } catch (error) {
+  } catch (err) {
     // If there's an error, log it and pass it down the middleware chain
-    next(error);
+    next(err);
   }
 };
 

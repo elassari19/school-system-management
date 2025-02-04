@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 export const userSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -11,4 +11,17 @@ export const userSchema = Joi.object({
   image: Joi.string().optional(),
   address: Joi.string().optional(),
   salary: Joi.number().optional(),
+});
+
+export const userUpdateSchema = Joi.object({
+  email: Joi.string().allow("").email().optional(),
+  fullname: Joi.string().allow("").optional(),
+  phone: Joi.string().allow("").optional(),
+  password: Joi.string().allow("").optional(),
+  role: Joi.string().allow("").optional(),
+  age: Joi.number().optional(),
+  gender: Joi.string().allow("").optional(),
+  image: Joi.string().allow("").optional(),
+  address: Joi.string().allow("").optional(),
+  salary: Joi.number().allow("").optional(),
 });

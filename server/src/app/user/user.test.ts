@@ -31,7 +31,7 @@ describe('User Controller', () => {
 
   describe('GET /v1/api/user', () => {
     it('should get a user by id', async () => {
-      const mockGetOne = { id: '1', name: 'Test User' };
+      const mockGetOne = { id: '1', fullname: 'Test User' }; // Changed from name to fullname
       (redisCacheHandler as jest.Mock).mockResolvedValue(mockGetOne);
 
       const response = await request(app).get('/v1/api/user/?id=1');
@@ -42,8 +42,8 @@ describe('User Controller', () => {
 
     it('should get all courses', async () => {
       const mockGetAll = [
-        { id: '1', name: 'Test User 1' },
-        { id: '2', name: 'Test User 2' },
+        { id: '1', fullname: 'Test User 1' }, // Changed from name to fullname
+        { id: '2', fullname: 'Test User 2' }, // Changed from name to fullname
       ];
       (redisCacheHandler as jest.Mock).mockResolvedValue(mockGetAll);
 
@@ -116,7 +116,7 @@ describe('User Controller', () => {
 
   describe('DELETE /v1/api/user', () => {
     it('should delete a user', async () => {
-      const mockDeleted = { id: '1', name: 'Deleted User' };
+      const mockDeleted = { id: '1', fullname: 'Deleted User' }; // Changed from name to fullname
       (prisma.user.delete as jest.Mock).mockResolvedValue(mockDeleted);
 
       const response = await request(app).delete('/v1/api/user?id=1');
@@ -128,8 +128,8 @@ describe('User Controller', () => {
 
     it('should delete many users', async () => {
       const mockDeletedMany = [
-        { id: '1', name: 'Deleted User 1' },
-        { id: '2', name: 'Deleted User 2' },
+        { id: '1', fullname: 'Deleted User 1' }, // Changed from name to fullname
+        { id: '2', fullname: 'Deleted User 2' }, // Changed from name to fullname
       ];
       (prisma.user.deleteMany as jest.Mock).mockResolvedValue(mockDeletedMany);
 
@@ -144,8 +144,8 @@ describe('User Controller', () => {
 
     it('should delete all users', async () => {
       const mockDeletedCourses = [
-        { id: '1', name: 'Deleted User 1' },
-        { id: '2', name: 'Deleted User 2' },
+        { id: '1', fullname: 'Deleted User 1' }, // Changed from name to fullname
+        { id: '2', fullname: 'Deleted User 2' }, // Changed from name to fullname
       ];
       (prisma.user.deleteMany as jest.Mock).mockResolvedValue(
         mockDeletedCourses
