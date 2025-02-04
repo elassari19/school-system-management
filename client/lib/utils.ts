@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const fetchData = async (target: string, method: string, query: any) => {
+export const getData = async (target: string, method: string, query: any) => {
   const resp = await fetch(`${API_URL}/${target}`, {
     method,
     headers: { 'Content-Type': 'application/json' },
@@ -23,7 +23,7 @@ export const fetchData = async (target: string, method: string, query: any) => {
   return data;
 };
 
-export const updateData = async (target: string, method: string, query: any) => {
+export const fetchData = async (target: string, method: string, query: any) => {
   const resp = await fetch(`${API_URL}/${target}`, {
     method,
     headers: { 'Content-Type': 'application/json' },
@@ -35,3 +35,16 @@ export const updateData = async (target: string, method: string, query: any) => 
   const data = await resp.json();
   return data;
 };
+
+export async function deleteData(target: string) {
+  const response = await fetch(`${API_URL}/${target}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    return { error: response.statusText };
+  }
+  const data = await response.json();
+  return data;
+}
