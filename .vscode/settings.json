@@ -1,6 +1,6 @@
 {
   "prettier.printWidth": 95,
-  "prettier.singleQuote": false,
+  "prettier.singleQuote": true,
   "javascript.preferences.quoteStyle": "double",
   "typescript.preferences.quoteStyle": "double"
 }
