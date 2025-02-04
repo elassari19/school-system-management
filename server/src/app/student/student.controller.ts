@@ -94,7 +94,7 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
   const { id } = req.query;
   const updateData = req.body;
 
-  if (!id) {
+  if (!id || id == undefined || id == null) {
     return res.status(400).send("No Student ID provided");
   }
 
@@ -109,6 +109,7 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
     });
     // If the Student is not found, send a 404 response
     if (!existingStudent) return res.status(404).send("Student Not found");
+    const { id: _, ...studentsWithoutId } = existingStudent;
 
     // Update the Student in the database
     const updatedStudent = await prisma.student.update({
@@ -116,7 +117,7 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
       data: {
         // Use the spread operator to combine the existing Student data
         // with the new data
-        ...existingStudent,
+        ...studentsWithoutId,
         ...updateData,
       },
     });
@@ -124,9 +125,9 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
     await redisCacheClear(`student:*`);
     // Return the updated Student data to the client
     return res.status(203).send(updatedStudent);
-  } catch (error) {
+  } catch (err) {
     // If there's an error, log it and pass it down the middleware chain
-    next(error);
+    next(err);
   }
 };
 
