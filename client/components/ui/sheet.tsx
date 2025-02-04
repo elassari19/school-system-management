@@ -140,11 +140,6 @@ export const SheetDrawer = ({
           </SheetHeader>
         )}
         <div className={cn('h-[90%] overflow-auto', className)}>{sheetContent}</div>
-        <SheetFooter className="flex justify-between p-4">
-          <SheetClose className="px-4 bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md">
-            {g('Cancel')}
-          </SheetClose>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
