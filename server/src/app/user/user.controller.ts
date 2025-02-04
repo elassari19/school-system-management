@@ -1,14 +1,14 @@
-import { NextFunction, Request, Response } from "express";
-import { prisma } from "../../utils/configs";
-import { redisCacheClear, redisCacheHandler } from "../../utils/redisCache";
-import { hash } from "bcryptjs";
-import { faker } from "@faker-js/faker";
+import { NextFunction, Request, Response } from 'express';
+import { prisma } from '../../utils/configs';
+import { redisCacheClear, redisCacheHandler } from '../../utils/redisCache';
+import { hash } from 'bcryptjs';
+import { faker } from '@faker-js/faker';
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
   const { query } = req.body;
   if (!id) {
-    return res.status(400).send("No user ID provided");
+    return res.status(400).send('No user ID provided');
   }
 
   try {
@@ -18,7 +18,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
     });
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).send('User not found');
     }
 
     return res.status(200).json(user);
@@ -29,7 +29,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   const { query } = req.body;
-  console.log("query", query);
+  console.log('query', query);
   try {
     // If cache is empty, get all users from database
     const users = await prisma.user.findMany({
@@ -37,13 +37,13 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     });
     // Check for null pointer references
     if (!users) {
-      throw new Error("No users found");
+      throw new Error('No users found');
     }
 
     // console.log("users", users);
     return res.status(200).send(users);
   } catch (error) {
-    console.log("error", error);
+    console.log('error', error);
     // If there's an error, log it and pass it down the middleware chain
     next(error);
   }
@@ -54,7 +54,7 @@ export const countUsers = async (req: Request, res: Response, next: NextFunction
   const users = await prisma.user.count({
     ...query,
   });
-  console.log("users", users);
+  console.log('users', users);
   return res.status(200).json(users);
 };
 
@@ -65,11 +65,11 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     where: { email: rest.email },
   });
   if (existUser) {
-    return res.status(302).send("User already exist");
+    return res.status(302).send('User already exist');
   }
 
   if (!password) {
-    return res.status(400).send("Password is required");
+    return res.status(400).send('Password is required');
   }
 
   try {
@@ -86,16 +86,17 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     });
 
     if (!user) {
-      throw new Error("User creation failed");
+      throw new Error('User creation failed');
     }
 
     // Clear the cache after creating a new user
-    await redisCacheClear("user:*");
+    await redisCacheClear('user:*');
 
+    console.log('created user', user);
     // Return the created user back to the client
     return res.status(201).json(user);
   } catch (error) {
-    console.error("Error creating user", error);
+    console.error('Error creating user', error);
     next(error);
   }
 };
@@ -105,11 +106,11 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
   const { password, ...updateData } = req.body;
 
   if (!id || id == undefined || id == null) {
-    return res.status(400).send("No user ID provided");
+    return res.status(400).send('No user ID provided');
   }
 
   if (!updateData) {
-    return res.status(400).send("No data provided");
+    return res.status(400).send('No data provided');
   }
 
   try {
@@ -119,11 +120,11 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     });
 
     // If the user is not found, send a 404 response
-    if (!existingUser) return res.status(404).send("User Not found");
+    if (!existingUser) return res.status(404).send('User Not found');
     const { id: _, ...userWithoutId } = existingUser;
 
     // If the password is provided, hash it with the salt
-    if (password !== undefined && password !== null && password !== "") {
+    if (password !== undefined && password !== null && password !== '') {
       const hashPassword = await hash(password, 12);
       updateData.password = hashPassword;
     }
@@ -152,30 +153,46 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
 
-  // Check for null pointer references
   if (!id) {
-    return res.status(400).send("No user ID provided");
+    return res.status(400).send('No user ID provided');
   }
 
   try {
-    // Attempt to delete the user from the database
-    const deleteUser = await prisma.user.delete({
+    // check if user exist
+    const user = await prisma.user.findUnique({
       where: { id: id as string },
+      include: {
+        student: true,
+      },
     });
 
-    // Check for null pointer references
-    if (!deleteUser) {
-      return res.status(404).send("User not found");
+    if (!user) {
+      return res.status(404).send('User Not found');
     }
 
-    // Clear the cache after deleting the user
+    // Attempt to delete the user and related data in a transaction
+    const deleteResult = await prisma.$transaction(async (tx) => {
+      // First delete the student record if it exists
+      if (user.student.length > 0) {
+        await tx.student.delete({
+          where: { id: user.student[0].id },
+        });
+      }
+
+      // Then delete the user
+      return await tx.user.delete({
+        where: { id: id as string },
+      });
+    });
+
+    console.log('delete user', deleteResult);
+    // Clear the cache after successful deletion
+    await redisCacheClear(`student:*`);
     await redisCacheClear(`user:*`);
 
-    // Return the deleted user data to the client
-    return res.status(203).send(deleteUser);
+    return res.status(200).send({ message: 'User and related data deleted successfully' });
   } catch (error) {
-    console.error("Error deleting user", error);
-    // Pass the error down the middleware chain
+    console.error('Error deleting user:', error);
     next(error);
   }
 };
@@ -185,7 +202,7 @@ export const deleteManyUsers = async (req: Request, res: Response, next: NextFun
 
   // Check if IDs are provided and not empty
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return res.status(400).send("No user IDs provided");
+    return res.status(400).send('No user IDs provided');
   }
 
   try {
@@ -195,7 +212,7 @@ export const deleteManyUsers = async (req: Request, res: Response, next: NextFun
 
     // Check if any users were deleted
     if (resp.count === 0) {
-      return res.status(404).send("No users found for the provided IDs");
+      return res.status(404).send('No users found for the provided IDs');
     }
 
     // Clear the cache after deleting the users
@@ -203,7 +220,7 @@ export const deleteManyUsers = async (req: Request, res: Response, next: NextFun
     // Return the deleted users data to the client
     return res.status(203).send(resp);
   } catch (error) {
-    console.error("Error deleting users", error);
+    console.error('Error deleting users', error);
     next(error);
   }
 };
@@ -215,7 +232,7 @@ export const deleteAllUsers = async (req: Request, res: Response, next: NextFunc
 
     // Check for null pointer references
     if (!resp) {
-      return res.status(404).send("No users found");
+      return res.status(404).send('No users found');
     }
 
     // Clear the Redis cache for all users
@@ -223,7 +240,7 @@ export const deleteAllUsers = async (req: Request, res: Response, next: NextFunc
     // Return the deleted users data to the client
     return res.status(203).send(resp);
   } catch (error) {
-    console.error("Error deleting all users", error);
+    console.error('Error deleting all users', error);
     // Pass the error down the middleware chain
     next(error);
   }
