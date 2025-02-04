@@ -25,12 +25,16 @@ export default async function page(props: IProps) {
 
   const handleTableData = (data: studentType[]) =>
     data.map((std: any) => ({
+      id: std.id,
       avatar: std.user.image,
       fullname: std.user.fullname,
       age: std.user.age,
       gender: std.user.gender,
       class: std.class.name,
       attendance: std.attendence,
+      userId: std.userId,
+      parentId: std.parentId,
+      classId: std.classId,
     }));
 
   return (

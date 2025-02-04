@@ -21,6 +21,9 @@ import { BiMessageDetail } from 'react-icons/bi';
 import Image from 'next/image';
 import AddStudentForm from '../forms/student-form';
 import { SheetDrawer } from '../ui/sheet';
+import DeleteModal from '../modals/delete-modal';
+import { deleteStudent } from '../../app/api/academic';
+import toast from 'react-hot-toast';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   headCell: string[];
@@ -42,6 +45,21 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
   const handlePage = (p: number) => {
     setPage(p);
     setParams('page', p.toString());
+  };
+
+  const handleDelete = async (item: any) => {
+    try {
+      const response = await deleteStudent(item.id!, item.userId!);
+      if (response.error) {
+        console.error('Delete failed:', response.error);
+        return toast.error(`${g('deleted failed')} ${item.fullname}`);
+      } else {
+        return toast.success(`${item.fullname} ${g('deleted successfully')}`);
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error(`${g('deleted failed')} ${item.fullname}`);
+    }
   };
 
   if (tableData.length === 0) {
@@ -99,7 +117,8 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
             tableData.map((item, index) => (
               <TableRow key={index}>
                 {headCell.map((cell, idx) => {
-                  if (item?.[cell] === 'Avatart') {
+                  const key = cell.toLowerCase().replace(/\s+/g, '');
+                  if (cell === 'Avatar') {
                     return (
                       <TableCell key={idx} className="max-w-16 overflow-scroll text-sm">
                         <Image src={item.avatar} alt="avatar" width={30} height={30} />
@@ -108,11 +127,12 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                   }
                   return (
                     <TableCell key={idx} className="max-w-28 overflow-scroll text-sm">
-                      {item?.[cell.replace(' ', '').toLocaleLowerCase()]}
+                      {item[key]}
                     </TableCell>
                   );
                 })}
 
+                {/* more action */}
                 {headCell.length > 0 && (
                   <TableCell className="text-sm flex items-cneter justify-center gap-4">
                     <SheetDrawer
@@ -126,9 +146,14 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                       modalContent={<div className="flex flex-col gap-2"></div>}
                     />
                     <Modal
-                      modalTitle={`Delete ${item.fullname} Data`}
+                      modalTitle={`${g('Delete')} ${item.fullname}`}
                       modalTrigger={<RiDeleteBin6Line size={14} />}
-                      modalContent={<div className="flex flex-col gap-2"></div>}
+                      modalContent={
+                        <DeleteModal
+                          itemName={item.fullname}
+                          handleSubmit={() => handleDelete(item)}
+                        />
+                      }
                     />
                   </TableCell>
                 )}

@@ -1,45 +1,16 @@
-"use server";
+'use server';
 
-import { fetchData, updateData } from "@/lib/utils";
-import { studentType } from "@/lib/zod-schema";
-import { revalidatePath } from "next/cache";
-
-export async function createStudent(data: Omit<studentType, "id">) {
-  const { _class, parent, image, age, ...rest } = data;
-
-  // create user with role of student
-  const user = await fetchData(`user/create`, "POST", {
-    ...rest,
-    age: parseInt(age),
-  });
-
-  if (user.error) {
-    console.log("user/create", user.error);
-    return user.error;
-  }
-
-  // create and connect user, parent, class to student
-  const student = await fetchData(`student/create`, "POST", {
-    classId: _class,
-    parentId: parent,
-    userId: user.id,
-  });
-
-  if (student.error) {
-    console.log("student/create", student.error);
-    return student.error;
-  }
-
-  return student;
-}
+import { getData, fetchData, deleteData } from '@/lib/utils';
+import { studentType } from '@/lib/zod-schema';
+import { revalidatePath } from 'next/cache';
 
 export async function getAllStudent(page: number = 1, query: any) {
-  const student = await fetchData(`student/all`, "POST", {
+  const student = await getData(`student/all`, 'POST', {
     where: {
       user: {
         fullname: {
           contains: query,
-          mode: "insensitive", // Case-insensitive search
+          mode: 'insensitive', // Case-insensitive search
         },
       },
     },
@@ -55,30 +26,30 @@ export async function getAllStudent(page: number = 1, query: any) {
   });
 
   if (student.error) {
-    console.log("student/find", student.error);
+    console.log('student/find', student.error);
     return student.error;
   }
 
-  const count = await fetchData(`user/count`, "POST", {
+  const count = await getData(`user/count`, 'POST', {
     where: {
-      role: "STUDENT",
+      role: 'STUDENT',
       fullname: {
         contains: query,
-        mode: "insensitive", // Case-insensitive search
+        mode: 'insensitive', // Case-insensitive search
       },
     },
   });
 
   if (count.error) {
-    console.log("student/count", count.error);
+    console.log('student/count', count.error);
     return count.error;
   }
 
   return { student, count };
 }
 
-export async function getStudentByGender(gender: "male" | "female") {
-  const student = await fetchData(`student/all`, "POST", {
+export async function getStudentByGender(gender: 'male' | 'female') {
+  const student = await getData(`student/all`, 'POST', {
     where: { user: { gender: gender } },
     include: {
       user: {
@@ -88,7 +59,7 @@ export async function getStudentByGender(gender: "male" | "female") {
   });
 
   if (student.error) {
-    console.log("student/create", student.error);
+    console.log('student/create', student.error);
     return student.error;
   }
 
@@ -97,32 +68,74 @@ export async function getStudentByGender(gender: "male" | "female") {
   return { length: student.length, average: averageAge };
 }
 
-export async function updateStudent(data: studentType) {
-  const { _class, parent, image, age, userId, id, ...rest } = data;
+export async function createStudent(data: Omit<studentType, 'id'>) {
+  const { _class, parent, image, age, ...rest } = data;
 
-  // update user with role of student
-  const user = await updateData(`user?id=${userId}`, "PUT", {
+  // create user with role of student
+  const user = await fetchData(`user/create`, 'POST', {
     ...rest,
     age: parseInt(age),
   });
 
   if (user.error) {
-    console.log("user/update", user);
+    console.log('user/create', user.error);
+    return user.error;
+  }
+
+  revalidatePath('/students', 'page');
+  // create and connect user, parent, class to student
+  const student = await fetchData(`student/create`, 'POST', {
+    classId: _class,
+    parentId: parent,
+    userId: user.id,
+  });
+
+  if (student.error) {
+    console.log('student/create', student.error);
+    return student.error;
+  }
+  console.log('student', student);
+  revalidatePath('/students', 'page');
+  return student;
+}
+
+export async function updateStudent(data: studentType) {
+  const { _class, parent, image, age, userId, id, ...rest } = data;
+
+  // update user with role of student
+  const user = await fetchData(`user?id=${userId}`, 'PUT', {
+    ...rest,
+    age: parseInt(age),
+  });
+
+  if (user.error) {
+    console.log('user/update', user);
     return user;
   }
 
   // update and connect user, parent, class to student
-  const student = await updateData(`student?id=${id}`, "PUT", {
+  const student = await fetchData(`student?id=${id}`, 'PUT', {
     classId: _class,
     parentId: parent,
     userId: userId,
   });
 
   if (student.error) {
-    console.log("student/update", student);
+    console.log('student/update', student);
     return student;
   }
 
-  revalidatePath("/students", "page");
+  revalidatePath('/students', 'page');
+  return student;
+}
+
+export async function deleteStudent(userId: string, studnetId: string) {
+  const student = await deleteData(`user?id=${studnetId}`);
+  if (student.error) {
+    console.log('student/delete', student);
+    return student;
+  }
+  // const user = await deleteData(`user?id=${student.userId}`);
+  revalidatePath('/students', 'page');
   return student;
 }

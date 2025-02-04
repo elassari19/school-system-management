@@ -10,6 +10,7 @@ import { getUsers } from '@/app/api/dashboard';
 import { createStudent, getAllStudent, updateStudent } from '@/app/api/academic';
 import toast from 'react-hot-toast';
 import useIntlTranslations from '@/hooks/use-intl-translations';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 
 interface Props {
   student?: string;
@@ -108,7 +109,7 @@ const AddStudentForm = ({ student }: Props) => {
     } else {
       res = await createStudent(data);
     }
-    console.log('res', res);
+
     if (res.error) {
       toast.error(
         `${g('Student')} ${data.fullname} ${
@@ -225,13 +226,18 @@ const AddStudentForm = ({ student }: Props) => {
         id="_class"
       />
 
-      <Button
-        type="submit"
-        disabled={!isValid || isSubmitting || isLoading}
-        isLoading={isLoading}
-      >
-        {g('Add')} {g('Student')}
-      </Button>
+      <div className="sticky bottom-0 right-0 bg-primary pt-4 flex gap-8 items-center justify-between">
+        <Button
+          type="submit"
+          disabled={!isValid || isSubmitting || isLoading}
+          isLoading={isLoading}
+        >
+          {g('Add')} {g('Student')}
+        </Button>
+        <DialogPrimitive.Close>
+          <Button disabled={isLoading}>{g('Cancel')}</Button>
+        </DialogPrimitive.Close>
+      </div>
     </form>
   );
 };
