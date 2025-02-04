@@ -125,7 +125,9 @@
     "edited failed": "edited failed",
     "saved successfully": "saved successfully",
     "saved failed": "saved failed",
-    "No Data": "No Data"
+    "No Data": "No Data",
+    "Are you sure you want to delete": "Are you sure you want to delete",
+    "Deleting": "Deleting"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",

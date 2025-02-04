@@ -125,7 +125,9 @@
     "edited failed": "فشل في التعديل",
     "saved successfully": "تم الحفظ بنجاح",
     "saved failed": "فشل في الحفظ",
-    "No Data": "لا يوجد بيانات"
+    "No Data": "لا يوجد بيانات",
+    "Are you sure you want to delete": "هل أنت متأكد من أنك تريد حذف",
+    "Deleting": "حذف"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",
