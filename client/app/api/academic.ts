@@ -1,9 +1,10 @@
 "use server";
 
-import { fetchData } from "@/lib/utils";
-import { addStudentType } from "@/lib/zod-schema";
+import { fetchData, updateData } from "@/lib/utils";
+import { studentType } from "@/lib/zod-schema";
+import { revalidatePath } from "next/cache";
 
-export async function createStudent(data: addStudentType) {
+export async function createStudent(data: Omit<studentType, "id">) {
   const { _class, parent, image, age, ...rest } = data;
 
   // create user with role of student
@@ -94,4 +95,34 @@ export async function getStudentByGender(gender: "male" | "female") {
   const totalAge = student.reduce((sum: number, std: any) => sum + std.user.age, 0);
   const averageAge = student.length ? totalAge / student.length : 0;
   return { length: student.length, average: averageAge };
+}
+
+export async function updateStudent(data: studentType) {
+  const { _class, parent, image, age, userId, id, ...rest } = data;
+
+  // update user with role of student
+  const user = await updateData(`user?id=${userId}`, "PUT", {
+    ...rest,
+    age: parseInt(age),
+  });
+
+  if (user.error) {
+    console.log("user/update", user);
+    return user;
+  }
+
+  // update and connect user, parent, class to student
+  const student = await updateData(`student?id=${id}`, "PUT", {
+    classId: _class,
+    parentId: parent,
+    userId: userId,
+  });
+
+  if (student.error) {
+    console.log("student/update", student);
+    return student;
+  }
+
+  revalidatePath("/students", "page");
+  return student;
 }
