@@ -26,8 +26,8 @@ export async function getAllStudent(page: number = 1, query: any) {
   });
 
   if (student.error) {
-    console.log('student/find', student.error);
-    return student.error;
+    console.log('student/find', student);
+    return student;
   }
 
   const count = await getData(`user/count`, 'POST', {
@@ -41,8 +41,8 @@ export async function getAllStudent(page: number = 1, query: any) {
   });
 
   if (count.error) {
-    console.log('student/count', count.error);
-    return count.error;
+    console.log('student/count', count);
+    return count;
   }
 
   return { student, count };
@@ -59,8 +59,8 @@ export async function getStudentByGender(gender: 'male' | 'female') {
   });
 
   if (student.error) {
-    console.log('student/create', student.error);
-    return student.error;
+    console.log('student/create', student);
+    return student;
   }
 
   const totalAge = student.reduce((sum: number, std: any) => sum + std.user.age, 0);
@@ -78,8 +78,8 @@ export async function createStudent(data: Omit<studentType, 'id'>) {
   });
 
   if (user.error) {
-    console.log('user/create', user.error);
-    return user.error;
+    console.log('user/create', user);
+    return user;
   }
 
   revalidatePath('/students', 'page');
@@ -92,7 +92,7 @@ export async function createStudent(data: Omit<studentType, 'id'>) {
 
   if (student.error) {
     console.log('student/create', student.error);
-    return student.error;
+    return student;
   }
   console.log('student', student);
   revalidatePath('/students', 'page');
@@ -125,17 +125,6 @@ export async function updateStudent(data: studentType) {
     return student;
   }
 
-  revalidatePath('/students', 'page');
-  return student;
-}
-
-export async function deleteStudent(userId: string, studnetId: string) {
-  const student = await deleteData(`user?id=${studnetId}`);
-  if (student.error) {
-    console.log('student/delete', student);
-    return student;
-  }
-  // const user = await deleteData(`user?id=${student.userId}`);
   revalidatePath('/students', 'page');
   return student;
 }

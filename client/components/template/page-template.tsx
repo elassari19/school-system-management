@@ -11,7 +11,10 @@ interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   placeholder: string;
   actionTarget: string;
   modalForm: React.ReactNode;
-  tableData: any[];
+  table: {
+    headCell: string[];
+    bodyCell: any[];
+  };
   pages: number;
 }
 
@@ -21,7 +24,7 @@ const PageTemplate = async ({
   overviewData,
   placeholder,
   modalForm,
-  tableData,
+  table,
   pages,
 }: IProps) => {
   const g = await getTranslations('global');
@@ -37,8 +40,8 @@ const PageTemplate = async ({
   ));
 
   const pageTableProps = {
-    headCell: ['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance'],
-    bodyCell: tableData,
+    headCell: table.headCell,
+    bodyCell: table.bodyCell,
     pages,
   };
 

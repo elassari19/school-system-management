@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const useUrlPath = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
 
-  const param = (target: string) => searchParams.get(target);
+  const param = (target: string) => searchParams.get(target) || '';
   // Remove the locale from the pathname
-  const unLocalePath = pathname.replace(/\/(en|ar)/, "");
-  const basePath = unLocalePath.split("/").at(1);
-  const subPath = unLocalePath.split("/").at(-1);
+  const unLocalePath = pathname.replace(/\/(en|ar)/, '');
+  const basePath = unLocalePath.split('/').at(1);
+  const subPath = unLocalePath.split('/').at(-1);
 
   const setParams = (target: string, value: string) => {
     const params = new URLSearchParams(searchParams);

@@ -22,8 +22,9 @@ import Image from 'next/image';
 import AddStudentForm from '../forms/student-form';
 import { SheetDrawer } from '../ui/sheet';
 import DeleteModal from '../modals/delete-modal';
-import { deleteStudent } from '../../app/api/academic';
 import toast from 'react-hot-toast';
+import NoData from '../no-data';
+import { deleteUser } from '@/app/api/global-actions';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   headCell: string[];
@@ -33,23 +34,22 @@ interface IProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
   const { g } = useIntlTranslations();
-  const [page, setPage] = useState(1);
   const [tableData, setTableData] = useState(bodyCell || []);
 
-  const { setParams } = useUrlPath();
+  const { setParams, param } = useUrlPath();
+  const page = parseInt(param('page')) || 1;
 
   useLayoutEffect(() => {
     setTableData(bodyCell);
   }, [bodyCell]);
 
   const handlePage = (p: number) => {
-    setPage(p);
     setParams('page', p.toString());
   };
 
   const handleDelete = async (item: any) => {
     try {
-      const response = await deleteStudent(item.id!, item.userId!);
+      const response = await deleteUser(item.userId!);
       if (response.error) {
         console.error('Delete failed:', response.error);
         return toast.error(`${g('deleted failed')} ${item.fullname}`);
@@ -61,14 +61,6 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
       toast.error(`${g('deleted failed')} ${item.fullname}`);
     }
   };
-
-  if (tableData.length === 0) {
-    return (
-      <div className="gradient text-xl w-full h-36 flex justify-center items-center">
-        <p className="font-bold">{g('No Data')}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="-mt-14">
@@ -102,65 +94,69 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
         </Button>
       </div>
 
-      <Table className={cn('gradient', className)}>
-        <TableHeader>
-          <TableRow>
-            {headCell.map((item, index) => (
-              <TableHead key={index}>{g(item)}</TableHead>
-            ))}
-            <TableHead className="text-center">{g('More')}</TableHead>
-          </TableRow>
-        </TableHeader>
+      {tableData.length === 0 ? (
+        <NoData />
+      ) : (
+        <Table className={cn('gradient', className)}>
+          <TableHeader>
+            <TableRow>
+              {headCell.map((item, index) => (
+                <TableHead key={index}>{g(item)}</TableHead>
+              ))}
+              <TableHead className="text-center">{g('More')}</TableHead>
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
-          {tableData &&
-            tableData.map((item, index) => (
-              <TableRow key={index}>
-                {headCell.map((cell, idx) => {
-                  const key = cell.toLowerCase().replace(/\s+/g, '');
-                  if (cell === 'Avatar') {
+          <TableBody>
+            {tableData &&
+              tableData.map((item, index) => (
+                <TableRow key={index}>
+                  {headCell.map((cell, idx) => {
+                    const key = cell.toLowerCase().replace(/\s+/g, '');
+                    if (cell === 'Avatar') {
+                      return (
+                        <TableCell key={idx} className="max-w-16 overflow-scroll text-sm">
+                          <Image src={item.avatar} alt="avatar" width={30} height={30} />
+                        </TableCell>
+                      );
+                    }
                     return (
-                      <TableCell key={idx} className="max-w-16 overflow-scroll text-sm">
-                        <Image src={item.avatar} alt="avatar" width={30} height={30} />
+                      <TableCell key={idx} className="max-w-28 overflow-scroll text-sm">
+                        {item[key]}
                       </TableCell>
                     );
-                  }
-                  return (
-                    <TableCell key={idx} className="max-w-28 overflow-scroll text-sm">
-                      {item[key]}
-                    </TableCell>
-                  );
-                })}
+                  })}
 
-                {/* more action */}
-                {headCell.length > 0 && (
-                  <TableCell className="text-sm flex items-cneter justify-center gap-4">
-                    <SheetDrawer
-                      sheetTrigger={<TbEdit size={14} />}
-                      sheetTitle={`Edit ${item.fullname} Data`}
-                      sheetContent={<AddStudentForm student={item.fullname} />}
-                    />
-                    <Modal
-                      modalTitle={`Send Message to ${item.fullname}`}
-                      modalTrigger={<BiMessageDetail size={14} />}
-                      modalContent={<div className="flex flex-col gap-2"></div>}
-                    />
-                    <Modal
-                      modalTitle={`${g('Delete')} ${item.fullname}`}
-                      modalTrigger={<RiDeleteBin6Line size={14} />}
-                      modalContent={
-                        <DeleteModal
-                          itemName={item.fullname}
-                          handleSubmit={() => handleDelete(item)}
-                        />
-                      }
-                    />
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+                  {/* more action */}
+                  {headCell.length > 0 && (
+                    <TableCell className="text-sm flex items-cneter justify-center gap-4">
+                      <SheetDrawer
+                        sheetTrigger={<TbEdit size={14} />}
+                        sheetTitle={`Edit ${item.fullname} Data`}
+                        sheetContent={<AddStudentForm student={item.fullname} />}
+                      />
+                      <Modal
+                        modalTitle={`Send Message to ${item.fullname}`}
+                        modalTrigger={<BiMessageDetail size={14} />}
+                        modalContent={<div className="flex flex-col gap-2"></div>}
+                      />
+                      <Modal
+                        modalTitle={`${g('Delete')} ${item.fullname}`}
+                        modalTrigger={<RiDeleteBin6Line size={14} />}
+                        modalContent={
+                          <DeleteModal
+                            itemName={item.fullname}
+                            handleSubmit={() => handleDelete(item)}
+                          />
+                        }
+                      />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      )}
 
       {/* pagination */}
       <div className="w-full flex justify-end items-center gap-2 py-2">

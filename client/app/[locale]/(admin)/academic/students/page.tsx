@@ -68,8 +68,11 @@ export default async function page(props: IProps) {
       placeholder={`${g('Search')} ${g('Student')}...`}
       actionTarget="student"
       modalForm={<AddStudentForm />}
-      tableData={handleTableData(searchStudent.student)}
-      pages={Math.ceil(searchStudent.count / 5)}
+      table={{
+        headCell: ['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance'],
+        bodyCell: handleTableData(searchStudent.student),
+      }}
+      pages={Math.floor(searchStudent.count / 5)}
     />
   );
 }
