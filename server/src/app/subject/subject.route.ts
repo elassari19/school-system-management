@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { isAdminOrTeacher, isAuthenticated } from "../../middelwares/passport.middelware";
+import { Router } from 'express';
+import { isAdminOrTeacher, isAuthenticated } from '../../middelwares/passport.middelware';
 import {
   countSubject,
   createSubject,
@@ -9,16 +9,16 @@ import {
   getAllSubjects,
   getSubject,
   updateSubject,
-} from "./subject.controller";
-import validateSchema from "../../middelwares/validateSchema";
-import { subjectSchema } from "./subject.schema";
+} from './subject.controller';
+import validateSchema from '../../middelwares/validateSchema';
+import { subjectSchema } from './subject.schema';
 
 const router = Router();
 
 /**
  * @swagger
  * /subject:
- *   get:
+ *   POST:
  *     summary: Get a subject by ID
  *     tags: [Subjects]
  *     parameters:
@@ -33,8 +33,8 @@ const router = Router();
  *       200:
  *         description: Subject details
  */
-router.get(
-  "/",
+router.post(
+  '/',
   // @ts-ignore
   // isAuthenticated(),
   getSubject
@@ -43,7 +43,7 @@ router.get(
 /**
  * @swagger
  * /subjects:
- *   get:
+ *   POST:
  *     summary: Get all subjects
  *     tags: [Subjects]
  *     security:
@@ -52,8 +52,8 @@ router.get(
  *       200:
  *         description: List of all subjects
  */
-router.get(
-  "/all",
+router.post(
+  '/all',
   // @ts-ignore
   // isAuthenticated(),
   getAllSubjects
@@ -78,7 +78,7 @@ router.get(
  *        500:
  *          description: Server error
  */
-router.get("/count", countSubject);
+router.get('/count', countSubject);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ router.get("/count", countSubject);
  *         description: Subject created successfully
  */
 router.post(
-  "/",
+  '/create',
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(subjectSchema),
@@ -128,7 +128,7 @@ router.post(
  *         description: Subject updated successfully
  */
 router.put(
-  "/",
+  '/',
   // @ts-ignore
   // isAdminOrTeacher(),
   validateSchema(subjectSchema),
@@ -154,7 +154,7 @@ router.put(
  *         description: Subject deleted successfully
  */
 router.delete(
-  "/",
+  '/',
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteSubject
@@ -183,7 +183,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  "/many",
+  '/many',
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteManySubjects
@@ -202,7 +202,7 @@ router.delete(
  *         description: Subjects deleted successfully
  */
 router.delete(
-  "/all",
+  '/all',
   // @ts-ignore
   // isAdminOrTeacher(),
   deleteAllSubjects

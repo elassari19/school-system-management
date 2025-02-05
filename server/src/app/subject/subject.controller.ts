@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-import { prisma } from "../../utils/configs";
-import { redisCacheClear, redisCacheHandler } from "../../utils/redisCache";
+import { NextFunction, Request, Response } from 'express';
+import { prisma } from '../../utils/configs';
+import { redisCacheClear, redisCacheHandler } from '../../utils/redisCache';
 
 export const getSubject = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
   try {
     // Look up subject in cache
     const subject = await redisCacheHandler(
@@ -14,19 +14,19 @@ export const getSubject = async (req: Request, res: Response, next: NextFunction
           where: {
             id: req.query.id as string,
           },
-          ...option,
+          ...query,
         })
     );
 
     return res.status(200).send(subject);
   } catch (error) {
-    console.log("Error", error);
+    console.log('Error', error);
     next(error);
   }
 };
 
 export const getAllSubjects = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
 
   try {
     // Attempt to retrieve all subjects from cache, or database if cache is empty
@@ -35,8 +35,8 @@ export const getAllSubjects = async (req: Request, res: Response, next: NextFunc
       async () =>
         // If cache is empty, get all subjects from database
         await prisma.subject.findMany({
-          orderBy: { createdAt: "asc" },
-          ...option,
+          orderBy: { createdAt: 'asc' },
+          ...query,
         })
     );
 
@@ -44,15 +44,15 @@ export const getAllSubjects = async (req: Request, res: Response, next: NextFunc
     return res.status(200).send(subjects);
   } catch (error) {
     // If there's an error, log it and send back an internal server error response
-    console.log("Error", error);
+    console.log('Error', error);
     next(error);
   }
 };
 
 export const countSubject = async (req: Request, res: Response, next: NextFunction) => {
-  const { option } = req.body;
+  const { query } = req.body;
   const count = await prisma.subject.count({
-    ...option,
+    ...query,
   });
   return res.status(200).json(count);
 };
@@ -71,10 +71,10 @@ export const createSubject = async (req: Request, res: Response, next: NextFunct
       },
     });
     // Clear the cache for all subjects after creating a new one
-    redisCacheClear("subject:*");
+    redisCacheClear('subject:*');
     return res.status(201).send(newSubject);
   } catch (error) {
-    console.log("Error", error);
+    console.log('Error', error);
     return res.status(500).send({ error: error });
   }
 };
@@ -98,7 +98,7 @@ export const updateSubject = async (req: Request, res: Response, next: NextFunct
     // Return the updated subject
     return res.status(203).send(resp);
   } catch (error) {
-    console.log("Error", error);
+    console.log('Error', error);
     // If there's an error, log it and send back an internal server error response
     next(error);
   }
@@ -121,7 +121,7 @@ export const deleteSubject = async (req: Request, res: Response, next: NextFunct
     return res.status(203).send(resp);
   } catch (error) {
     // If there's an error, log it and send back an internal server error response
-    console.log("Error", error);
+    console.log('Error', error);
     next(error);
   }
 };
@@ -143,7 +143,7 @@ export const deleteManySubjects = async (req: Request, res: Response, next: Next
     // Return the deleted subjects
     return res.status(203).send(resp);
   } catch (error) {
-    console.log("Error in deleteManySubjects:", error);
+    console.log('Error in deleteManySubjects:', error);
     // If there's an error, log it and send back an internal server error response
     next(error);
   }
@@ -158,7 +158,7 @@ export const deleteAllSubjects = async (req: Request, res: Response, next: NextF
     // Send a successful response with the deleted subjects
     return res.status(203).send(resp);
   } catch (error) {
-    console.log("Error", error);
+    console.log('Error', error);
     // Send an error response if something goes wrong
     next(error);
   }
