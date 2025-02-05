@@ -36,7 +36,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
   const { g } = useIntlTranslations();
   const [tableData, setTableData] = useState(bodyCell || []);
 
-  const { setParams, param } = useUrlPath();
+  const { setParams, param, pushRouter, pathname } = useUrlPath();
   const page = parseInt(param('page')) || 1;
 
   useLayoutEffect(() => {
@@ -110,7 +110,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
           <TableBody>
             {tableData &&
               tableData.map((item, index) => (
-                <TableRow key={index}>
+                <TableRow key={index} onClick={() => pushRouter(`${pathname}/${item.userId}`)}>
                   {headCell.map((cell, idx) => {
                     const key = cell.toLowerCase().replace(/\s+/g, '');
                     if (cell === 'Avatar') {

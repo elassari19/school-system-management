@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 const useUrlPath = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { replace } = useRouter();
+  const { replace, push } = useRouter();
 
   const param = (target: string) => searchParams.get(target) || '';
   // Remove the locale from the pathname
@@ -34,6 +34,7 @@ const useUrlPath = () => {
     unLocalePath,
     basePath,
     subPath,
+    pushRouter: push,
   };
 };
 

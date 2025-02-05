@@ -128,3 +128,17 @@ export async function updateStudent(data: studentType) {
   revalidatePath('/students', 'page');
   return student;
 }
+
+export async function getAllSubject() {
+  const subject = await getData(`subject/all`, 'POST', {
+    include: {
+      courses: true,
+    },
+  });
+
+  if (subject.error) {
+    console.log('subject/find', subject);
+    return subject;
+  }
+  return subject;
+}
