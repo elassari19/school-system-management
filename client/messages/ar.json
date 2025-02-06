@@ -128,7 +128,8 @@
     "No Data": "لا يوجد بيانات",
     "Are you sure you want to delete": "هل أنت متأكد من أنك تريد حذف",
     "Deleting": "حذف",
-    "Welcome": "مرحبا"
+    "Welcome": "مرحبا",
+    "Weekly Schedule": "جدول الأسبوعي"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",

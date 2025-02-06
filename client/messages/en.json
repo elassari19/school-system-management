@@ -128,7 +128,8 @@
     "No Data": "No Data",
     "Are you sure you want to delete": "Are you sure you want to delete",
     "Deleting": "Deleting",
-    "Welcome": "Welcome"
+    "Welcome": "Welcome",
+    "Weekly Schedule": "Weekly Schedule"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",

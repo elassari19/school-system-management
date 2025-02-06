@@ -1,11 +1,11 @@
 import { getUsers } from '@/app/api/dashboard';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import { getAllSubject } from '../../../../../api/academic';
+import WeeklySchedule from '@/components/calendar/weekly-schedule';
+import { getAllSubject } from '@/app/api/academic';
+import { studentScheduleData } from '@/lib/dummy-data';
 
 interface IProps {
   params: Promise<{
@@ -42,7 +42,7 @@ async function page(props: IProps) {
     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
       <div className="col-span-full md:col-span-3 grid gap-4">
         {/* welcome card */}
-        <Card className="bg-primary">
+        <Card className="bg-primary border-secondary">
           <CardHeader className="">
             <div className="flex items-center justify-between gap-2 md:px-4">
               <div>
@@ -64,13 +64,15 @@ async function page(props: IProps) {
           </CardHeader>
         </Card>
 
+        {/* schedule/calendar for this week */}
+        <WeeklySchedule schedules={studentScheduleData} />
+
         {/* subject progress table [subject name, total subject courses, grade average for each subject, ] */}
 
         {/* chart of attendence */}
       </div>
       <div className="col-span-full md:col-span-2 grid gap-4">
-        {/* schedul/calder for this week */}
-        {/* upcomming exams */}
+        {/* upcoming exams */}
         {/* list of joining groups */}
       </div>
     </div>
