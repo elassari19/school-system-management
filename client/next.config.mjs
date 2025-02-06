@@ -5,9 +5,18 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      'avatars.githubusercontent.com',
-      // ... other existing domains
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cloudflare-ipfs.com',
+        pathname: '**',
+      },
+      // Add other image sources if needed
     ],
   },
 };
