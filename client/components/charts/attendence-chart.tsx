@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Bar,
   BarChart,
-  CartesianAxis,
   CartesianGrid,
   Legend,
   ResponsiveContainer,
@@ -24,25 +23,6 @@ interface IProps extends React.HTMLAttributes<HTMLDivElement> {
 const AttendenceChart = ({ data, title, className }: IProps) => {
   const { g } = useIntlTranslations();
   return (
-    // <RootCard
-    //   className={cn('', className)}
-    //   title={title}
-    //   cardContent={
-    //     <ResponsiveContainer>
-    //       <BarChart data={data}>
-    //         <CartesianAxis strokeDasharray="3" />
-    //         <XAxis dataKey="name" />
-    //         <YAxis />
-    //         <Legend verticalAlign="top" height={40} />
-    //         <Tooltip />
-    //         <Legend />
-    //         <Bar dataKey="male" fill="#4169E1e1" name={g('Male')} />
-    //         <Bar dataKey="average" fill="#82ca9d" name={g('Average')} />
-    //         <Bar dataKey="female" fill="#FF69B4e1" name={g('Female')} />
-    //       </BarChart>
-    //     </ResponsiveContainer>
-    //   }
-    // />
     <RootCard
       className={cn('', className)}
       title={title}

@@ -12,7 +12,7 @@ import { cn } from '../../lib/utils';
 interface IProps {
   title?: React.ReactNode;
   description?: React.ReactNode;
-  cardHeader: React.ReactNode;
+  cardHeader?: React.ReactNode;
   cardContent: React.ReactNode;
   cardFooter?: React.ReactNode;
   className?: string;
