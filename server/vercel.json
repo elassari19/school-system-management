@@ -1,4 +1,13 @@
 {
   "version": 2,
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  "builds": [
+    {
+      "src": "src/server.ts",
+      "use": "@vercel/node",
+      "config": {
+        "buildCommand": "prisma generate && tsc"
+      }
+    }
+  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "src/server.ts" }]
 }

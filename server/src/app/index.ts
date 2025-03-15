@@ -7,7 +7,6 @@ import morgan from 'morgan';
 import passport from 'passport';
 import sessionMiddelware from '../middelwares/session.middelware';
 import swaggerDocs from '../utils/swagger';
-import api from '../../api';
 
 /* ROUTE IMPORTS */
 import authRouter from './auth/auth.route';
@@ -55,7 +54,9 @@ export const createApp = () => {
   app.use(notFound);
   app.use(errorHandler);
 
-  app.use('/v1/api', api);
+  app.use('/', (req, res) => {
+    res.send('Greetings from School Management Server!');
+  });
 
   return app;
 };
