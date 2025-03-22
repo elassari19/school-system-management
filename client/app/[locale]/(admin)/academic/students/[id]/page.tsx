@@ -6,6 +6,9 @@ import Image from 'next/image';
 import WeeklySchedule from '@/components/calendar/weekly-schedule';
 import { getAllSubject } from '@/app/api/academic';
 import { studentScheduleData } from '@/lib/dummy-data';
+import SubjectProgressTable from '@/components/tables/subject-progress-table';
+import AttendanceLineChart from '@/components/charts/attendance-line-chart';
+import StudentGroups from '@/components/cards/student-groups';
 
 interface IProps {
   params: Promise<{
@@ -38,9 +41,19 @@ async function page(props: IProps) {
     return <div>{'No student found'}</div>;
   }
 
+  // Generate attendance data for the past 12 months
+  const attendanceData = Array.from({ length: 12 }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (11 - i));
+    return {
+      month: date.toLocaleString('default', { month: 'short' }),
+      attendance: Math.floor(Math.random() * (100 - 75) + 75), // Random attendance between 75-100%
+    };
+  });
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-      <div className="col-span-full md:col-span-3 grid gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 h-full">
+      <div className="col-span-full md:col-span-3 grid gap-4 h-full overflow-auto">
         {/* welcome card */}
         <Card className="bg-primary border-secondary">
           <CardHeader className="">
@@ -67,13 +80,32 @@ async function page(props: IProps) {
         {/* schedule/calendar for this week */}
         <WeeklySchedule schedules={studentScheduleData} />
 
-        {/* subject progress table [subject name, total subject courses, grade average for each subject, ] */}
+        <SubjectProgressTable
+          data={[
+            { name: 'Mathematics', totalCourses: 4, averageGrade: 85, status: 'good' },
+            { name: 'Physics', totalCourses: 3, averageGrade: 92, status: 'excellent' },
+            { name: 'Chemistry', totalCourses: 3, averageGrade: 78, status: 'average' },
+          ]}
+        />
 
-        {/* chart of attendence */}
+        <AttendanceLineChart data={attendanceData} />
       </div>
-      <div className="col-span-full md:col-span-2 grid gap-4">
-        {/* upcoming exams */}
-        {/* list of joining groups */}
+      <div className="col-span-full md:col-span-2 grid gap-4 h-full overflow-auto">
+        <StudentGroups
+          groups={[
+            {
+              id: '1',
+              name: 'Physics Study Group',
+              subject: 'Physics',
+              projectName: 'Wave Motion Analysis',
+              deadline: '2024-03-15',
+              members: [
+                { id: '1', name: 'John Doe', role: 'leader' },
+                { id: '2', name: 'Jane Smith', role: 'member' },
+              ],
+            },
+          ]}
+        />
       </div>
     </div>
   );
