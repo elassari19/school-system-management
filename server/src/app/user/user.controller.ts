@@ -103,49 +103,53 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
-  const { password, ...updateData } = req.body;
+  const { password, student, ...updateData } = req.body;
 
-  if (!id || id == undefined || id == null) {
+  if (!id) {
     return res.status(400).send('No user ID provided');
   }
 
-  if (!updateData) {
-    return res.status(400).send('No data provided');
-  }
-
   try {
-    // Find the existing user in the database
     const existingUser = await prisma.user.findUnique({
       where: { id: id as string },
+      include: {
+        student: true
+      }
     });
 
-    // If the user is not found, send a 404 response
-    if (!existingUser) return res.status(404).send('User Not found');
-    const { id: _, ...userWithoutId } = existingUser;
+    if (!existingUser) {
+      return res.status(404).send('User Not found');
+    }
 
-    // If the password is provided, hash it with the salt
-    if (password !== undefined && password !== null && password !== '') {
+    // Handle password update
+    if (password) {
       const hashPassword = await hash(password, 12);
       updateData.password = hashPassword;
     }
 
-    // Update the user in the database
+    // Update user and related student data
     const updatedUser = await prisma.user.update({
       where: { id: id as string },
       data: {
-        // Use the spread operator to combine the existing user data
-        // with the new data
-        ...userWithoutId,
         ...updateData,
-        password: userWithoutId.password,
+        student: student ? {
+          update: {
+            where: { userId: id as string },
+            data: student
+          }
+        } : undefined
       },
+      include: {
+        student: true
+      }
     });
-    // Clear the cache of the user
+
     await redisCacheClear(`user:*`);
-    // Return the updated user data to the client
-    return res.status(203).send(updatedUser);
+    await redisCacheClear(`student:*`);
+    
+    return res.status(200).send(updatedUser);
   } catch (err) {
-    // If there's an error, log it and pass it down the middleware chain
+    console.error('Error updating user:', err);
     next(err);
   }
 };

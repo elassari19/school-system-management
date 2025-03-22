@@ -26,7 +26,9 @@ const AddStudentForm = ({ student }: Props) => {
   const getParents = async () => {
     const result = await getUsers({
       where: { role: 'PARENT' },
-      select: { id: true, fullname: true },
+      include: {
+        parent: true,
+      },
     });
     setParents(result);
   };
@@ -50,29 +52,12 @@ const AddStudentForm = ({ student }: Props) => {
     if (student) {
       getStudent();
       getClasses();
-      getParents(); // Add this to fetch parents when editing
+      getParents();
     } else {
       getParents();
       getClasses();
     }
   }, []);
-
-  React.useEffect(() => {
-    if (student && students) {
-      setValue('fullname', students?.user.fullname || '');
-      setValue('email', students?.user.email || '');
-      setValue('age', students?.user.age || '');
-      setValue('phone', students?.user.phone || '');
-      setValue('gender', students?.user.gender || '');
-      setValue('password', students?.user.password || '');
-      setValue('role', students?.user.role || '');
-      setValue('address', students?.user.address || '');
-      setValue('parent', students?.parent.id || ''); // Change to use parent ID instead of fullname
-      setValue('_class', students?.class.id || ''); // Change to use class ID instead of name
-      setValue('image', students?.user.image || '');
-      setValue('password', null); // Change this line
-    }
-  }, [students, student]);
 
   const {
     register,
@@ -83,23 +68,43 @@ const AddStudentForm = ({ student }: Props) => {
     formState: { errors, isLoading, isSubmitting, isValid },
   } = useForm<studentType>({
     resolver: zodResolver(studentSchema),
+    defaultValues: {
+      role: 'STUDENT',
+    },
   });
 
   React.useEffect(() => {
+    if (student && students) {
+      setValue('fullname', students?.user?.fullname || '');
+      setValue('email', students?.user?.email || '');
+      setValue('age', students?.user?.age?.toString() || '');
+      setValue('phone', students?.user?.phone || '');
+      setValue('gender', students?.user?.gender || '');
+      setValue('role', 'STUDENT');
+      setValue('address', students?.user?.address || '');
+      setValue('parent', students?.parent?.id || '');
+      setValue('_class', students?.class?.id || '');
+      setValue('image', students?.user?.image || '');
+    }
+  }, [students, student, setValue]);
+
+  React.useEffect(() => {
     if (student) {
-      setValue('fullname', students?.user.fullname || '');
-      setValue('email', students?.user.email || '');
-      setValue('age', '' + students?.user.age || '');
-      setValue('phone', students?.user.phone || '');
-      setValue('gender', students?.user.gender || '');
+      setValue('fullname', students?.user?.fullname || '');
+      setValue('email', students?.user?.email || '');
+      setValue('age', '' + students?.user?.age || '');
+      setValue('phone', students?.user?.phone || '');
+      setValue('gender', students?.user?.gender || '');
       setValue('password', '');
-      setValue('role', students?.user.role || '');
-      setValue('address', students?.user.address || '');
-      setValue('parent', students?.parent.user.id || '');
-      setValue('_class', students?.class.id || '');
-      setValue('image', students?.user.image || '');
+      setValue('role', students?.user?.role || '');
+      setValue('address', students?.user?.address || '');
+      setValue('parent', students?.parent?.id || '');
+      setValue('_class', students?.class?.id || '');
+      setValue('image', students?.user?.image || '');
     }
   }, [students, student]);
+
+  console.log('parents', students, parents[0]);
 
   const onSubmit = async (data: studentType) => {
     // if recive student invoke update else invoke create function
@@ -140,10 +145,10 @@ const AddStudentForm = ({ student }: Props) => {
       <FormInput
         label={`${g('Parents')} ${g('Name')}`}
         error={errors?.parent?.message || ''}
-        options={parents?.map((p) => ({ id: p.id, value: p.fullname })) || []}
+        options={parents?.map((p) => ({ id: p.parent[0].id, value: p.fullname })) || []}
         {...register('parent')}
         id="parentName"
-        defaultValue={students?.parent.id} // Add this line
+        defaultValue={students?.parent?.id || ''} // Add this line
       />
 
       <FormInput
@@ -196,10 +201,6 @@ const AddStudentForm = ({ student }: Props) => {
         ]}
         {...register('gender')}
         id="gender"
-        option={[
-          { id: 'male', value: 'male' },
-          { id: 'female', value: 'female' },
-        ]}
       />
 
       <FormInput
@@ -232,7 +233,7 @@ const AddStudentForm = ({ student }: Props) => {
           disabled={!isValid || isSubmitting || isLoading}
           isLoading={isLoading}
         >
-          {g('Add')} {g('Student')}
+          {g(student ? 'Update' : 'Add')} {g('Student')}
         </Button>
         <DialogPrimitive.Close>
           <Button disabled={isLoading}>{g('Cancel')}</Button>

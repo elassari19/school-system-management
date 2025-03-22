@@ -25,6 +25,8 @@ import DeleteModal from '../modals/delete-modal';
 import toast from 'react-hot-toast';
 import NoData from '../no-data';
 import { deleteUser } from '@/app/api/global-actions';
+import Link from 'next/link';
+import { MdExplore } from 'react-icons/md';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   headCell: string[];
@@ -110,7 +112,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
           <TableBody>
             {tableData &&
               tableData.map((item, index) => (
-                <TableRow key={index} onClick={() => pushRouter(`${pathname}/${item.userId}`)}>
+                <TableRow key={index}>
                   {headCell.map((cell, idx) => {
                     const key = cell.toLowerCase().replace(/\s+/g, '');
                     if (cell === 'Avatar') {
@@ -130,6 +132,12 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                   {/* more action */}
                   {headCell.length > 0 && (
                     <TableCell className="text-sm flex items-cneter justify-center gap-4">
+                      <Link
+                        href={`${pathname}/${item.userId}`}
+                        className="bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md z-[1]"
+                      >
+                        <MdExplore size={14} />
+                      </Link>
                       <SheetDrawer
                         sheetTrigger={<TbEdit size={14} />}
                         sheetTitle={`Edit ${item.fullname} Data`}

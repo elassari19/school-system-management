@@ -12,14 +12,10 @@ export const getStudent = async (req: Request, res: Response, next: NextFunction
   }
 
   try {
-    const student = await redisCacheHandler(
-      `student:${id}`,
-      async () =>
-        await prisma.student.findUnique({
-          where: { id },
-          ...query,
-        })
-    );
+    const student = await prisma.student.findUnique({
+      where: { id },
+      ...query,
+    });
 
     if (!student) {
       return res.status(404).send('Student not found');
@@ -93,41 +89,66 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
 
 export const updateStudent = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.query;
-  const updateData = req.body;
+  const { parentId, classId } = req.body;
 
-  if (!id || id == undefined || id == null) {
+  if (!id) {
     return res.status(400).send('No Student ID provided');
   }
 
-  if (!updateData) {
-    return res.status(400).send('No data provided');
-  }
-
   try {
-    // Find the existing student in the database
+    // Find the existing student in the database with full relations
     const existingStudent = await prisma.student.findUnique({
       where: { id: id as string },
+      include: {
+        parent: {
+          include: {
+            user: true,
+          },
+        },
+        class: true,
+        user: true,
+      },
     });
-    // If the Student is not found, send a 404 response
-    if (!existingStudent) return res.status(404).send('Student Not found');
-    const { id: _, ...studentsWithoutId } = existingStudent;
 
-    // Update the Student in the database
+    if (!existingStudent) {
+      return res.status(404).send('Student Not found');
+    }
+
+    // Verify if the parent exists before updating
+    const parentExists = await prisma.parent.findUnique({
+      where: { id: parentId },
+      include: {
+        user: true,
+      },
+    });
+
+    if (parentId && !parentExists) {
+      console.log('Parent not found');
+      return res.status(404).send('Parent Not found');
+    }
+
+    // Update the Student in the database with relations
     const updatedStudent = await prisma.student.update({
       where: { id: id as string },
       data: {
-        // Use the spread operator to combine the existing Student data
-        // with the new data
-        ...studentsWithoutId,
-        ...updateData,
+        ...(parentId && { parentId }),
+        ...(classId && { classId }),
+      },
+      include: {
+        parent: {
+          include: {
+            user: true,
+          },
+        },
+        class: true,
+        user: true,
       },
     });
-    // Clear the cache of the Student
+
     await redisCacheClear(`student:*`);
-    // Return the updated Student data to the client
-    return res.status(203).send(updatedStudent);
+    return res.status(200).send(updatedStudent);
   } catch (err) {
-    // If there's an error, log it and pass it down the middleware chain
+    console.error('Error updating student:', err);
     next(err);
   }
 };

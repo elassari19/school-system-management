@@ -33,7 +33,7 @@ export default async function page(props: IProps) {
       class: std.class.name,
       attendance: std.attendence,
       userId: std.userId,
-      parentId: std.parentId,
+      parentId: std?.parentId || '',
       classId: std.classId,
     }));
 
