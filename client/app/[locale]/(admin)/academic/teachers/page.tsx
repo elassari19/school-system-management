@@ -2,9 +2,13 @@ import React from 'react';
 import TeacherForm from '@/components/forms/teacher-form';
 import { getTranslations } from 'next-intl/server';
 import { getData } from '@/app/api/services';
-import PageTemplate from '@/components/template/page-template';
+import PageTemplate, {
+  ActionsSection,
+  OverviewSection,
+} from '@/components/template/page-template';
 import { ChartLine, GraduationCap } from 'lucide-react';
 import { UserType } from '@/lib/zod-schema';
+import PageTable from '@/components/tables/page-table';
 
 interface IProps {
   searchParams: Promise<{
@@ -75,42 +79,49 @@ export default async function page(props: IProps) {
     }));
 
     return (
-      <PageTemplate
-        overviewData={[
-          {
-            icon: GraduationCap,
-            title: `${g('Male')} ${g('Teachers')}`,
-            currentValue: maleTeachers.length,
-            pastValue: `+17% ${g('new Teachers this year')}`,
-          },
-          {
-            icon: GraduationCap,
-            title: `${g('Female')} ${g('Teachers')}`,
-            currentValue: femaleTeachers.length,
-            pastValue: `+13% ${g('new Teachers this year')}`,
-          },
-          {
-            icon: ChartLine,
-            title: `${g('Male')} ${g('Average')} ${g('Age')}`,
-            currentValue: maleAverageAge.toFixed(4),
-            pastValue: `+0.28% ${g('Students average age this year')}`,
-          },
-          {
-            icon: ChartLine,
-            title: `${g('Female')} ${g('Average')} ${g('Age')}`,
-            currentValue: femaleAverageAge.toFixed(4),
-            pastValue: `-0.03% ${g('Students average age this year')}`,
-          },
-        ]}
-        placeholder={`${g('SearchTeachers')}...`}
-        actionTarget="Teacher"
-        ModalForm={TeacherForm}
-        table={{
-          headCell: tableHeaders,
-          bodyCell: handleTableData,
-        }}
-        pages={Math.ceil(teachers.length / 5)}
-      />
+      <PageTemplate>
+        <OverviewSection
+          overviewData={[
+            {
+              icon: GraduationCap,
+              title: `${g('Male')} ${g('Teachers')}`,
+              currentValue: maleTeachers.length,
+              pastValue: `+17% ${g('new Teachers this year')}`,
+            },
+            {
+              icon: GraduationCap,
+              title: `${g('Female')} ${g('Teachers')}`,
+              currentValue: femaleTeachers.length,
+              pastValue: `+13% ${g('new Teachers this year')}`,
+            },
+            {
+              icon: ChartLine,
+              title: `${g('Male')} ${g('Average')} ${g('Age')}`,
+              currentValue: maleAverageAge.toFixed(4),
+              pastValue: `+0.28% ${g('Students average age this year')}`,
+            },
+            {
+              icon: ChartLine,
+              title: `${g('Female')} ${g('Average')} ${g('Age')}`,
+              currentValue: femaleAverageAge.toFixed(4),
+              pastValue: `-0.03% ${g('Students average age this year')}`,
+            },
+          ]}
+        />
+
+        <ActionsSection
+          placeholder={`${g('Search')} ${g('Teacher')}...`}
+          actionTarget="Teacher"
+          ModalForm={TeacherForm}
+        />
+
+        <PageTable
+          headCell={tableHeaders}
+          bodyCell={handleTableData}
+          ModalForm={TeacherForm}
+          pages={Math.ceil(teachers.length / 5)}
+        />
+      </PageTemplate>
     );
   } catch (error) {
     console.error('Error fetching teachers:', error);

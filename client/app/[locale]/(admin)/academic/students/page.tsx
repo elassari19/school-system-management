@@ -1,10 +1,14 @@
 import AddStudentForm from '@/components/forms/student-form';
-import PageTemplate from '@/components/template/page-template';
+import PageTemplate, {
+  ActionsSection,
+  OverviewSection,
+} from '@/components/template/page-template';
 import { ChartLine, GraduationCap } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import React from 'react';
 import { getData } from '@/app/api/services';
 import { UserType } from '@/lib/zod-schema';
+import PageTable from '../../../../../components/tables/page-table';
 
 interface IProps {
   searchParams: Promise<{
@@ -64,41 +68,48 @@ export default async function page(props: IProps) {
   }));
 
   return (
-    <PageTemplate
-      overviewData={[
-        {
-          icon: GraduationCap,
-          title: `${g('Male')} ${g('Students')}`,
-          currentValue: maleStudents.length,
-          pastValue: `+17% ${a('new Students this year')}`,
-        },
-        {
-          icon: GraduationCap,
-          title: `${g('Female')} ${g('Students')}`,
-          currentValue: femaleStudents.length,
-          pastValue: `+13% ${a('new Students this year')}`,
-        },
-        {
-          icon: ChartLine,
-          title: `${g('Male')} ${g('Average')} ${g('Age')}`,
-          currentValue: maleAverageAge.toFixed(4),
-          pastValue: `+0.28% ${a('Students average age this year')}`,
-        },
-        {
-          icon: ChartLine,
-          title: `${g('Female')} ${g('Average')} ${g('Age')}`,
-          currentValue: femaleAverageAge.toFixed(4),
-          pastValue: `-0.03% ${a('Students average age this year')}`,
-        },
-      ]}
-      placeholder={`${g('Search')} ${g('Student')}...`}
-      actionTarget="Student"
-      ModalForm={AddStudentForm}
-      table={{
-        headCell: ['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance'],
-        bodyCell: handleTableData,
-      }}
-      pages={Math.floor(searchStudent.count / 5)}
-    />
+    <PageTemplate>
+      <OverviewSection
+        overviewData={[
+          {
+            icon: GraduationCap,
+            title: `${g('Male')} ${g('Students')}`,
+            currentValue: maleStudents.length,
+            pastValue: `+17% ${a('new Students this year')}`,
+          },
+          {
+            icon: GraduationCap,
+            title: `${g('Female')} ${g('Students')}`,
+            currentValue: femaleStudents.length,
+            pastValue: `+13% ${a('new Students this year')}`,
+          },
+          {
+            icon: ChartLine,
+            title: `${g('Male')} ${g('Average')} ${g('Age')}`,
+            currentValue: maleAverageAge.toFixed(4),
+            pastValue: `+0.28% ${a('Students average age this year')}`,
+          },
+          {
+            icon: ChartLine,
+            title: `${g('Female')} ${g('Average')} ${g('Age')}`,
+            currentValue: femaleAverageAge.toFixed(4),
+            pastValue: `-0.03% ${a('Students average age this year')}`,
+          },
+        ]}
+      />
+
+      <ActionsSection
+        placeholder={`${g('Search')} ${g('Student')}...`}
+        actionTarget="Student"
+        ModalForm={AddStudentForm}
+      />
+
+      <PageTable
+        headCell={['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance']}
+        bodyCell={handleTableData}
+        ModalForm={AddStudentForm}
+        pages={Math.ceil(searchStudent.count / 5)}
+      />
+    </PageTemplate>
   );
 }
