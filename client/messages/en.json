@@ -35,6 +35,7 @@
     "E-Learning": "E-Learning",
     "Inventory": "Inventory",
     "Finance": "Finance",
+    "Salary": "Salary",
     "Accounting": "Accounting",
     "Fees Management": "Fees Management",
     "Expenses": "Expenses",
@@ -88,6 +89,7 @@
     "Student": "Student",
     "Average": "Average",
     "Users": "Users",
+    "Teacher": "Teacher",
     "Teacher Reports": "Teacher Reports",
     "Attendance Reports": "Attendance Reports",
     "new students this year": "new students this year",
@@ -129,7 +131,10 @@
     "Are you sure you want to delete": "Are you sure you want to delete",
     "Deleting": "Deleting",
     "Welcome": "Welcome",
-    "Weekly Schedule": "Weekly Schedule"
+    "Weekly Schedule": "Weekly Schedule",
+    "new Teachers this year": "new Teachers this year",
+    "Students average age this year": "Students average age this year",
+    "SearchTeachers": "Search teachers"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",
@@ -173,6 +178,16 @@
     "Biology": "Biology",
     "Phylosophy": "Phylosophy",
     "Arts and Crafts": "Arts and Crafts",
-    "Social Studies": "Social Studies"
+    "Social Studies": "Social Studies",
+    "Male Teachers": "Male Teachers",
+    "Female Teachers": "Female Teachers",
+    "Active male teachers": "Active male teachers",
+    "Active female teachers": "Active female teachers",
+    "Average Age": "Average Age",
+    "Years old on average": "Years old on average",
+    "Average Salary": "Average Salary",
+    "Annual salary": "Annual salary",
+    "Search teachers": "Search teachers",
+    "Add New Teacher": "Add New Teacher"
   }
 }

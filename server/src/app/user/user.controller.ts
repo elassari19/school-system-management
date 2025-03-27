@@ -5,15 +5,10 @@ import { hash } from 'bcryptjs';
 import { faker } from '@faker-js/faker';
 
 export const getUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.query;
-  const { query } = req.body;
-  if (!id) {
-    return res.status(400).send('No user ID provided');
-  }
+  const query = req.body;
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id },
       ...query,
     });
 
@@ -28,8 +23,8 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
-  const { query } = req.body;
-  console.log('query', query);
+  const query = req.body;
+
   try {
     // If cache is empty, get all users from database
     const users = await prisma.user.findMany({
@@ -40,7 +35,6 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
       throw new Error('No users found');
     }
 
-    // console.log("users", users);
     return res.status(200).send(users);
   } catch (error) {
     console.log('error', error);
@@ -102,19 +96,11 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 };
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.query;
-  const { password, student, ...updateData } = req.body;
-
-  if (!id) {
-    return res.status(400).send('No user ID provided');
-  }
+  const { where, data, include } = req.body;
 
   try {
     const existingUser = await prisma.user.findUnique({
-      where: { id: id as string },
-      include: {
-        student: true
-      }
+      where,
     });
 
     if (!existingUser) {
@@ -122,31 +108,21 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     }
 
     // Handle password update
-    if (password) {
-      const hashPassword = await hash(password, 12);
-      updateData.password = hashPassword;
+    if (data.password) {
+      const hashPassword = await hash(data.password, 12);
+      data.password = hashPassword;
     }
 
-    // Update user and related student data
+    // Update user and related fields data
     const updatedUser = await prisma.user.update({
-      where: { id: id as string },
-      data: {
-        ...updateData,
-        student: student ? {
-          update: {
-            where: { userId: id as string },
-            data: student
-          }
-        } : undefined
-      },
-      include: {
-        student: true
-      }
+      where,
+      data,
+      include,
     });
 
     await redisCacheClear(`user:*`);
     await redisCacheClear(`student:*`);
-    
+
     return res.status(200).send(updatedUser);
   } catch (err) {
     console.error('Error updating user:', err);
@@ -155,16 +131,12 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 };
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.query;
-
-  if (!id) {
-    return res.status(400).send('No user ID provided');
-  }
+  const { where } = req.body;
 
   try {
     // check if user exist
     const user = await prisma.user.findUnique({
-      where: { id: id as string },
+      where,
       include: {
         student: true,
       },
@@ -185,7 +157,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
       // Then delete the user
       return await tx.user.delete({
-        where: { id: id as string },
+        where,
       });
     });
 

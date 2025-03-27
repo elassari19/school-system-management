@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { NextFunction, Request, Response } from "express";
+import { Prisma } from '@prisma/client';
+import { NextFunction, Request, Response } from 'express';
 
 // generate errorHandler middleware
 export const errorHandler = async (method: Function) => {
@@ -8,35 +8,35 @@ export const errorHandler = async (method: Function) => {
       await method(req, res, next);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2001") {
+        if (error.code === 'P2001') {
           return res.status(400).json({
-            message: "Bad request",
+            message: 'Bad request',
           });
         }
-        if (error.code === "P2002") {
+        if (error.code === 'P2002') {
           return res.status(400).json({
-            message: "Duplicate entry",
+            message: 'Duplicate entry',
           });
         }
-        if (error.code === "P2003") {
+        if (error.code === 'P2003') {
           return res.status(400).json({
-            message: "Foreign key constraint failed",
+            message: 'Foreign key constraint failed',
           });
         }
-        if (error.code === "P2025") {
+        if (error.code === 'P2025') {
           return res.status(400).json({
-            message: "No record found",
+            message: 'No record found',
           });
         }
       }
       return res.status(400).json({
-        message: "Bad request",
+        message: 'Bad request',
       });
     }
   };
 };
 
 export const notFound = (req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json({ message: "Route not found" });
+  res.status(404).json({ error: 'Route not found' });
   next();
 };

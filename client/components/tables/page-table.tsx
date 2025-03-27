@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import useIntlTranslations from '@/hooks/use-intl-translations';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
@@ -19,26 +18,26 @@ import { TbEdit } from 'react-icons/tb';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { BiMessageDetail } from 'react-icons/bi';
 import Image from 'next/image';
-import AddStudentForm from '../forms/student-form';
 import { SheetDrawer } from '../ui/sheet';
 import DeleteModal from '../modals/delete-modal';
 import toast from 'react-hot-toast';
 import NoData from '../no-data';
-import { deleteUser } from '@/app/api/global-actions';
 import Link from 'next/link';
 import { MdExplore } from 'react-icons/md';
+import { deleteData } from '@/app/api/services';
 
 interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   headCell: string[];
   bodyCell: any[];
+  ModalForm: React.FC<{ user: string }>;
   pages: number;
 }
 
-const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
+const PageTable = ({ headCell, bodyCell, pages, ModalForm, className }: IProps) => {
   const { g } = useIntlTranslations();
   const [tableData, setTableData] = useState(bodyCell || []);
 
-  const { setParams, param, pushRouter, pathname } = useUrlPath();
+  const { setParams, param, pathname } = useUrlPath();
   const page = parseInt(param('page')) || 1;
 
   useLayoutEffect(() => {
@@ -51,7 +50,10 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
 
   const handleDelete = async (item: any) => {
     try {
-      const response = await deleteUser(item.userId!);
+      const response = await deleteData({
+        where: { id: item.id },
+      });
+
       if (response.error) {
         console.error('Delete failed:', response.error);
         return toast.error(`${g('deleted failed')} ${item.fullname}`);
@@ -133,7 +135,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                   {headCell.length > 0 && (
                     <TableCell className="text-sm flex items-cneter justify-center gap-4">
                       <Link
-                        href={`${pathname}/${item.userId}`}
+                        href={`${pathname}/${item.id}`}
                         className="bg-secondary/80 hover:bg-secondary text-white text-sm p-2 rounded-md z-[1]"
                       >
                         <MdExplore size={14} />
@@ -141,7 +143,7 @@ const PageTable = ({ headCell, bodyCell, pages, className }: IProps) => {
                       <SheetDrawer
                         sheetTrigger={<TbEdit size={14} />}
                         sheetTitle={`Edit ${item.fullname} Data`}
-                        sheetContent={<AddStudentForm student={item.fullname} />}
+                        sheetContent={<ModalForm user={item.id} />}
                       />
                       <Modal
                         modalTitle={`Send Message to ${item.fullname}`}

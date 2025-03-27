@@ -35,6 +35,7 @@
     "E-Learning": "التعلم الإلكتروني",
     "Inventory": "المخزون",
     "Finance": "المالية",
+    "Salary": "المرتب",
     "Accounting": "المحاسبة",
     "Fees Management": "إدارة الرسوم",
     "Expenses": "المصروفات",
@@ -88,6 +89,7 @@
     "Student": "الطالب",
     "Average": "المتوسط",
     "Users": "المستخدمين",
+    "Teacher": "معلم",
     "Teacher Reports": "تقارير المعلم",
     "Attendance Reports": "تقارير الحضور",
     "new students this year": "طلاب جدد هذا العام",
@@ -129,7 +131,10 @@
     "Are you sure you want to delete": "هل أنت متأكد من أنك تريد حذف",
     "Deleting": "حذف",
     "Welcome": "مرحبا",
-    "Weekly Schedule": "جدول الأسبوعي"
+    "Weekly Schedule": "جدول الأسبوعي",
+    "new Teachers this year": "معلمون جدد هذا العام",
+    "Students average age this year": "متوسط أعمار الطلاب هذا العام",
+    "SearchTeachers": "البحث عن المعلمين"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",

@@ -1,135 +1,193 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
-import { studentSchema, studentType } from '@/lib/zod-schema';
-import { Button } from '../ui/button';
-import FormInput from '../inputs/form-input';
-import { getUsers } from '@/app/api/dashboard';
-import { createStudent, getAllStudent, updateStudent } from '@/app/api/academic';
-import toast from 'react-hot-toast';
-import useIntlTranslations from '@/hooks/use-intl-translations';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-
+import useIntlTranslations from '@/hooks/use-intl-translations';
+import FormInput from '../inputs/form-input';
+import { studentFormSchema, StudentFormType } from '@/lib/zod-schema';
+import { getData, getFirstData, createData, updateData } from '@/app/api/services';
+import toast from 'react-hot-toast';
 interface Props {
-  student?: string;
+  user?: string;
 }
 
-const AddStudentForm = ({ student }: Props) => {
+export default function StudentForm({ user }: Props) {
   const { g } = useIntlTranslations();
-
-  const [classes, setClassess] = React.useState<any[]>([]);
+  const [classes, setClasses] = React.useState<any[]>([]);
   const [parents, setParents] = React.useState<any[]>([]);
-  const [students, setStudent] = React.useState<any>();
+  const [student, setStudent] = React.useState<any>();
 
   const getParents = async () => {
-    const result = await getUsers({
+    const result = await getData({
       where: { role: 'PARENT' },
       include: {
         parent: true,
       },
     });
-    setParents(result);
+    if (result) {
+      setParents(result);
+    }
   };
 
   const getClasses = async () => {
-    const result = await getUsers(
+    const result = await getData(
       {
         select: { id: true, name: true },
       },
       'class'
     );
-    setClassess(result);
+    if (result) {
+      setClasses(result);
+    }
   };
 
   const getStudent = async () => {
-    const resp = await getAllStudent(1, student);
-    setStudent(resp?.student[0]);
+    const result = await getFirstData({
+      where: { id: user },
+      include: {
+        student: {
+          include: {
+            parent: true,
+            class: true,
+          },
+        },
+      },
+    });
+    if (result) {
+      setStudent(result);
+    }
   };
 
   React.useEffect(() => {
-    if (student) {
+    getClasses();
+    getParents();
+    if (user) {
       getStudent();
-      getClasses();
-      getParents();
-    } else {
-      getParents();
-      getClasses();
     }
-  }, []);
+  }, [user]);
 
   const {
     register,
     handleSubmit,
     setValue,
-    getValues,
     reset,
     formState: { errors, isLoading, isSubmitting, isValid },
-  } = useForm<studentType>({
-    resolver: zodResolver(studentSchema),
+  } = useForm<StudentFormType>({
+    resolver: zodResolver(studentFormSchema),
     defaultValues: {
       role: 'STUDENT',
     },
   });
 
   React.useEffect(() => {
-    if (student && students) {
-      setValue('fullname', students?.user?.fullname || '');
-      setValue('email', students?.user?.email || '');
-      setValue('age', students?.user?.age?.toString() || '');
-      setValue('phone', students?.user?.phone || '');
-      setValue('gender', students?.user?.gender || '');
-      setValue('role', 'STUDENT');
-      setValue('address', students?.user?.address || '');
-      setValue('parent', students?.parent?.id || '');
-      setValue('_class', students?.class?.id || '');
-      setValue('image', students?.user?.image || '');
-    }
-  }, [students, student, setValue]);
-
-  React.useEffect(() => {
     if (student) {
-      setValue('fullname', students?.user?.fullname || '');
-      setValue('email', students?.user?.email || '');
-      setValue('age', '' + students?.user?.age || '');
-      setValue('phone', students?.user?.phone || '');
-      setValue('gender', students?.user?.gender || '');
-      setValue('password', '');
-      setValue('role', students?.user?.role || '');
-      setValue('address', students?.user?.address || '');
-      setValue('parent', students?.parent?.id || '');
-      setValue('_class', students?.class?.id || '');
-      setValue('image', students?.user?.image || '');
+      setValue('email', student.email || '');
+      setValue('fullname', student.fullname || '');
+      setValue('phone', student.phone || '');
+      setValue('password', student.password || '');
+      setValue('role', student.role || '');
+      setValue('age', student.age?.toString() || '');
+      setValue('gender', student.gender || '');
+      setValue('address', student.address || '');
+      setValue('image', student.image || '');
+      setValue('parent', student.student[0].parent?.id || '');
+      setValue('_class', student.student[0].class?.id || '');
     }
-  }, [students, student]);
+  }, [student, setValue]);
 
-  console.log('parents', students, parents[0]);
+  const onSubmit = async (data: StudentFormType) => {
+    try {
+      let res;
+      if (user) {
+        res = await updateData(
+          {
+            where: {
+              id: user,
+            },
+            data: {
+              email: data.email,
+              fullname: data.fullname,
+              phone: data.phone,
+              password: data.password,
+              role: data.role,
+              age: parseInt(data.age),
+              gender: data.gender,
+              address: data.address,
+              image: data.image,
+              student: {
+                update: {
+                  where: {
+                    id: student.student[0].id,
+                  },
+                  data: {
+                    parent: {
+                      connect: {
+                        id: data.parent,
+                      },
+                    },
+                    class: {
+                      connect: {
+                        id: data._class,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            include: {
+              student: {
+                include: {
+                  parent: true,
+                  class: true,
+                },
+              },
+            },
+          },
+          'user'
+        );
+      } else {
+        res = await createData({
+          email: data.email,
+          fullname: data.fullname,
+          phone: data.phone,
+          password: data.password,
+          role: data.role,
+          age: parseInt(data.age),
+          gender: data.gender,
+          address: data.address,
+          image: data.image,
+          student: {
+            create: {
+              parentId: data.parent,
+              classId: data._class,
+            },
+          },
+        });
+      }
 
-  const onSubmit = async (data: studentType) => {
-    // if recive student invoke update else invoke create function
-    let res;
-    if (student) {
-      res = await updateStudent({ ...data, userId: students.userId, id: students.id });
-    } else {
-      res = await createStudent(data);
-    }
+      if (res.error) {
+        throw new Error(res.error);
+      }
 
-    if (res.error) {
+      toast.success(
+        `${g('Student')} ${data.fullname} ${
+          student ? g('updated successfully') : g('created successfully')
+        }`
+      );
+
+      if (!student) {
+        reset();
+      }
+    } catch (error) {
       toast.error(
         `${g('Student')} ${data.fullname} ${
           student ? g('updated failed') : g('created failed')
         }`
       );
-      console.log('error', res.error);
-      return;
     }
-    toast.success(
-      `${g('Student')} ${data.fullname} ${
-        student ? g('updated successfully') : g('created successfully')
-      }`
-    );
-    !student && reset();
   };
 
   return (
@@ -148,7 +206,6 @@ const AddStudentForm = ({ student }: Props) => {
         options={parents?.map((p) => ({ id: p.parent[0].id, value: p.fullname })) || []}
         {...register('parent')}
         id="parentName"
-        defaultValue={students?.parent?.id || ''} // Add this line
       />
 
       <FormInput
@@ -233,7 +290,7 @@ const AddStudentForm = ({ student }: Props) => {
           disabled={!isValid || isSubmitting || isLoading}
           isLoading={isLoading}
         >
-          {g(student ? 'Update' : 'Add')} {g('Student')}
+          {g(user ? 'Update' : 'Add')} {g('Student')}
         </Button>
         <DialogPrimitive.Close>
           <Button disabled={isLoading}>{g('Cancel')}</Button>
@@ -241,6 +298,4 @@ const AddStudentForm = ({ student }: Props) => {
       </div>
     </form>
   );
-};
-
-export default AddStudentForm;
+}

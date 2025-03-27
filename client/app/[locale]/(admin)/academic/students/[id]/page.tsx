@@ -1,10 +1,9 @@
-import { getUsers } from '@/app/api/dashboard';
+import { getData, getFirstData } from '@/app/api/services';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import WeeklySchedule from '@/components/calendar/weekly-schedule';
-import { getAllSubject } from '@/app/api/academic';
 import { studentScheduleData } from '@/lib/dummy-data';
 import SubjectProgressTable from '@/components/tables/subject-progress-table';
 import AttendanceLineChart from '@/components/charts/attendance-line-chart';
@@ -20,23 +19,26 @@ async function page(props: IProps) {
   const params = await props.params;
   const g = await getTranslations('global');
 
-  const [user] = await getUsers({
-    where: {
-      id: params.id,
-      role: 'STUDENT',
-    },
-    include: {
-      student: {
-        include: {
-          class: true,
-          grade: true,
-          parent: true,
+  const [user] = await Promise.all([
+    await getFirstData({
+      where: {
+        id: params.id,
+        role: 'STUDENT',
+      },
+      include: {
+        student: {
+          include: {
+            class: true,
+            grade: true,
+            parent: true,
+          },
         },
       },
-    },
-  });
-  const subject = await getAllSubject();
-  console.log('student', subject);
+    }),
+  ]);
+
+  console.log('user', user);
+
   if (!user.student) {
     return <div>{'No student found'}</div>;
   }

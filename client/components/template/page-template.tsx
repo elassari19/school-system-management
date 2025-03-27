@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { cn } from '@/lib/utils';
 import OverviewCard from '../cards/overview-card';
 import { getTranslations } from 'next-intl/server';
@@ -10,7 +10,7 @@ interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   overviewData: any[];
   placeholder: string;
   actionTarget: string;
-  modalForm: React.ReactNode;
+  ModalForm: FunctionComponent;
   table: {
     headCell: string[];
     bodyCell: any[];
@@ -23,7 +23,8 @@ const PageTemplate = async ({
   className,
   overviewData,
   placeholder,
-  modalForm,
+  actionTarget,
+  ModalForm,
   table,
   pages,
 }: IProps) => {
@@ -42,6 +43,7 @@ const PageTemplate = async ({
   const pageTableProps = {
     headCell: table.headCell,
     bodyCell: table.bodyCell,
+    ModalForm,
     pages,
   };
 
@@ -57,9 +59,9 @@ const PageTemplate = async ({
         <SearchInput placeholder={placeholder} className="max-w-64 z-[1]" />
 
         <SheetDrawer
-          sheetTrigger={`${g('Add')} ${g('Student')}`}
-          sheetTitle={`${g('Add')} ${g('Student')}`}
-          sheetContent={modalForm}
+          sheetTrigger={`${g('Add')} ${g(actionTarget)}`}
+          sheetTitle={`${g('Add')} ${g(actionTarget)}`}
+          sheetContent={<ModalForm />}
           className=""
         />
       </section>

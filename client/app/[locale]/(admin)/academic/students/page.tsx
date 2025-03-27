@@ -1,10 +1,10 @@
-import { getAllStudent, getStudentByGender } from '@/app/api/academic';
 import AddStudentForm from '@/components/forms/student-form';
 import PageTemplate from '@/components/template/page-template';
-import { studentType } from '@/lib/zod-schema';
 import { ChartLine, GraduationCap } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import React from 'react';
+import { getData } from '@/app/api/services';
+import { UserType } from '@/lib/zod-schema';
 
 interface IProps {
   searchParams: Promise<{
@@ -17,25 +17,51 @@ export default async function page(props: IProps) {
   const { page = 0, q = '' } = await props.searchParams;
   const [a, g] = await Promise.all([getTranslations('academic'), getTranslations('global')]);
 
-  const [maleStudents, femaleStudents, searchStudent] = await Promise.all([
-    getStudentByGender('male'),
-    getStudentByGender('female'),
-    getAllStudent(page, q),
+  const [students, searchStudent] = await Promise.all([
+    await getData({
+      where: { role: 'STUDENT' },
+      select: {
+        age: true,
+        gender: true,
+      },
+    }),
+    await getData({
+      where: { role: 'STUDENT', fullname: { contains: q, mode: 'insensitive' } },
+      include: {
+        student: {
+          include: {
+            class: true,
+            parent: true,
+            grade: true,
+          },
+        },
+      },
+      skip: page > 0 ? (page - 1) * 5 : 0,
+      take: 5,
+    }),
   ]);
 
-  const handleTableData = (data: studentType[]) =>
-    data.map((std: any) => ({
-      id: std.id,
-      avatar: std.user.image,
-      fullname: std.user.fullname,
-      age: std.user.age,
-      gender: std.user.gender,
-      class: std.class.name,
-      attendance: std.attendence,
-      userId: std.userId,
-      parentId: std?.parentId || '',
-      classId: std.classId,
-    }));
+  const maleStudents = students.filter((t: UserType) => t.gender === 'male');
+  const femaleStudents = students.filter((t: UserType) => t.gender === 'female');
+  const maleAverageAge =
+    maleStudents.reduce((total: number, teacher: UserType) => total + teacher.age!, 0) /
+    maleStudents.length;
+  const femaleAverageAge =
+    femaleStudents.reduce((total: number, teacher: UserType) => total + teacher.age!, 0) /
+    femaleStudents.length;
+
+  const handleTableData = searchStudent.map((std: any) => ({
+    id: std?.id || '',
+    avatar: std?.image || '',
+    fullname: std?.fullname || '',
+    age: std?.age || '',
+    gender: std?.gender || '',
+    class: std?.student[0]?.class?.name || '',
+    attendance: std?.student?.attendence || '',
+    parentId: std?.student[0]?.parentId || '',
+    classId: std?.student[0]?.classId || '',
+    gradeId: std?.student[0]?.gradeId || '',
+  }));
 
   return (
     <PageTemplate
@@ -55,22 +81,22 @@ export default async function page(props: IProps) {
         {
           icon: ChartLine,
           title: `${g('Male')} ${g('Average')} ${g('Age')}`,
-          currentValue: maleStudents.average.toFixed(4),
+          currentValue: maleAverageAge.toFixed(4),
           pastValue: `+0.28% ${a('Students average age this year')}`,
         },
         {
           icon: ChartLine,
           title: `${g('Female')} ${g('Average')} ${g('Age')}`,
-          currentValue: femaleStudents.average.toFixed(4),
+          currentValue: femaleAverageAge.toFixed(4),
           pastValue: `-0.03% ${a('Students average age this year')}`,
         },
       ]}
       placeholder={`${g('Search')} ${g('Student')}...`}
-      actionTarget="student"
-      modalForm={<AddStudentForm />}
+      actionTarget="Student"
+      ModalForm={AddStudentForm}
       table={{
         headCell: ['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance'],
-        bodyCell: handleTableData(searchStudent.student),
+        bodyCell: handleTableData,
       }}
       pages={Math.floor(searchStudent.count / 5)}
     />
