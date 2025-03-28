@@ -2,7 +2,6 @@
 import React from 'react';
 import {
   ResponsiveContainer,
-  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,

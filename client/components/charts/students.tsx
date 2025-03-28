@@ -1,12 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import {
-  RadialBarChart,
-  RadialBar,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+import { RadialBarChart, RadialBar, Legend, ResponsiveContainer } from 'recharts';
 
 interface IProps {
   genderData: {

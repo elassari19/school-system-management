@@ -29,7 +29,9 @@ export default function AttendanceLineChart({ data }: Props) {
     return (
       <RootCard
         title={a('Attendance Overview')}
-        cardContent={<div className="h-[400px] flex items-center justify-center">No data available</div>}
+        cardContent={
+          <div className="h-[400px] flex items-center justify-center">No data available</div>
+        }
       />
     );
   }
@@ -42,16 +44,13 @@ export default function AttendanceLineChart({ data }: Props) {
           <ResponsiveContainer>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="month"
-                tick={{ fill: '#888888' }}
-              />
-              <YAxis 
+              <XAxis dataKey="month" tick={{ fill: '#888888' }} />
+              <YAxis
                 domain={[0, 100]}
                 tickFormatter={(value) => `${value}%`}
                 tick={{ fill: '#888888' }}
               />
-              <Tooltip 
+              <Tooltip
                 formatter={(value) => [`${value}%`, g('Attendance')]}
                 contentStyle={{ background: '#fff', border: '1px solid #ccc' }}
               />
