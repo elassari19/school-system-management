@@ -10,6 +10,14 @@ import FormInput from '../inputs/form-input';
 import { studentFormSchema, StudentFormType } from '@/lib/zod-schema';
 import { getData, getFirstData, createData, updateData } from '@/app/api/services';
 import toast from 'react-hot-toast';
+import {
+  createUserQuery,
+  getClassesQuery,
+  getParentsQuery,
+  getUserQuery,
+  updateUserQuery,
+} from '@/app/api/academic';
+
 interface Props {
   user?: string;
 }
@@ -20,52 +28,24 @@ export default function StudentForm({ user }: Props) {
   const [parents, setParents] = React.useState<any[]>([]);
   const [student, setStudent] = React.useState<any>();
 
-  const getParents = async () => {
-    const result = await getData({
-      where: { role: 'PARENT' },
-      include: {
-        parent: true,
-      },
-    });
-    if (result) {
-      setParents(result);
+  const getFormData = async () => {
+    const parent = await getParentsQuery();
+    const classes = await getClassesQuery();
+    const student = await getUserQuery(user!);
+    if (student) {
+      setStudent(student);
     }
-  };
-
-  const getClasses = async () => {
-    const result = await getData(
-      {
-        select: { id: true, name: true },
-      },
-      'class'
-    );
-    if (result) {
-      setClasses(result);
+    if (classes) {
+      setClasses(classes);
     }
-  };
-
-  const getStudent = async () => {
-    const result = await getFirstData({
-      where: { id: user },
-      include: {
-        student: {
-          include: {
-            parent: true,
-            class: true,
-          },
-        },
-      },
-    });
-    if (result) {
-      setStudent(result);
+    if (parent) {
+      setParents(parent);
     }
   };
 
   React.useEffect(() => {
-    getClasses();
-    getParents();
     if (user) {
-      getStudent();
+      getFormData();
     }
   }, [user]);
 
@@ -102,70 +82,9 @@ export default function StudentForm({ user }: Props) {
     try {
       let res;
       if (user) {
-        res = await updateData(
-          {
-            where: {
-              id: user,
-            },
-            data: {
-              email: data.email,
-              fullname: data.fullname,
-              phone: data.phone,
-              password: data.password,
-              role: data.role,
-              age: parseInt(data.age),
-              gender: data.gender,
-              address: data.address,
-              image: data.image,
-              student: {
-                update: {
-                  where: {
-                    id: student.student[0].id,
-                  },
-                  data: {
-                    parent: {
-                      connect: {
-                        id: data.parent,
-                      },
-                    },
-                    class: {
-                      connect: {
-                        id: data._class,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            include: {
-              student: {
-                include: {
-                  parent: true,
-                  class: true,
-                },
-              },
-            },
-          },
-          'user'
-        );
+        res = await updateUserQuery(data, user, student.student[0].id);
       } else {
-        res = await createData({
-          email: data.email,
-          fullname: data.fullname,
-          phone: data.phone,
-          password: data.password,
-          role: data.role,
-          age: parseInt(data.age),
-          gender: data.gender,
-          address: data.address,
-          image: data.image,
-          student: {
-            create: {
-              parentId: data.parent,
-              classId: data._class,
-            },
-          },
-        });
+        res = await createUserQuery(data);
       }
 
       if (res.error) {

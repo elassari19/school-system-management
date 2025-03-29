@@ -1,39 +1,31 @@
-import { NextFunction, Request, Response } from "express";
-import { prisma } from "../../utils/configs";
-import { redisCacheClear, redisCacheHandler } from "../../utils/redisCache";
+import { NextFunction, Request, Response } from 'express';
+import { prisma } from '../../utils/configs';
+import { redisCacheClear, redisCacheHandler } from '../../utils/redisCache';
 
 export const getClass = async (req: Request, res: Response, next: NextFunction) => {
-  const { query } = req.body;
+  const query = req.body;
   try {
     // Look up class in cache
-    const schoolClass = await redisCacheHandler(
-      `class:${req.query.id}`,
-      async () =>
-        // If not in cache, look up in database
-        await prisma.class.findUnique({
-          where: {
-            id: req.query.id as string,
-          },
-          ...query, // @ts-ignore
-        })
-    );
+    const schoolClass = await prisma.class.findUnique({
+      ...query,
+    });
 
     // Return the class
     return res.status(200).send(schoolClass);
   } catch (error) {
-    console.log("Error", error);
+    console.log('Error', error);
     next(error);
   }
 };
 
 export const getAllClasses = async (req: Request, res: Response, next: NextFunction) => {
-  const { query } = req.body;
+  const query = req.body;
   try {
     const schoolClass = await redisCacheHandler(
-      "class:", // The key to store the result in Redis
+      'class:', // The key to store the result in Redis
       async () =>
         await prisma.class.findMany({
-          orderBy: { createdAt: "asc" },
+          orderBy: { createdAt: 'asc' },
           ...query,
         })
     );
@@ -45,7 +37,7 @@ export const getAllClasses = async (req: Request, res: Response, next: NextFunct
 };
 
 export const countClass = async (req: Request, res: Response, next: NextFunction) => {
-  const { query } = req.body;
+  const query = req.body;
   const count = await prisma.class.count({
     ...query,
   });
@@ -54,14 +46,11 @@ export const countClass = async (req: Request, res: Response, next: NextFunction
 
 export const createClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name } = req.body;
+    const query = req.body;
 
     // Create a new class
     const newClass = await prisma.class.create({
-      data: {
-        name: name, // @ts-ignore
-        user: { connect: { id: req.user?.id } },
-      },
+      ...query,
     });
 
     // Clear the Redis cache
@@ -70,28 +59,29 @@ export const createClass = async (req: Request, res: Response, next: NextFunctio
     // Return the new class
     return res.status(201).send(newClass);
   } catch (error) {
-    console.log("Error", error);
+    console.log('Error', error);
     // Return an error if something went wrong
     next(error);
   }
 };
 
 export const updateClass = async (req: Request, res: Response, next: NextFunction) => {
-  const { name } = req.body;
-
-  // Get the class ID from the request query
-  const classId = req.query.id as string;
+  const { where, data, include } = req.body;
 
   try {
+    const existingClass = await prisma.class.findUnique({
+      where,
+    });
+    if (!existingClass) {
+      return res.status(404).send('Class not found');
+    }
     // Update the class
     const resp = await prisma.class.update({
       // Update the class with the given ID
-      where: { id: classId },
+      where,
       // Update the class name and connect the user
-      data: {
-        name, // @ts-ignore
-        users: { connect: { id: req.user?.id } },
-      },
+      data,
+      include,
     });
 
     // Clear the Redis cache
@@ -101,7 +91,7 @@ export const updateClass = async (req: Request, res: Response, next: NextFunctio
     return res.status(203).send(resp);
   } catch (error) {
     // Log the error
-    console.log("Error", error);
+    console.log('Error', error);
     // Return an error if something went wrong
     next(error);
   }
@@ -110,14 +100,11 @@ export const updateClass = async (req: Request, res: Response, next: NextFunctio
 export const deleteClass = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get the class ID from the request query
-    const classId = req.query.id as string;
+    const query = req.body;
 
     // Delete the class
     const resp = await prisma.class.delete({
-      // Delete the class with the given ID
-      where: {
-        id: classId,
-      },
+      ...query,
     });
 
     // Clear the Redis cache
@@ -127,21 +114,18 @@ export const deleteClass = async (req: Request, res: Response, next: NextFunctio
     return res.status(203).send(resp);
   } catch (error) {
     // Log the error
-    console.log("Error", error);
+    console.log('Error', error);
     // Return an error if something went wrong
     next(error);
   }
 };
 
 export const deleteManyClasses = async (req: Request, res: Response, next: NextFunction) => {
-  const { ids } = req.body;
+  const query = req.body;
   try {
     // Delete the classes
     const resp = await prisma.class.deleteMany({
-      // Delete the classes with the given IDs
-      where: {
-        id: { in: ids },
-      },
+      ...query,
     });
 
     // Clear the Redis cache
@@ -151,7 +135,7 @@ export const deleteManyClasses = async (req: Request, res: Response, next: NextF
     return res.status(203).send(resp);
   } catch (error) {
     // Log the error
-    console.log("Error", error);
+    console.log('Error', error);
     // Return an error if something went wrong
     next(error);
   }
@@ -163,13 +147,13 @@ export const deleteAllClasses = async (req: Request, res: Response, next: NextFu
     const resp = await prisma.class.deleteMany({});
 
     // Clear the Redis cache for all classes
-    redisCacheClear("class:*");
+    redisCacheClear('class:*');
 
     // Send response with the deleted classes
     return res.status(203).send(resp);
   } catch (error) {
     // Log any errors that occur
-    console.log("Error", error);
+    console.log('Error', error);
 
     // Send an error response if something goes wrong
     next(error);

@@ -8,8 +8,13 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import useIntlTranslations from '@/hooks/use-intl-translations';
 import FormInput from '../inputs/form-input';
 import { SubjectType, teacherFormSchema, TeacherFormType } from '@/lib/zod-schema';
-import { getData, getFirstData, createData, updateData } from '@/app/api/services';
 import toast from 'react-hot-toast';
+import {
+  createTeacherQuery,
+  getTeacherDetailsQuery,
+  getTeacherSubjectsQuery,
+  updateTeacherQuery,
+} from '@/app/api/academic';
 
 interface Props {
   user?: string;
@@ -20,36 +25,18 @@ export default function TeacherForm({ user }: Props) {
   const [subjects, setSubjects] = React.useState<SubjectType[]>([]);
   const [teacher, setTeacher] = React.useState<any>();
 
-  const getSubjects = async () => {
-    const result = await getData({}, 'subject');
-    if (result) {
-      setSubjects(result);
+  const getFormData = async () => {
+    const subject = await getTeacherSubjectsQuery();
+    if (subject) {
+      setSubjects(subject);
     }
-  };
-
-  const getTeacher = async () => {
-    const result = await getFirstData({
-      where: { id: user },
-      include: {
-        teacher: {
-          include: {
-            subject: true,
-            classes: true,
-            education: true,
-            experience: true,
-          },
-        },
-      },
-    });
-    if (result) {
-      setTeacher(result);
-    }
+    const teacher = await getTeacherDetailsQuery(user!);
+    if (teacher) setTeacher(teacher);
   };
 
   React.useEffect(() => {
-    getSubjects();
     if (user) {
-      getTeacher();
+      getFormData();
     }
   }, []);
 
@@ -86,64 +73,9 @@ export default function TeacherForm({ user }: Props) {
     try {
       let res;
       if (user) {
-        res = await updateData({
-          where: {
-            id: user,
-          },
-          data: {
-            email: data.email,
-            fullname: data.fullname,
-            phone: data.phone,
-            password: data.password,
-            role: data.role,
-            age: parseInt(data.age),
-            gender: data.gender,
-            address: data.address,
-            salary: parseFloat(data.salary),
-            teacher: {
-              update: {
-                where: {
-                  id: teacher.teacher[0].id,
-                },
-                data: {
-                  subject: {
-                    connect: {
-                      id: data.subject,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          include: {
-            teacher: {
-              include: {
-                subject: true,
-              },
-            },
-          },
-        });
+        res = await updateTeacherQuery(data, user, teacher.teacher[0].id);
       } else {
-        res = await createData({
-          email: data.email,
-          fullname: data.fullname,
-          phone: data.phone,
-          password: data.password,
-          role: data.role,
-          age: parseInt(data.age),
-          gender: data.gender,
-          address: data.address,
-          salary: parseFloat(data.salary),
-          teacher: {
-            create: {
-              subject: {
-                connect: {
-                  id: data.subject,
-                },
-              },
-            },
-          },
-        });
+        res = await createTeacherQuery(data);
       }
 
       if (res.error) {

@@ -6,9 +6,10 @@ import PageTemplate, {
 import { ChartLine, GraduationCap } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import React from 'react';
-import { getData } from '@/app/api/services';
 import { UserType } from '@/lib/zod-schema';
-import PageTable from '../../../../../components/tables/page-table';
+import PageTable from '@/components/tables/page-table';
+import { getSearchStudentsQuery, getStudentsQuery } from '@/app/api/academic';
+import { calculateStats } from '../../../../../helpers/stats-function';
 
 interface IProps {
   searchParams: Promise<{
@@ -19,40 +20,14 @@ interface IProps {
 
 export default async function page(props: IProps) {
   const { page = 0, q = '' } = await props.searchParams;
-  const [a, g] = await Promise.all([getTranslations('academic'), getTranslations('global')]);
-
-  const [students, searchStudent] = await Promise.all([
-    await getData({
-      where: { role: 'STUDENT' },
-      select: {
-        age: true,
-        gender: true,
-      },
-    }),
-    await getData({
-      where: { role: 'STUDENT', fullname: { contains: q, mode: 'insensitive' } },
-      include: {
-        student: {
-          include: {
-            class: true,
-            parent: true,
-            grade: true,
-          },
-        },
-      },
-      skip: page > 0 ? (page - 1) * 5 : 0,
-      take: 5,
-    }),
+  const [a, g, students, searchStudent] = await Promise.all([
+    getTranslations('academic'),
+    getTranslations('global'),
+    getStudentsQuery(),
+    getSearchStudentsQuery(page, q),
   ]);
 
-  const maleStudents = students.filter((t: UserType) => t.gender === 'male');
-  const femaleStudents = students.filter((t: UserType) => t.gender === 'female');
-  const maleAverageAge =
-    maleStudents.reduce((total: number, teacher: UserType) => total + teacher.age!, 0) /
-    maleStudents.length;
-  const femaleAverageAge =
-    femaleStudents.reduce((total: number, teacher: UserType) => total + teacher.age!, 0) /
-    femaleStudents.length;
+  const { male, female, maleAverageAge, femaleAverageAge } = calculateStats(students);
 
   const handleTableData = searchStudent.map((std: any) => ({
     id: std?.id || '',
@@ -74,13 +49,13 @@ export default async function page(props: IProps) {
           {
             icon: GraduationCap,
             title: `${g('Male')} ${g('Students')}`,
-            currentValue: maleStudents.length,
+            currentValue: `${male.length}`,
             pastValue: `+17% ${a('new Students this year')}`,
           },
           {
             icon: GraduationCap,
             title: `${g('Female')} ${g('Students')}`,
-            currentValue: femaleStudents.length,
+            currentValue: `${female.length}`,
             pastValue: `+13% ${a('new Students this year')}`,
           },
           {
@@ -108,7 +83,7 @@ export default async function page(props: IProps) {
         headCell={['Avatar', 'Full Name', 'Age', 'Gender', 'Class', 'Attendance']}
         bodyCell={handleTableData}
         ModalForm={AddStudentForm}
-        pages={Math.ceil(searchStudent.count / 5)}
+        pages={Math.ceil(q.length > 2 ? searchStudent.length / 5 : students.length / 5)}
       />
     </PageTemplate>
   );

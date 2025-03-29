@@ -3,6 +3,15 @@
 import { API_URL } from '@/lib/functions-helper';
 import { revalidatePath } from 'next/cache';
 
+export async function countData(query: {}, target = 'user') {
+  const res = await fetch(`${API_URL}/${target}/count`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(query),
+  });
+  const data = await res.json();
+  return data;
+}
 export async function getData(query: {}, target = 'user') {
   const res = await fetch(`${API_URL}/${target}/all`, {
     method: 'POST',

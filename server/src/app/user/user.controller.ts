@@ -8,9 +8,12 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
   const query = req.body;
 
   try {
-    const user = await prisma.user.findUnique({
-      ...query,
-    });
+    const user = await redisCacheHandler(
+      `user:${query.where?.id || 'single'}`,
+      async () => await prisma.user.findUnique({
+        ...query,
+      })
+    );
 
     if (!user) {
       return res.status(404).send('User not found');
@@ -26,11 +29,13 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
   const query = req.body;
 
   try {
-    // If cache is empty, get all users from database
-    const users = await prisma.user.findMany({
-      ...query,
-    });
-    // Check for null pointer references
+    const users = await redisCacheHandler(
+      `user:all${JSON.stringify(query)}`,
+      async () => await prisma.user.findMany({
+        ...query,
+      })
+    );
+
     if (!users) {
       throw new Error('No users found');
     }
@@ -38,18 +43,25 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     return res.status(200).send(users);
   } catch (error) {
     console.log('error', error);
-    // If there's an error, log it and pass it down the middleware chain
     next(error);
   }
 };
 
 export const countUsers = async (req: Request, res: Response, next: NextFunction) => {
   const { query } = req.body;
-  const users = await prisma.user.count({
-    ...query,
-  });
-  console.log('users', users);
-  return res.status(200).json(users);
+  
+  try {
+    const count = await redisCacheHandler(
+      `user:count${JSON.stringify(query)}`,
+      async () => await prisma.user.count({
+        ...query,
+      })
+    );
+    
+    return res.status(200).json(count);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {

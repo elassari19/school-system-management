@@ -9,11 +9,11 @@ import userAvatar from '@/app/public/assets/user.png';
 import { getCookie } from '@/lib/cookies-handler';
 import { DashboardCarousel } from '@/components/ui/carousel';
 import RootCard from '@/components/cards/root-card';
-import { countAllUsers } from '@/app/api/dashboard';
 import PageTemplate, {
   ChartSection,
   OverviewSection,
 } from '@/components/template/page-template';
+import { getAcademicCounts } from '@/app/api/academic';
 
 const members = [
   { id: '1', name: 'John Doe', avatar: userAvatar, role: 'TEACHER' },
@@ -23,29 +23,12 @@ const members = [
 ];
 
 const Page = async () => {
-  const user = await getCookie('session');
-  const g = await getTranslations('global');
-  const a = await getTranslations('academic');
-
-  const totalFemal = await countAllUsers({
-    role: 'STUDENT',
-    gender: 'female',
-  });
-
-  const totalMale = await countAllUsers({
-    role: 'STUDENT',
-    gender: 'male',
-  });
-
-  const totalTeachers = await countAllUsers({
-    role: 'TEACHER',
-  });
-
-  const totalParents = await countAllUsers({
-    role: 'PARENT',
-  });
-
-  const totalClasses = await countAllUsers({}, 'class');
+  const [user, g, a, counts] = await Promise.all([
+    getCookie('session'),
+    getTranslations('global'),
+    getTranslations('academic'),
+    getAcademicCounts(),
+  ]);
 
   return (
     <PageTemplate>
@@ -54,25 +37,25 @@ const Page = async () => {
           {
             icon: GraduationCap,
             title: `${g('Total')} ${g('Students')}`,
-            currentValue: totalFemal + totalMale,
+            currentValue: counts.totalFemale + counts.totalMale,
             pastValue: `+17 ${a('new Students this year')}`,
           },
           {
             icon: UsersRound,
             title: `${g('Total')} ${g('Teachers')}`,
-            currentValue: totalTeachers,
+            currentValue: counts.totalTeachers,
             pastValue: `+4 ${a('new Teachers this year')}`,
           },
           {
             icon: Users,
             title: `${g('Total')} ${g('Parents')}`,
-            currentValue: totalParents,
+            currentValue: counts.totalParents,
             pastValue: `+12 ${a('new Parents this year')}`,
           },
           {
             icon: BookOpen,
             title: `${g('Total')} ${g('Classes')}`,
-            currentValue: totalClasses,
+            currentValue: counts.totalClasses,
             pastValue: `+6 ${a('new Classes this year')}`,
           },
         ]}
