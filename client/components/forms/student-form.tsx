@@ -29,24 +29,23 @@ export default function StudentForm({ user }: Props) {
   const [student, setStudent] = React.useState<any>();
 
   const getFormData = async () => {
-    const parent = await getParentsQuery();
-    const classes = await getClassesQuery();
-    const student = await getUserQuery(user!);
-    if (student) {
-      setStudent(student);
-    }
-    if (classes) {
-      setClasses(classes);
-    }
-    if (parent) {
-      setParents(parent);
+    try {
+      const [parentData, classesData, studentData] = await Promise.all([
+        getParentsQuery(),
+        getClassesQuery(),
+        user ? getUserQuery(user) : null,
+      ]);
+
+      setParents(parentData);
+      setClasses(classesData);
+      if (studentData) setStudent(studentData);
+    } catch (error) {
+      toast.error(g('Failed to load form data'));
     }
   };
 
   React.useEffect(() => {
-    if (user) {
-      getFormData();
-    }
+    getFormData();
   }, [user]);
 
   const {
@@ -67,7 +66,7 @@ export default function StudentForm({ user }: Props) {
       setValue('email', student.email || '');
       setValue('fullname', student.fullname || '');
       setValue('phone', student.phone || '');
-      setValue('password', student.password || '');
+      setValue('password', '');
       setValue('role', student.role || '');
       setValue('age', student.age?.toString() || '');
       setValue('gender', student.gender || '');

@@ -191,7 +191,10 @@ export const teacherFormSchema = z.object({
   fullname: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email address'),
   age: z.string().min(1, 'Age is required'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z
+    .string()
+    .optional()
+    .or(z.string().min(6, 'Password must be at least 6 characters')),
   address: z.string().optional(),
   gender: z.enum(['male', 'female'], {
     required_error: 'Please select a gender',
@@ -207,7 +210,10 @@ export const studentFormSchema = z.object({
   fullname: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email address'),
   age: z.string().min(1, 'Age is required'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z
+    .string()
+    .optional()
+    .or(z.string().min(6, 'Password must be at least 6 characters')),
   address: z.string().optional(),
   gender: z.enum(['male', 'female'], {
     required_error: 'Please select a gender',

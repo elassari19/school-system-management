@@ -24,20 +24,23 @@ export default function TeacherForm({ user }: Props) {
   const { g } = useIntlTranslations();
   const [subjects, setSubjects] = React.useState<SubjectType[]>([]);
   const [teacher, setTeacher] = React.useState<any>();
-
+  console.log('teacher', teacher);
   const getFormData = async () => {
-    const subject = await getTeacherSubjectsQuery();
-    if (subject) {
-      setSubjects(subject);
+    try {
+      const [subjectData, teacherData] = await Promise.all([
+        getTeacherSubjectsQuery(),
+        user ? getTeacherDetailsQuery(user) : null,
+      ]);
+
+      setSubjects(subjectData);
+      setTeacher(teacherData);
+    } catch (error) {
+      toast.error(g('Failed to load form data'));
     }
-    const teacher = await getTeacherDetailsQuery(user!);
-    if (teacher) setTeacher(teacher);
   };
 
   React.useEffect(() => {
-    if (user) {
-      getFormData();
-    }
+    getFormData();
   }, []);
 
   const {
@@ -59,7 +62,7 @@ export default function TeacherForm({ user }: Props) {
       setValue('email', teacher.email || '');
       setValue('fullname', teacher.fullname || '');
       setValue('phone', teacher.phone || '');
-      setValue('password', teacher.password || '');
+      setValue('password', '');
       setValue('role', teacher.role || '');
       setValue('age', teacher.age?.toString() || '');
       setValue('gender', teacher.gender || '');
