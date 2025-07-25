@@ -17,6 +17,7 @@ interface IProps {
   cardFooter?: React.ReactNode;
   className?: string;
   flex?: boolean;
+  children?: React.ReactNode;
 }
 
 const RootCard = ({
@@ -27,6 +28,7 @@ const RootCard = ({
   cardFooter,
   className,
   flex,
+  children,
 }: IProps) => {
   return (
     <Card

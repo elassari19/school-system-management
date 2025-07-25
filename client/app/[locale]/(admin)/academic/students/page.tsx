@@ -6,10 +6,9 @@ import PageTemplate, {
 import { ChartLine, GraduationCap } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import React from 'react';
-import { UserType } from '@/lib/zod-schema';
 import PageTable from '@/components/tables/page-table';
 import { getSearchStudentsQuery, getStudentsQuery } from '@/app/api/academic';
-import { calculateStats } from '../../../../../helpers/stats-function';
+import { calculateStats } from '@/helpers/stats-function';
 
 interface IProps {
   searchParams: Promise<{

@@ -200,9 +200,28 @@ export const teacherFormSchema = z.object({
     required_error: 'Please select a gender',
   }),
   subject: z.string().min(1, 'Subject is required'),
+  classes: z.array(z.string().optional()).optional(),
   salary: z.string().min(1, 'Salary is required'),
   role: z.literal('TEACHER'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  image: z.string().optional(),
+  education: z.array(
+    z.object({
+      school: z.string().min(1, 'School is required'),
+      degree: z.string().min(1, 'Degree is required'),
+      field: z.string().min(1, 'Field is required'),
+      from: z.date(),
+      to: z.date(),
+    })
+  ),
+  experience: z.array(
+    z.object({
+      company: z.string().min(1, 'Company is required'),
+      position: z.string().min(1, 'Position is required'),
+      from: z.date(),
+      to: z.date(),
+    })
+  ),
 });
 export type TeacherFormType = z.infer<typeof teacherFormSchema>;
 

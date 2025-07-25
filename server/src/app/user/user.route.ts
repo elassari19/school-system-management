@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { isAuthenticated } from "../../middelwares/passport.middelware";
+import { Router } from 'express';
+import { isAuthenticated } from '../../middelwares/passport.middelware';
 import {
   countUsers,
   createUser,
@@ -9,9 +9,9 @@ import {
   getAllUsers,
   getUser,
   updateUser,
-} from "./user.controller";
-import validateSchema from "../../middelwares/validateSchema";
-import { userSchema, userUpdateSchema } from "./user.schema";
+} from './user.controller';
+import validateSchema from '../../middelwares/validateSchema';
+import { userSchema, userUpdateSchema } from './user.schema';
 
 const router = Router();
 
@@ -47,7 +47,7 @@ const router = Router();
  *          description: Server error
  */
 router.post(
-  "/",
+  '/',
   // @ts-ignore
   // isAuthenticated(),
   getUser
@@ -80,7 +80,7 @@ router.post(
  *          description: Server error
  */
 router.post(
-  "/all",
+  '/all',
   // @ts-ignore
   // isAuthenticated(),
   getAllUsers
@@ -105,7 +105,7 @@ router.post(
  *        500:
  *          description: Server error
  */
-router.post("/count", countUsers);
+router.post('/count', countUsers);
 
 /**
  * @swagger
@@ -126,7 +126,7 @@ router.post("/count", countUsers);
  *          description: Subject created successfully
  */
 router.post(
-  "/create",
+  '/create',
   // @ts-ignore
   // isAuthenticated(),
   validateSchema(userSchema),
@@ -152,7 +152,7 @@ router.post(
  *          description: Subject created successfully
  */
 router.put(
-  "/",
+  '/',
   // @ts-ignore
   // isAuthenticated(),
   validateSchema(userUpdateSchema),
@@ -183,7 +183,7 @@ router.put(
  *          description: Server error
  */
 router.delete(
-  "/",
+  '/',
   // @ts-ignore
   // isAuthenticated(),
   deleteUser
@@ -212,7 +212,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  "/many",
+  '/many',
   // @ts-ignore
   // isAuthenticated(),
   deleteManyUsers
@@ -233,7 +233,7 @@ router.delete(
  *         description: Internal server error
  */
 router.delete(
-  "/all",
+  '/all',
   // @ts-ignore
   // isAuthenticated(),
   deleteAllUsers
