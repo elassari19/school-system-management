@@ -1,13 +1,14 @@
-# Backend Server
+# Backend Server (NestJS + PostgreSQL + TypeORM)
 
-This is the backend server for `School Managment System`.
+This is the backend server for `School Management System`.
 
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 
-- You have installed Node.js (version 14.x or later recommended)
+- You have installed Node.js (version 18.x or later recommended)
 - You have a Windows/Linux/Mac machine
+- You have PostgreSQL installed and running
 - You have Redis installed locally (see Redis installation instructions below)
 
 ## Installing and Running the Server
@@ -29,15 +30,36 @@ npm install
 3. Set up environment variables
    Create a `.env` file in the root directory and add necessary environment variables.
 
-- mongodb url
-  DATABASE_URL="mongodb+srv://<password>:<password>@cluster0.pvabb34.mongodb.net/<Database name>?retryWrites=true&w=majority"
-- PORT=<port>
-- SECRET_KEY=<cookies secret key>
+```
+DATABASE_URL=postgresql://<user>:<password>@localhost:5432/<dbname>
+REDIS_URL=redis://localhost:6379
+SECRET_KEY=<session_secret>
+STRIPE_SECRET_API_KEY=<stripe_key>
+STRIPE_PRICE_ID=<stripe_price_id>
+STRIPE_WEBHOOK_SECRET=<stripe_webhook_secret>
+CLIENT_URL=http://localhost:3000
+PORT=3001
+```
 
-4. Build the project
-   npm run build
+4. Run database migrations
 
-5. Start the server
+```
+npm run migration:run
+```
+
+5. Seed the database (optional)
+
+```
+npm run seed
+```
+
+6. Build the project
+
+```
+npm run build
+```
+
+7. Start the server
 
 - For production:
   ```
@@ -45,16 +67,19 @@ npm install
   ```
 - For development (with hot reloading):
   ```
-  npm run dev
+  npm run start:dev
   ```
 
 ## Scripts
 
 - `npm test`: Run Jest tests
-- `npm run seed`: Seed the database using Prisma
+- `npm run seed`: Seed the database using TypeORM
 - `npm run build`: Build the project
 - `npm start`: Start the production server
-- `npm run dev`: Start the development server with hot reloading
+- `npm run start:dev`: Start the development server with hot reloading
+- `npm run migration:generate`: Generate a new migration
+- `npm run migration:run`: Run pending migrations
+- `npm run migration:revert`: Revert the last migration
 
 ## Redis Installation and Setup
 
@@ -83,7 +108,7 @@ KEY *
 ```
 
 ```
-# delete specefic data by key
+# delete specific data by key
 redis-cli
 DEL {key}
 ```
@@ -94,9 +119,9 @@ redis-cli
 flushall
 ```
 
-### MP2 Setup and Configuration
+### PM2 Setup and Configuration
 
-MP2 (Process Manager 2) is recommended for production deployment. Here's how to set it up:
+PM2 (Process Manager 2) is recommended for production deployment. Here's how to set it up:
 
 1. Install PM2 globally:
 

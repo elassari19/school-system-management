@@ -7,22 +7,19 @@ import { Parent } from '../common/entities/parent.entity';
 import { CreatePaymentIntentDto, CreateCheckoutSessionDto, RetrievePaymentDto } from './dto/payment.dto';
 import { ConfigService } from '@nestjs/config';
 import { PaymentStatus } from '../common/entities/enums';
+import { STRIPE_CLIENT } from '../common/providers/stripe.provider';
 
 @Injectable()
 export class PaymentService {
-  private stripe: Stripe;
-
   constructor(
+    @Inject(STRIPE_CLIENT)
+    private stripe: Stripe,
     private configService: ConfigService,
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
     @InjectRepository(Parent)
     private parentRepository: Repository<Parent>,
-  ) {
-    this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_API_KEY')!, {
-      apiVersion: '2024-06-20',
-    });
-  }
+  ) {}
 
   async getPriceId() {
     const product = await this.stripe.products.create({
