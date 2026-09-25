@@ -2,12 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/server.ts",
+      "src": "dist/main.js",
       "use": "@vercel/node",
       "config": {
-        "buildCommand": "prisma generate && tsc"
+        "buildCommand": "npm run build"
       }
     }
   ],
-  "rewrites": [{ "source": "/(.*)", "destination": "src/server.ts" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "dist/main.js" }]
 }
