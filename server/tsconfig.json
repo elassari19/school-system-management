@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "CommonJS",
+    "moduleResolution": "bundler",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -21,7 +22,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "lib": ["ES2021"],
-    "moduleResolution": "node",
+
     "strict": true
   }
 }
