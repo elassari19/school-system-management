@@ -72,7 +72,7 @@
     "Meeting": "اجتماع",
     "Appointments": "المواعيد",
     "Avatar": "الصورة الرمزية",
-    "Full Name": "الاسم الكامل",
+"Full Name": "الاسم الكامل",
     "Phone": "الهاتف",
     "Gender": "الجنس",
     "Address": "العنوان",
@@ -115,8 +115,8 @@
     "Update": "تحديث",
     "Save": "حفظ",
     "Close": "اغلاق",
-    "Name": "اسم",
     "More": "المزيد",
+    "Name": "اسم",
     "created successfully": "تم إنشاء بنجاح",
     "created failed": "فشل في انشاء",
     "updated successfully": "تم التحديث بنجاح",
@@ -133,8 +133,10 @@
     "Welcome": "مرحبا",
     "Weekly Schedule": "جدول الأسبوعي",
     "new Teachers this year": "معلمون جدد هذا العام",
-    "Students average age this year": "متوسط أعمار الطلاب هذا العام",
-    "SearchTeachers": "البحث عن المعلمين"
+    "Students average age this year": "متوسط ​​أعمار الطلاب هذا العام",
+    "SearchTeachers": "البحث عن المعلمين",
+    "Hide password": "إخفاء كلمة المرور",
+    "Show password": "إظهار كلمة المرور"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",
@@ -144,7 +146,10 @@
     "Already have an account?": "هل لديك حساب؟",
     "Signed out successfully": "تم تسجيل الخروج بنجاح",
     "Failed to sign out": "فشل تسجيل الخروج",
-    "Don't have account?": "ليس لديك حساب؟"
+    "Don't have account?": "ليس لديك حساب؟",
+    "Or continue with": "أو المتابعة مع",
+    "Successfully signed up": "تم التسجيل بنجاح",
+    "failedToSignUp": "فشل التسجيل يرجى المحاولة مرة أخرى"
   },
   "academic": {
     "new Parents this year": "آباء جدد هذا العام",

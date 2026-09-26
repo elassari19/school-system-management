@@ -134,7 +134,9 @@
     "Weekly Schedule": "Weekly Schedule",
     "new Teachers this year": "new Teachers this year",
     "Students average age this year": "Students average age this year",
-    "SearchTeachers": "Search teachers"
+    "SearchTeachers": "Search teachers",
+    "Hide password": "Hide password",
+    "Show password": "Show password"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",
@@ -144,7 +146,10 @@
     "Already have an account?": "Already have an account?",
     "Signed out successfully": "Signed out successfully",
     "Failed to sign out": "Failed to sign out",
-    "Don't have account?": "Don't have account?"
+    "Don't have account?": "Don't have account?",
+    "Or continue with": "Or continue with",
+    "Successfully signed up": "Successfully signed up",
+    "failedToSignUp": "Failed to sign up. Please try again."
   },
   "academic": {
     "new Parents this year": "new Parents this year",
