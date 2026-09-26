@@ -88,26 +88,27 @@ async function seed() {
     }
   }
 
-  // Create parent users and students
-  for (let n = 0; n < 10; n++) {
+  // Create parent users and students (493 parents, 2-4 students each)
+  for (let n = 0; n < 493; n++) {
     const parentUser = userRepo.create({
       email: `parent${n}@example.com`,
       fullname: `Parent ${n}`,
       phone: `555-000-${n.toString().padStart(4, '0')}`,
       password: hashedPassword,
       role: Role.PARENT,
-      age: 35 + n,
+      age: 28 + (n % 33),
       gender: n % 2 === 0 ? 'Male' : 'Female',
       image: `https://api.dicebear.com/7.x/avataaars/svg?seed=parent${n}`,
       address: `Address ${n}`,
-      salary: 50000 + n * 1000,
+      salary: 30000 + (n % 90000),
     });
     await userRepo.save(parentUser);
 
     const parent = parentRepo.create({ userId: parentUser.id });
     await parentRepo.save(parent);
 
-    for (let i = 0; i < 2; i++) {
+    const studentCount = 2 + (n % 3);
+    for (let i = 0; i < studentCount; i++) {
       const studentUser = userRepo.create({
         email: `student${n}-${i}@example.com`,
         fullname: `Student ${n}-${i} ${parentUser.fullname.split(' ').pop()}`,
@@ -125,23 +126,23 @@ async function seed() {
         userId: studentUser.id,
         parentId: parent.id,
         classId: createdClasses[Math.floor(Math.random() * createdClasses.length)].id,
-        attendence: 92.5,
+        attendence: 85 + Math.random() * 15,
         status: 'Active',
       });
       await studentRepo.save(student);
     }
-    console.log(`Created parent: ${parentUser.fullname} with 2 students`);
+    if (n % 50 === 0) console.log(`Created parent ${n}: ${parentUser.fullname} with ${studentCount} students`);
   }
 
-  // Create teacher users
-  for (let t = 0; t < 5; t++) {
+  // Create teacher users (56 teachers)
+  for (let t = 0; t < 56; t++) {
     const teacherUser = userRepo.create({
       email: `teacher${t}@example.com`,
       fullname: `Teacher ${t}`,
       phone: `555-222-${t.toString().padStart(4, '0')}`,
       password: hashedPassword,
       role: Role.TEACHER,
-      age: 30 + t,
+      age: 28 + (t % 33),
       gender: t % 2 === 0 ? 'Male' : 'Female',
       image: `https://api.dicebear.com/7.x/avataaars/svg?seed=teacher${t}`,
       address: `Teacher Address ${t}`,
@@ -157,12 +158,12 @@ async function seed() {
     // Add education
     const education = educationRepo.create({
       school: `University ${t}`,
-      degree: 95 + t,
+      degree: 92 + (t % 6),
       field: createdSubjects[t % createdSubjects.length].name,
       image: `https://api.dicebear.com/7.x/avataaars/svg?seed=edu${t}`,
       teacherId: teacher.id,
-      from: new Date('2015-01-01'),
-      to: new Date('2019-01-01'),
+      from: new Date(2015 + (t % 5), 0, 1),
+      to: new Date(2019 + (t % 5), 0, 1),
     });
     await educationRepo.save(education);
 
@@ -171,13 +172,13 @@ async function seed() {
       company: `School ${t}`,
       position: createdSubjects[t % createdSubjects.length].name,
       teacherId: teacher.id,
-      from: new Date('2020-01-01'),
-      to: new Date('2023-01-01'),
+      from: new Date(2020 + (t % 3), 0, 1),
+      to: new Date(2023 + (t % 3), 0, 1),
       certificate: `https://api.dicebear.com/7.x/avataaars/svg?seed=exp${t}`,
     });
     await experienceRepo.save(experience);
   }
-  console.log('Created 5 teachers with education and experience');
+  console.log('Created 56 teachers with education and experience');
 
   // Connect teachers to classes
   const teachers = await teacherRepo.find();
