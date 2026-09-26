@@ -14,7 +14,7 @@ import { parentType } from "@/lib/types";
 import { ChevronDown, ChevronRight } from "lucide-react"; // Import icons
 import useIntlTranslations from "@/hooks/use-intl-translations";
 import { parentData } from "@/lib/dummy-data";
-import { getParentsWithChidren } from "@/app/api/dashboard";
+import { getParentsWithChildren } from "@/app/api/dashboard";
 import { Button } from "../ui/button";
 
 interface IProps {
@@ -28,7 +28,7 @@ const ParentChildTable = ({ pages }: IProps) => {
   const [page, setPage] = useState(1);
 
   const getTableData = async () => {
-    const result = await getParentsWithChidren(page - 1);
+    const result = await getParentsWithChildren(page - 1);
     setData(result);
   };
 

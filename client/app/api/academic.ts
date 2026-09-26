@@ -65,19 +65,21 @@ export async function getSearchStudentsQuery(page: number, q: string) {
 
 export async function createUserQuery(data: StudentFormType) {
   return await createData({
-    email: data.email,
-    fullname: data.fullname,
-    phone: data.phone,
-    password: data.password,
-    role: data.role,
-    age: parseInt(data.age),
-    gender: data.gender,
-    address: data.address,
-    image: data.image,
-    student: {
-      create: {
-        parentId: data.parent,
-        classId: data._class,
+    data: {
+      email: data.email,
+      fullname: data.fullname,
+      phone: data.phone,
+      password: data.password,
+      role: data.role,
+      age: parseInt(data.age),
+      gender: data.gender,
+      address: data.address,
+      image: data.image,
+      student: {
+        create: {
+          parentId: data.parent,
+          classId: data._class,
+        },
       },
     },
   });
@@ -211,20 +213,22 @@ export async function getTeacherDetailsQuery(userId: string) {
 
 export async function createTeacherQuery(data: TeacherFormType) {
   return await createData({
-    email: data.email,
-    fullname: data.fullname,
-    phone: data.phone,
-    password: data.password,
-    role: data.role,
-    age: parseInt(data.age),
-    gender: data.gender,
-    address: data.address,
-    salary: parseFloat(data.salary),
-    teacher: {
-      create: {
-        subject: {
-          connect: {
-            id: data.subject,
+    data: {
+      email: data.email,
+      fullname: data.fullname,
+      phone: data.phone,
+      password: data.password,
+      role: data.role,
+      age: parseInt(data.age),
+      gender: data.gender,
+      address: data.address,
+      salary: parseFloat(data.salary),
+      teacher: {
+        create: {
+          subject: {
+            connect: {
+              id: data.subject,
+            },
           },
         },
       },

@@ -9,10 +9,20 @@ import { events, monthlyFinance } from "@/lib/dummy-data";
 import EventsCard from "@/components/cards/events-card";
 import DashboardTemplate from "@/components/template/dashboard-template";
 import { getAllUsersByRole } from "@/app/api/dashboard";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 interface IProps {}
 
 export default async function Page({}: IProps) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const session = cookieStore.get("session")?.value;
+
+  if (!token && !session) {
+    redirect("/sign-in");
+  }
+
   const g = await getTranslations("global");
   const totalTeachers = await getAllUsersByRole("TEACHER");
   const totalStduents = await getAllUsersByRole("STUDENT");

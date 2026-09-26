@@ -1,36 +1,42 @@
 'use server';
 
 import { API_URL } from '@/lib/functions-helper';
+import { transformPrismaToTypeORM, PrismaQuery } from './query-transformer';
+
+function transformQueryForCustomEndpoint(query: PrismaQuery) {
+  const transformed = transformPrismaToTypeORM(query);
+  return { query: transformed };
+}
 
 // Get upcoming exams
 export async function getUpcomingExams(classId?: string, subjectId?: string) {
   try {
+    const prismaQuery = {
+      where: {
+        date: {
+          gte: new Date(),
+        },
+        ...(classId && { classId }),
+        ...(subjectId && { subjectId }),
+      },
+      include: {
+        subject: true,
+        class: true,
+        teacher: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'asc' as const,
+      },
+    };
+
     const response = await fetch(`${API_URL}/exams/upcoming`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            date: {
-              gte: new Date(),
-            },
-            ...(classId && { classId }),
-            ...(subjectId && { subjectId }),
-          },
-          include: {
-            subject: true,
-            class: true,
-            teacher: {
-              include: {
-                user: true,
-              },
-            },
-          },
-          orderBy: {
-            date: 'asc',
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {
@@ -87,28 +93,28 @@ export async function scheduleExam(data: {
 // Get exam results
 export async function getExamResults(examId: string) {
   try {
+    const prismaQuery = {
+      where: {
+        examId,
+      },
+      include: {
+        student: {
+          include: {
+            user: true,
+          },
+        },
+        exam: {
+          include: {
+            subject: true,
+          },
+        },
+      },
+    };
+
     const response = await fetch(`${API_URL}/exams/results`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            examId,
-          },
-          include: {
-            student: {
-              include: {
-                user: true,
-              },
-            },
-            exam: {
-              include: {
-                subject: true,
-              },
-            },
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {

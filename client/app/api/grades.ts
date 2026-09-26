@@ -1,31 +1,37 @@
 'use server';
 
 import { API_URL } from '@/lib/functions-helper';
+import { transformPrismaToTypeORM, PrismaQuery } from './query-transformer';
+
+function transformQueryForCustomEndpoint(query: PrismaQuery) {
+  const transformed = transformPrismaToTypeORM(query);
+  return { query: transformed };
+}
 
 // Get student grades
 export async function getStudentGrades(studentId: string, subjectId?: string, term?: string) {
   try {
+    const prismaQuery = {
+      where: {
+        studentId,
+        ...(subjectId && { subjectId }),
+        ...(term && { term }),
+      },
+      include: {
+        subject: true,
+        student: {
+          include: {
+            user: true,
+            class: true,
+          },
+        },
+      },
+    };
+
     const response = await fetch(`${API_URL}/grades/student`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            studentId,
-            ...(subjectId && { subjectId }),
-            ...(term && { term }),
-          },
-          include: {
-            subject: true,
-            student: {
-              include: {
-                user: true,
-                class: true,
-              },
-            },
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {
@@ -78,28 +84,28 @@ export async function recordGrade(data: {
 // Get class performance statistics
 export async function getClassPerformance(classId: string, subjectId?: string, term?: string) {
   try {
+    const prismaQuery = {
+      where: {
+        student: {
+          classId,
+        },
+        ...(subjectId && { subjectId }),
+        ...(term && { term }),
+      },
+      include: {
+        subject: true,
+        student: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    };
+
     const response = await fetch(`${API_URL}/grades/class-stats`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            student: {
-              classId,
-            },
-            ...(subjectId && { subjectId }),
-            ...(term && { term }),
-          },
-          include: {
-            subject: true,
-            student: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {

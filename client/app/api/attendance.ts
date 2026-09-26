@@ -1,6 +1,12 @@
 'use server';
 
 import { API_URL } from '@/lib/functions-helper';
+import { transformPrismaToTypeORM, PrismaQuery } from './query-transformer';
+
+function transformQueryForCustomEndpoint(query: PrismaQuery) {
+  const transformed = transformPrismaToTypeORM(query);
+  return { query: transformed };
+}
 
 // Get attendance records for a specific date range
 export async function getAttendanceRecords(
@@ -9,28 +15,28 @@ export async function getAttendanceRecords(
   classId?: string
 ) {
   try {
+    const prismaQuery = {
+      where: {
+        date: {
+          gte: new Date(startDate),
+          lte: new Date(endDate),
+        },
+        ...(classId && { classId }),
+      },
+      include: {
+        student: {
+          include: {
+            user: true,
+            class: true,
+          },
+        },
+      },
+    };
+
     const response = await fetch(`${API_URL}/attendance/records`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            date: {
-              gte: new Date(startDate),
-              lte: new Date(endDate),
-            },
-            ...(classId && { classId }),
-          },
-          include: {
-            student: {
-              include: {
-                user: true,
-                class: true,
-              },
-            },
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {
@@ -77,30 +83,30 @@ export async function markAttendance(data: {
 // Get attendance statistics
 export async function getAttendanceStats(classId: string, month?: number, year?: number) {
   try {
+    const prismaQuery = {
+      where: {
+        classId,
+        ...(month &&
+          year && {
+            date: {
+              gte: new Date(year, month - 1, 1),
+              lt: new Date(year, month, 0),
+            },
+          }),
+      },
+      include: {
+        student: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    };
+
     const response = await fetch(`${API_URL}/attendance/stats`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            classId,
-            ...(month &&
-              year && {
-                date: {
-                  gte: new Date(year, month - 1, 1),
-                  lt: new Date(year, month, 0),
-                },
-              }),
-          },
-          include: {
-            student: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {

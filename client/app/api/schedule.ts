@@ -1,28 +1,34 @@
 'use server';
 
 import { API_URL } from '@/lib/functions-helper';
+import { transformPrismaToTypeORM, PrismaQuery } from './query-transformer';
+
+function transformQueryForCustomEndpoint(query: PrismaQuery) {
+  const transformed = transformPrismaToTypeORM(query);
+  return { query: transformed };
+}
 
 // Get class schedule
 export async function getClassSchedule(classId: string) {
   try {
+    const prismaQuery = {
+      where: {
+        classId,
+      },
+      include: {
+        subject: true,
+        teacher: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    };
+
     const response = await fetch(`${API_URL}/schedule/class`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            classId,
-          },
-          include: {
-            subject: true,
-            teacher: {
-              include: {
-                user: true,
-              },
-            },
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {
@@ -75,20 +81,20 @@ export async function updateSchedule(data: {
 // Get teacher schedule
 export async function getTeacherSchedule(teacherId: string) {
   try {
+    const prismaQuery = {
+      where: {
+        teacherId,
+      },
+      include: {
+        subject: true,
+        class: true,
+      },
+    };
+
     const response = await fetch(`${API_URL}/schedule/teacher`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: {
-          where: {
-            teacherId,
-          },
-          include: {
-            subject: true,
-            class: true,
-          },
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {
@@ -104,14 +110,16 @@ export async function getTeacherSchedule(teacherId: string) {
 // Delete schedule entry
 export async function deleteScheduleEntry(scheduleId: string) {
   try {
+    const prismaQuery = {
+      where: {
+        id: scheduleId,
+      },
+    };
+
     const response = await fetch(`${API_URL}/schedule/delete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        where: {
-          id: scheduleId,
-        },
-      }),
+      body: JSON.stringify(transformQueryForCustomEndpoint(prismaQuery)),
     });
 
     if (!response.ok) {
