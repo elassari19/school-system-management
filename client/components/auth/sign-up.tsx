@@ -21,8 +21,7 @@ const SignUp = () => {
     watch,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
-    // @ts-ignore
-    defaultValues: { role: g('Student') },
+    defaultValues: { role: g('Student') as SignUpFormData['role'] },
   });
 
   const role = watch('role');
