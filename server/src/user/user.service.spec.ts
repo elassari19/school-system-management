@@ -5,8 +5,9 @@ import { NotFoundException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from './user.service';
 import { User } from '../common/entities/user.entity';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { Role } from '../common/entities/enums';
 
 const mockUser = {
   id: '123e4567-e89b-12d3-a456-426614174000',
@@ -29,16 +30,29 @@ const mockUserRepository = {
   clear: jest.fn(),
 };
 
-const mockRedisService = {
-  getCache: jest.fn(),
-  setCache: jest.fn(),
-  clearCachePattern: jest.fn(),
+const mockCacheConfig = {
+  getTtl: jest.fn().mockReturnValue(1800),
+  getKeyPrefix: jest.fn().mockReturnValue('school:'),
+  isEnabled: jest.fn().mockReturnValue(true),
+  getDefaultTtl: jest.fn().mockReturnValue(3600),
+};
+
+const mockCacheService = {
+  get: jest.fn(),
+  set: jest.fn(),
+  delete: jest.fn(),
+  invalidateByTag: jest.fn(),
+  getOrSet: jest.fn(),
+  generateEntityCacheKey: jest.fn((entity, id) => `school:${entity}:${id}`),
+  generateListCacheKey: jest.fn((entity, params) => `school:${entity}:list:${JSON.stringify(params)}`),
+  generateCacheKey: jest.fn((...parts) => `school:${parts.join(':')}`),
+  'cacheConfig': mockCacheConfig,
 };
 
 describe('UserService', () => {
   let service: UserService;
   let userRepository: Repository<User>;
-  let redisService: RedisService;
+  let cacheService: CacheService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -49,44 +63,47 @@ describe('UserService', () => {
           useValue: mockUserRepository,
         },
         {
-          provide: RedisService,
-          useValue: mockRedisService,
+          provide: CacheService,
+          useValue: mockCacheService,
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    redisService = module.get<RedisService>(RedisService);
+    cacheService = module.get<CacheService>(CacheService);
 
     jest.clearAllMocks();
   });
 
   describe('findOne', () => {
     it('should return cached user if available', async () => {
-      mockRedisService.getCache.mockResolvedValue(mockUser);
+      mockCacheService.getOrSet.mockResolvedValue(mockUser);
 
       const result = await service.findOne(mockUser.id);
 
-      expect(redisService.getCache).toHaveBeenCalledWith(`user:${mockUser.id}`);
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.findOne).not.toHaveBeenCalled();
       expect(result).toEqual(mockUser);
     });
 
     it('should fetch from database and cache if not cached', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
 
       const result = await service.findOne(mockUser.id);
 
-      expect(redisService.getCache).toHaveBeenCalledWith(`user:${mockUser.id}`);
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUser.id } });
-      expect(redisService.setCache).toHaveBeenCalledWith(`user:${mockUser.id}`, mockUser, 60);
       expect(result).toEqual(mockUser);
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.findOne(mockUser.id)).rejects.toThrow(NotFoundException);
@@ -96,49 +113,51 @@ describe('UserService', () => {
   describe('findAll', () => {
     it('should return cached users if available', async () => {
       const users = [mockUser];
-      mockRedisService.getCache.mockResolvedValue(users);
+      mockCacheService.getOrSet.mockResolvedValue(users);
 
       const result = await service.findAll();
 
-      expect(redisService.getCache).toHaveBeenCalledWith('user:all:{}');
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.find).not.toHaveBeenCalled();
       expect(result).toEqual(users);
     });
 
     it('should fetch from database and cache if not cached', async () => {
       const users = [mockUser];
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.find.mockResolvedValue(users);
 
       const result = await service.findAll();
 
-      expect(redisService.getCache).toHaveBeenCalledWith('user:all:{}');
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.find).toHaveBeenCalledWith({});
-      expect(redisService.setCache).toHaveBeenCalledWith('user:all:{}', users, 60);
       expect(result).toEqual(users);
     });
   });
 
   describe('count', () => {
     it('should return cached count if available', async () => {
-      mockRedisService.getCache.mockResolvedValue(5);
+      mockCacheService.getOrSet.mockResolvedValue(5);
 
       const result = await service.count();
 
-      expect(redisService.getCache).toHaveBeenCalledWith('user:count:{}');
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.count).not.toHaveBeenCalled();
       expect(result).toBe(5);
     });
 
     it('should fetch from database and cache if not cached', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.count.mockResolvedValue(5);
 
       const result = await service.count();
 
-      expect(redisService.getCache).toHaveBeenCalledWith('user:count:{}');
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.count).toHaveBeenCalledWith({});
-      expect(redisService.setCache).toHaveBeenCalledWith('user:count:{}', 5, 60);
       expect(result).toBe(5);
     });
   });
@@ -147,7 +166,11 @@ describe('UserService', () => {
     const createUserDto: CreateUserDto = {
       email: 'test@example.com',
       fullname: 'Test User',
+      phone: '+1234567890',
       password: 'password123',
+      role: Role.PARENT,
+      age: 25,
+      gender: 'Male',
     };
 
     it('should create a new user and clear cache', async () => {
@@ -164,7 +187,7 @@ describe('UserService', () => {
         password: 'hashedPassword',
       });
       expect(userRepository.save).toHaveBeenCalledWith(mockUser);
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('user:*');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
       expect(result).toEqual(mockUser);
     });
 
@@ -182,7 +205,9 @@ describe('UserService', () => {
 
     it('should update user and clear cache', async () => {
       const updatedUser = { ...mockUser, fullname: 'Updated User' };
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockUserRepository.save.mockResolvedValue(updatedUser);
 
@@ -190,14 +215,16 @@ describe('UserService', () => {
 
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUser.id } });
       expect(userRepository.save).toHaveBeenCalledWith(updatedUser);
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('user:*');
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('student:*');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('student');
       expect(result).toEqual(updatedUser);
     });
 
     it('should hash password if provided', async () => {
       const updateWithPassword = { ...updateUserDto, password: 'newPassword123' };
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockUserRepository.save.mockResolvedValue({ ...mockUser, password: 'hashedPassword' });
 
@@ -207,7 +234,9 @@ describe('UserService', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.update(mockUser.id, updateUserDto)).rejects.toThrow(NotFoundException);
@@ -216,7 +245,9 @@ describe('UserService', () => {
 
   describe('delete', () => {
     it('should delete user and clear cache', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockUserRepository.delete.mockResolvedValue({ affected: 1 });
 
@@ -224,12 +255,14 @@ describe('UserService', () => {
 
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUser.id } });
       expect(userRepository.delete).toHaveBeenCalledWith(mockUser.id);
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('user:*');
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('student:*');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('student');
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.delete(mockUser.id)).rejects.toThrow(NotFoundException);
@@ -244,7 +277,7 @@ describe('UserService', () => {
       await service.deleteMany(ids);
 
       expect(userRepository.delete).toHaveBeenCalledWith(ids);
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('user:*');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
     });
   });
 
@@ -255,7 +288,7 @@ describe('UserService', () => {
       await service.deleteAll();
 
       expect(userRepository.clear).toHaveBeenCalled();
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('user:*');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
     });
   });
 });

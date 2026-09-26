@@ -13,7 +13,7 @@ import { ChapterModule } from './chapter/chapter.module';
 import { ContentModule } from './content/content.module';
 import { GroupModule } from './group/group.module';
 import { PaymentModule } from './payment/payment.module';
-import { RedisModule } from './common/redis/redis.module';
+import { CacheModule } from './common/cache/cache.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { RedisModule } from './common/redis/redis.module';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
-    RedisModule,
+    CacheModule,
     AuthModule,
     UserModule,
     StudentModule,

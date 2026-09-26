@@ -3,59 +3,51 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Chapter } from '../common/entities/chapter.entity';
 import { CreateChapterDto, UpdateChapterDto, GetChapterDto } from './dto/chapter.dto';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 
 @Injectable()
 export class ChapterService {
   constructor(
     @InjectRepository(Chapter)
     private chapterRepository: Repository<Chapter>,
-    private redisService: RedisService,
+    private cacheService: CacheService,
   ) {}
 
   async findOne(id: string): Promise<Chapter> {
-    const cacheKey = `chapter:${id}`;
-    const cached = await this.redisService.getCache<Chapter>(cacheKey);
-    if (cached) return cached;
-
-    const chapter = await this.chapterRepository.findOne({
-      where: { id },
-      relations: ['course', 'content'],
-    });
-    if (!chapter) {
-      throw new NotFoundException('Chapter not found');
-    }
-    await this.redisService.setCache(cacheKey, chapter, 60);
-    return chapter;
+    const cacheKey = this.cacheService.generateEntityCacheKey('chapter', id);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      const chapter = await this.chapterRepository.findOne({
+        where: { id },
+        relations: ['course', 'content'],
+      });
+      if (!chapter) {
+        throw new NotFoundException('Chapter not found');
+      }
+      return chapter;
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['chapter'] });
   }
 
   async findAll(query: any = {}): Promise<Chapter[]> {
-    const cacheKey = `chapter:all:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<Chapter[]>(cacheKey);
-    if (cached) return cached;
-
-    const chapters = await this.chapterRepository.find({
-      ...query,
-      relations: ['course', 'content'],
-    });
-    await this.redisService.setCache(cacheKey, chapters, 60);
-    return chapters;
+    const cacheKey = this.cacheService.generateListCacheKey('chapter', query);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.chapterRepository.find({
+        ...query,
+        relations: ['course', 'content'],
+      });
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['chapter'] });
   }
 
   async count(query: any = {}): Promise<number> {
-    const cacheKey = `chapter:count:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<number>(cacheKey);
-    if (cached !== null) return cached;
-
-    const count = await this.chapterRepository.count(query);
-    await this.redisService.setCache(cacheKey, count, 60);
-    return count;
+    const cacheKey = this.cacheService.generateCacheKey('chapter', 'count', JSON.stringify(query));
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.chapterRepository.count(query);
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['chapter'] });
   }
 
   async create(createChapterDto: CreateChapterDto): Promise<Chapter> {
     const chapter = this.chapterRepository.create(createChapterDto);
     const savedChapter = await this.chapterRepository.save(chapter);
-    await this.redisService.clearCachePattern('chapter:*');
+    await this.cacheService.invalidateByTag('chapter');
     return savedChapter;
   }
 
@@ -63,23 +55,23 @@ export class ChapterService {
     const chapter = await this.findOne(id);
     Object.assign(chapter, updateChapterDto);
     const updatedChapter = await this.chapterRepository.save(chapter);
-    await this.redisService.clearCachePattern('chapter:*');
+    await this.cacheService.invalidateByTag('chapter');
     return updatedChapter;
   }
 
   async delete(id: string): Promise<void> {
     await this.findOne(id);
     await this.chapterRepository.delete(id);
-    await this.redisService.clearCachePattern('chapter:*');
+    await this.cacheService.invalidateByTag('chapter');
   }
 
   async deleteMany(ids: string[]): Promise<void> {
     await this.chapterRepository.delete(ids);
-    await this.redisService.clearCachePattern('chapter:*');
+    await this.cacheService.invalidateByTag('chapter');
   }
 
   async deleteAll(): Promise<void> {
     await this.chapterRepository.clear();
-    await this.redisService.clearCachePattern('chapter:*');
+    await this.cacheService.invalidateByTag('chapter');
   }
 }

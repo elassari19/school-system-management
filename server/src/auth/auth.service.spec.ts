@@ -6,7 +6,7 @@ import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { User } from '../common/entities/user.entity';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 import { SignUpDto, SignInDto, ForgotPasswordDto, ResetPasswordDto } from './dto/auth.dto';
 
 const mockUser = {
@@ -30,18 +30,29 @@ const mockJwtService = {
   sign: jest.fn(),
 };
 
-const mockRedisService = {
-  getCache: jest.fn(),
-  setCache: jest.fn(),
-  clearCache: jest.fn(),
-  clearCachePattern: jest.fn(),
+const mockCacheConfig = {
+  getTtl: jest.fn().mockReturnValue(1800),
+  getKeyPrefix: jest.fn().mockReturnValue('school:'),
+  isEnabled: jest.fn().mockReturnValue(true),
+  getDefaultTtl: jest.fn().mockReturnValue(3600),
+};
+
+const mockCacheService = {
+  get: jest.fn(),
+  set: jest.fn(),
+  delete: jest.fn(),
+  invalidateByTag: jest.fn(),
+  getOrSet: jest.fn(),
+  generateEntityCacheKey: jest.fn((entity, id) => `school:${entity}:${id}`),
+  generateCacheKey: jest.fn((...parts) => `school:${parts.join(':')}`),
+  'cacheConfig': mockCacheConfig,
 };
 
 describe('AuthService', () => {
   let service: AuthService;
   let userRepository: Repository<User>;
   let jwtService: JwtService;
-  let redisService: RedisService;
+  let cacheService: CacheService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -56,8 +67,8 @@ describe('AuthService', () => {
           useValue: mockJwtService,
         },
         {
-          provide: RedisService,
-          useValue: mockRedisService,
+          provide: CacheService,
+          useValue: mockCacheService,
         },
       ],
     }).compile();
@@ -65,7 +76,7 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     jwtService = module.get<JwtService>(JwtService);
-    redisService = module.get<RedisService>(RedisService);
+    cacheService = module.get<CacheService>(CacheService);
 
     jest.clearAllMocks();
   });
@@ -93,7 +104,7 @@ describe('AuthService', () => {
         password: 'hashedPassword',
       });
       expect(userRepository.save).toHaveBeenCalledWith(mockUser);
-      expect(redisService.clearCachePattern).toHaveBeenCalledWith('course:*');
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
       expect(result).not.toHaveProperty('password');
       expect(result.email).toBe(signUpDto.email);
     });
@@ -119,9 +130,11 @@ describe('AuthService', () => {
     };
 
     it('should return user and access token on successful sign in', async () => {
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockJwtService.sign.mockReturnValue('mock-jwt-token');
-      mockRedisService.getCache.mockResolvedValue(null);
 
       const result = await service.signIn(signInDto);
 
@@ -139,16 +152,20 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(null);
-      mockRedisService.getCache.mockResolvedValue(null);
 
       await expect(service.signIn(signInDto)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException if password is invalid', async () => {
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      bcrypt.compare.mockResolvedValue(false);
-      mockRedisService.getCache.mockResolvedValue(null);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(service.signIn(signInDto)).rejects.toThrow(UnauthorizedException);
     });
@@ -156,19 +173,22 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return user if credentials are valid', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const result = await service.validateUser('test@example.com', 'password123');
 
-      expect(redisService.getCache).toHaveBeenCalledWith('user:test@example.com');
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
-      expect(redisService.setCache).toHaveBeenCalledWith('user:test@example.com', mockUser, 60);
       expect(result).toEqual(mockUser);
     });
 
     it('should return cached user if available', async () => {
-      mockRedisService.getCache.mockResolvedValue(mockUser);
+      mockCacheService.getOrSet.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const result = await service.validateUser('test@example.com', 'password123');
 
@@ -177,7 +197,9 @@ describe('AuthService', () => {
     });
 
     it('should return null if user not found', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(null);
 
       const result = await service.validateUser('test@example.com', 'password123');
@@ -186,9 +208,11 @@ describe('AuthService', () => {
     });
 
     it('should return null if password is invalid', async () => {
-      mockRedisService.getCache.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockImplementation(async (key, factory) => {
+        return factory();
+      });
       mockUserRepository.findOne.mockResolvedValue(mockUser);
-      bcrypt.compare.mockResolvedValue(false);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       const result = await service.validateUser('test@example.com', 'password123');
 
@@ -199,6 +223,7 @@ describe('AuthService', () => {
   // Direct test to verify bcrypt mock works
   describe('bcrypt mock verification', () => {
     it('should have bcrypt.compare mocked', async () => {
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       const result = await bcrypt.compare('any', 'any');
       expect(result).toBe(true);
     });
@@ -213,10 +238,10 @@ describe('AuthService', () => {
       const result = await service.forgotPassword(forgotPasswordDto);
 
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: forgotPasswordDto.email } });
-      expect(redisService.setCache).toHaveBeenCalledWith(
+      expect(cacheService.set).toHaveBeenCalledWith(
         `reset-password:${forgotPasswordDto.email}`,
         expect.any(String),
-        60 * 60,
+        expect.objectContaining({ ttl: 60 * 60, tags: ['password-reset'] }),
       );
       expect(result).toEqual({ message: 'Token sent to your email' });
     });
@@ -237,38 +262,39 @@ describe('AuthService', () => {
     };
 
     it('should reset password and clear reset token', async () => {
-      mockRedisService.getCache.mockResolvedValue('valid-token');
+      mockCacheService.get.mockResolvedValue('valid-token');
       mockUserRepository.findOne.mockResolvedValue(mockUser);
       mockUserRepository.update.mockResolvedValue({ affected: 1 });
 
       const result = await service.resetPassword(resetPasswordDto);
 
-      expect(redisService.getCache).toHaveBeenCalledWith(`reset-password:${resetPasswordDto.email}`);
+      expect(cacheService.get).toHaveBeenCalledWith(`reset-password:${resetPasswordDto.email}`);
       expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: resetPasswordDto.email } });
       expect(bcrypt.hash).toHaveBeenCalledWith(resetPasswordDto.password, 12);
       expect(userRepository.update).toHaveBeenCalledWith(
         { email: resetPasswordDto.email },
         { password: 'hashedPassword' },
       );
-      expect(redisService.clearCache).toHaveBeenCalledWith(`reset-password:${resetPasswordDto.email}`);
+      expect(cacheService.delete).toHaveBeenCalledWith(`reset-password:${resetPasswordDto.email}`);
+      expect(cacheService.invalidateByTag).toHaveBeenCalledWith('user');
       expect(result).toEqual({ message: 'Password reset successfully' });
     });
 
     it('should throw UnauthorizedException if token is invalid', async () => {
-      mockRedisService.getCache.mockResolvedValue('different-token');
+      mockCacheService.get.mockResolvedValue('different-token');
 
       await expect(service.resetPassword(resetPasswordDto)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw ConflictException if passwords do not match', async () => {
       const invalidDto = { ...resetPasswordDto, confirmPassword: 'different' };
-      mockRedisService.getCache.mockResolvedValue('valid-token');
+      mockCacheService.get.mockResolvedValue('valid-token');
 
       await expect(service.resetPassword(invalidDto)).rejects.toThrow(ConflictException);
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
-      mockRedisService.getCache.mockResolvedValue('valid-token');
+      mockCacheService.get.mockResolvedValue('valid-token');
       mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.resetPassword(resetPasswordDto)).rejects.toThrow(UnauthorizedException);
@@ -277,17 +303,17 @@ describe('AuthService', () => {
 
   describe('getProfile', () => {
     it('should return user profile without password', async () => {
-      mockUserRepository.findOne.mockResolvedValue(mockUser);
+      mockCacheService.getOrSet.mockResolvedValue(mockUser);
 
       const result = await service.getProfile(mockUser.id);
 
-      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUser.id } });
+      expect(cacheService.getOrSet).toHaveBeenCalled();
       expect(result).not.toHaveProperty('password');
       expect(result.email).toBe(mockUser.email);
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
-      mockUserRepository.findOne.mockResolvedValue(null);
+      mockCacheService.getOrSet.mockResolvedValue(null);
 
       await expect(service.getProfile(mockUser.id)).rejects.toThrow(UnauthorizedException);
     });

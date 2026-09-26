@@ -3,59 +3,51 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Group } from '../common/entities/group.entity';
 import { CreateGroupDto, UpdateGroupDto, GetGroupDto } from './dto/group.dto';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectRepository(Group)
     private groupRepository: Repository<Group>,
-    private redisService: RedisService,
+    private cacheService: CacheService,
   ) {}
 
   async findOne(id: string): Promise<Group> {
-    const cacheKey = `group:${id}`;
-    const cached = await this.redisService.getCache<Group>(cacheKey);
-    if (cached) return cached;
-
-    const group = await this.groupRepository.findOne({
-      where: { id },
-      relations: ['user', 'memberships', 'admins'],
-    });
-    if (!group) {
-      throw new NotFoundException('Group not found');
-    }
-    await this.redisService.setCache(cacheKey, group, 60);
-    return group;
+    const cacheKey = this.cacheService.generateEntityCacheKey('group', id);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      const group = await this.groupRepository.findOne({
+        where: { id },
+        relations: ['user', 'memberships', 'admins'],
+      });
+      if (!group) {
+        throw new NotFoundException('Group not found');
+      }
+      return group;
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['group'] });
   }
 
   async findAll(query: any = {}): Promise<Group[]> {
-    const cacheKey = `group:all:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<Group[]>(cacheKey);
-    if (cached) return cached;
-
-    const groups = await this.groupRepository.find({
-      ...query,
-      relations: ['user', 'memberships', 'admins'],
-    });
-    await this.redisService.setCache(cacheKey, groups, 60);
-    return groups;
+    const cacheKey = this.cacheService.generateListCacheKey('group', query);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.groupRepository.find({
+        ...query,
+        relations: ['user', 'memberships', 'admins'],
+      });
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['group'] });
   }
 
   async count(query: any = {}): Promise<number> {
-    const cacheKey = `group:count:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<number>(cacheKey);
-    if (cached !== null) return cached;
-
-    const count = await this.groupRepository.count(query);
-    await this.redisService.setCache(cacheKey, count, 60);
-    return count;
+    const cacheKey = this.cacheService.generateCacheKey('group', 'count', JSON.stringify(query));
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.groupRepository.count(query);
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['group'] });
   }
 
   async create(createGroupDto: CreateGroupDto): Promise<Group> {
     const group = this.groupRepository.create(createGroupDto);
     const savedGroup = await this.groupRepository.save(group);
-    await this.redisService.clearCachePattern('group:*');
+    await this.cacheService.invalidateByTag('group');
     return savedGroup;
   }
 
@@ -63,23 +55,23 @@ export class GroupService {
     const group = await this.findOne(id);
     Object.assign(group, updateGroupDto);
     const updatedGroup = await this.groupRepository.save(group);
-    await this.redisService.clearCachePattern('group:*');
+    await this.cacheService.invalidateByTag('group');
     return updatedGroup;
   }
 
   async delete(id: string): Promise<void> {
     await this.findOne(id);
     await this.groupRepository.delete(id);
-    await this.redisService.clearCachePattern('group:*');
+    await this.cacheService.invalidateByTag('group');
   }
 
   async deleteMany(ids: string[]): Promise<void> {
     await this.groupRepository.delete(ids);
-    await this.redisService.clearCachePattern('group:*');
+    await this.cacheService.invalidateByTag('group');
   }
 
   async deleteAll(): Promise<void> {
     await this.groupRepository.clear();
-    await this.redisService.clearCachePattern('group:*');
+    await this.cacheService.invalidateByTag('group');
   }
 }

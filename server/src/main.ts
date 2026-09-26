@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import session from 'express-session';
-import connectRedis from 'connect-redis';
+import RedisStore from 'connect-redis';
 import { RedisService } from './common/redis/redis.service';
 import { AppModule } from './app.module';
 
@@ -10,11 +10,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const redisService = app.get(RedisService);
-  const RedisStore = connectRedis(session);
+  const redisClient = redisService.getClient();
 
   app.use(
     session({
-      store: new RedisStore({ client: redisService as any }),
+      store: new (RedisStore as any)({ client: redisClient, prefix: 'sess:' }),
       secret: process.env.SECRET_KEY || 'j809898nbbbhf76v65c4cuj',
       saveUninitialized: false,
       resave: false,

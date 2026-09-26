@@ -3,53 +3,45 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teacher } from '../common/entities/teacher.entity';
 import { CreateTeacherDto, UpdateTeacherDto, GetTeacherDto } from './dto/teacher.dto';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 
 @Injectable()
 export class TeacherService {
   constructor(
     @InjectRepository(Teacher)
     private teacherRepository: Repository<Teacher>,
-    private redisService: RedisService,
+    private cacheService: CacheService,
   ) {}
 
   async findOne(id: string): Promise<Teacher> {
-    const cacheKey = `teacher:${id}`;
-    const cached = await this.redisService.getCache<Teacher>(cacheKey);
-    if (cached) return cached;
-
-    const teacher = await this.teacherRepository.findOne({
-      where: { id },
-      relations: ['user', 'subject', 'classes', 'education', 'experience'],
-    });
-    if (!teacher) {
-      throw new NotFoundException('Teacher not found');
-    }
-    await this.redisService.setCache(cacheKey, teacher, 60);
-    return teacher;
+    const cacheKey = this.cacheService.generateEntityCacheKey('teacher', id);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      const teacher = await this.teacherRepository.findOne({
+        where: { id },
+        relations: ['user', 'subject', 'classes', 'education', 'experience'],
+      });
+      if (!teacher) {
+        throw new NotFoundException('Teacher not found');
+      }
+      return teacher;
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['teacher'] });
   }
 
   async findAll(query: any = {}): Promise<Teacher[]> {
-    const cacheKey = `teacher:all:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<Teacher[]>(cacheKey);
-    if (cached) return cached;
-
-    const teachers = await this.teacherRepository.find({
-      ...query,
-      relations: ['user', 'subject', 'classes', 'education', 'experience'],
-    });
-    await this.redisService.setCache(cacheKey, teachers, 60);
-    return teachers;
+    const cacheKey = this.cacheService.generateListCacheKey('teacher', query);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.teacherRepository.find({
+        ...query,
+        relations: ['user', 'subject', 'classes', 'education', 'experience'],
+      });
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['teacher'] });
   }
 
   async count(query: any = {}): Promise<number> {
-    const cacheKey = `teacher:count:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<number>(cacheKey);
-    if (cached !== null) return cached;
-
-    const count = await this.teacherRepository.count(query);
-    await this.redisService.setCache(cacheKey, count, 60);
-    return count;
+    const cacheKey = this.cacheService.generateCacheKey('teacher', 'count', JSON.stringify(query));
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.teacherRepository.count(query);
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['teacher'] });
   }
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
@@ -61,7 +53,7 @@ export class TeacherService {
       // Handle class associations if needed
     }
 
-    await this.redisService.clearCachePattern('teacher:*');
+    await this.cacheService.invalidateByTag('teacher');
     return savedTeacher;
   }
 
@@ -69,23 +61,23 @@ export class TeacherService {
     const teacher = await this.findOne(id);
     Object.assign(teacher, updateTeacherDto);
     const updatedTeacher = await this.teacherRepository.save(teacher);
-    await this.redisService.clearCachePattern('teacher:*');
+    await this.cacheService.invalidateByTag('teacher');
     return updatedTeacher;
   }
 
   async delete(id: string): Promise<void> {
     await this.findOne(id);
     await this.teacherRepository.delete(id);
-    await this.redisService.clearCachePattern('teacher:*');
+    await this.cacheService.invalidateByTag('teacher');
   }
 
   async deleteMany(ids: string[]): Promise<void> {
     await this.teacherRepository.delete(ids);
-    await this.redisService.clearCachePattern('teacher:*');
+    await this.cacheService.invalidateByTag('teacher');
   }
 
   async deleteAll(): Promise<void> {
     await this.teacherRepository.clear();
-    await this.redisService.clearCachePattern('teacher:*');
+    await this.cacheService.invalidateByTag('teacher');
   }
 }

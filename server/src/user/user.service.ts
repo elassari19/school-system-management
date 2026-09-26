@@ -4,47 +4,39 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../common/entities/user.entity';
 import { CreateUserDto, UpdateUserDto, GetUserDto } from './dto/user.dto';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private redisService: RedisService,
+    private cacheService: CacheService,
   ) {}
 
   async findOne(id: string): Promise<User> {
-    const cacheKey = `user:${id}`;
-    const cached = await this.redisService.getCache<User>(cacheKey);
-    if (cached) return cached;
-
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    await this.redisService.setCache(cacheKey, user, 60);
-    return user;
+    const cacheKey = this.cacheService.generateEntityCacheKey('user', id);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      const user = await this.userRepository.findOne({ where: { id } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] });
   }
 
   async findAll(query: any = {}): Promise<User[]> {
-    const cacheKey = `user:all:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<User[]>(cacheKey);
-    if (cached) return cached;
-
-    const users = await this.userRepository.find(query);
-    await this.redisService.setCache(cacheKey, users, 60);
-    return users;
+    const cacheKey = this.cacheService.generateListCacheKey('user', query);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.userRepository.find(query);
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] });
   }
 
   async count(query: any = {}): Promise<number> {
-    const cacheKey = `user:count:${JSON.stringify(query)}`;
-    const cached = await this.redisService.getCache<number>(cacheKey);
-    if (cached !== null) return cached;
-
-    const count = await this.userRepository.count(query);
-    await this.redisService.setCache(cacheKey, count, 60);
-    return count;
+    const cacheKey = this.cacheService.generateCacheKey('user', 'count', JSON.stringify(query));
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.userRepository.count(query);
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] });
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -63,7 +55,7 @@ export class UserService {
     });
 
     const savedUser = await this.userRepository.save(user);
-    await this.redisService.clearCachePattern('user:*');
+    await this.cacheService.invalidateByTag('user');
     return savedUser;
   }
 
@@ -76,25 +68,25 @@ export class UserService {
 
     Object.assign(user, updateUserDto);
     const updatedUser = await this.userRepository.save(user);
-    await this.redisService.clearCachePattern('user:*');
-    await this.redisService.clearCachePattern('student:*');
+    await this.cacheService.invalidateByTag('user');
+    await this.cacheService.invalidateByTag('student');
     return updatedUser;
   }
 
   async delete(id: string): Promise<void> {
-    const user = await this.findOne(id);
+    await this.findOne(id);
     await this.userRepository.delete(id);
-    await this.redisService.clearCachePattern('user:*');
-    await this.redisService.clearCachePattern('student:*');
+    await this.cacheService.invalidateByTag('user');
+    await this.cacheService.invalidateByTag('student');
   }
 
   async deleteMany(ids: string[]): Promise<void> {
     await this.userRepository.delete(ids);
-    await this.redisService.clearCachePattern('user:*');
+    await this.cacheService.invalidateByTag('user');
   }
 
   async deleteAll(): Promise<void> {
     await this.userRepository.clear();
-    await this.redisService.clearCachePattern('user:*');
+    await this.cacheService.invalidateByTag('user');
   }
 }

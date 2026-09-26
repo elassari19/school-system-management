@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import Stripe from 'stripe';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { CreatePaymentIntentDto, CreateCheckoutSessionDto, RetrievePaymentDto } 
 import { ConfigService } from '@nestjs/config';
 import { PaymentStatus } from '../common/entities/enums';
 import { STRIPE_CLIENT } from '../common/providers/stripe.provider';
+import { CacheService } from '../common/cache/cache.service';
 
 @Injectable()
 export class PaymentService {
@@ -19,6 +20,7 @@ export class PaymentService {
     private paymentRepository: Repository<Payment>,
     @InjectRepository(Parent)
     private parentRepository: Repository<Parent>,
+    private cacheService: CacheService,
   ) {}
 
   async getPriceId() {
@@ -88,13 +90,16 @@ export class PaymentService {
   async retrievePayment(retrievePaymentDto: RetrievePaymentDto) {
     const { paymentId } = retrievePaymentDto;
 
-    const payment = await this.stripe.paymentIntents.retrieve(paymentId);
+    const cacheKey = this.cacheService.generateEntityCacheKey('payment', paymentId);
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      const payment = await this.stripe.paymentIntents.retrieve(paymentId);
 
-    if (!payment) {
-      throw new Error('Payment not found');
-    }
+      if (!payment) {
+        throw new NotFoundException('Payment not found');
+      }
 
-    return payment;
+      return payment;
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('payments'), tags: ['payment'] });
   }
 
   async handleWebhook(payload: Buffer, signature: string) {
@@ -119,6 +124,7 @@ export class PaymentService {
         if (payment) {
           payment.status = PaymentStatus.PAID;
           await this.paymentRepository.save(payment);
+          await this.cacheService.invalidateByTag('payment');
         }
       } catch (error) {
         console.error('Error updating payment status:', error);
@@ -134,6 +140,8 @@ export class PaymentService {
       signatureId,
       status: PaymentStatus.PENDING,
     });
-    return this.paymentRepository.save(payment);
+    const savedPayment = await this.paymentRepository.save(payment);
+    await this.cacheService.invalidateByTag('payment');
+    return savedPayment;
   }
 }

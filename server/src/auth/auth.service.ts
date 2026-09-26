@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../common/entities/user.entity';
 import { SignUpDto, SignInDto, ForgotPasswordDto, ResetPasswordDto } from './dto/auth.dto';
-import { RedisService } from '../common/redis/redis.service';
+import { CacheService } from '../common/cache/cache.service';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
-    private redisService: RedisService,
+    private cacheService: CacheService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -39,7 +39,7 @@ export class AuthService {
     });
 
     const savedUser = await this.userRepository.save(user);
-    await this.redisService.clearCachePattern('course:*');
+    await this.cacheService.invalidateByTag('user');
 
     const { password: _, ...result } = savedUser;
     return result;
@@ -59,24 +59,17 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const cacheKey = `user:${email}`;
-    const cachedUser = await this.redisService.getCache<User>(cacheKey);
+    const cacheKey = this.cacheService.generateEntityCacheKey('user', email);
 
-    let user: User | null = null;
-    if (cachedUser) {
-      user = cachedUser;
-    } else {
-      user = await this.userRepository.findOne({ where: { email } });
-      if (user) {
-        await this.redisService.setCache(cacheKey, user, 60);
-      }
-    }
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return null;
-    }
-
-    return user;
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      return this.userRepository.findOne({ where: { email } });
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] })
+      .then(async (user) => {
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+          return null;
+        }
+        return user;
+      });
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
@@ -89,10 +82,10 @@ export class AuthService {
     }
 
     const token = Math.random().toString(36).substring(2);
-    await this.redisService.setCache(
+    await this.cacheService.set(
       `reset-password:${forgotPasswordDto.email}`,
       token,
-      60 * 60,
+      { ttl: 60 * 60, tags: ['password-reset'] },
     );
 
     return { message: 'Token sent to your email' };
@@ -101,9 +94,7 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { email, token, password, confirmPassword } = resetPasswordDto;
 
-    const storedToken = await this.redisService.getCache<string>(
-      `reset-password:${email}`,
-    );
+    const storedToken = await this.cacheService.get<string>(`reset-password:${email}`);
 
     if (storedToken !== token) {
       throw new UnauthorizedException('Invalid token');
@@ -120,13 +111,18 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 12);
     await this.userRepository.update({ email }, { password: hashedPassword });
-    await this.redisService.clearCache(`reset-password:${email}`);
+    await this.cacheService.delete(`reset-password:${email}`);
+    await this.cacheService.invalidateByTag('user');
 
     return { message: 'Password reset successfully' };
   }
 
   async getProfile(userId: string) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const cacheKey = this.cacheService.generateEntityCacheKey('user', userId);
+    const user = await this.cacheService.getOrSet(cacheKey, async () => {
+      return this.userRepository.findOne({ where: { id: userId } });
+    }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] });
+
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
