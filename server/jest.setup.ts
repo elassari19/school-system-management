@@ -5,5 +5,5 @@ jest.mock('bcryptjs', () => ({
   compare: jest.fn().mockImplementation(() => Promise.resolve(true)),
 }));
 
-bcrypt.hash.mockImplementation(() => Promise.resolve('hashedPassword'));
-bcrypt.compare.mockImplementation(() => Promise.resolve(true));
+(bcrypt.hash as jest.Mock).mockImplementation(() => Promise.resolve('hashedPassword'));
+(bcrypt.compare as jest.Mock).mockImplementation(() => Promise.resolve(true));

@@ -37,11 +37,9 @@ export class GroupMembership {
   group: Group;
 
   @ManyToOne(() => User, (user) => user.adminGroups)
-  @JoinColumn({ name: 'user_id' })
   adminUser: User;
 
   @ManyToOne(() => Group, (group) => group.admins)
-  @JoinColumn({ name: 'user_id' })
   adminGroup: Group;
 
   @CreateDateColumn()
