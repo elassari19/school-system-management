@@ -27,6 +27,9 @@ export async function getEventQuery(id: string) {
   return await getFirstData(
     {
       where: { id },
+      include: {
+        createdBy: true,
+      },
     },
     'event'
   );

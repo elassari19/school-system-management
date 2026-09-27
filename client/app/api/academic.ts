@@ -202,7 +202,15 @@ export async function getTeacherDetailsQuery(userId: string) {
       teacher: {
         include: {
           subject: true,
-          classes: true,
+          classes: {
+            include: {
+              class: {
+                include: {
+                  students: true,
+                },
+              },
+            },
+          },
           education: true,
           experience: true,
         },
@@ -316,9 +324,31 @@ export async function getClassQuery(id: string) {
     {
       where: { id },
       include: {
-        students: true,
-        teachers: true,
-        subject: true,
+        students: {
+          include: {
+            user: true,
+            parent: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+        teachers: {
+          include: {
+            teacher: {
+              include: {
+                user: true,
+                subject: true,
+              },
+            },
+          },
+        },
+        subject: {
+          include: {
+            subject: true,
+          },
+        },
       },
     },
     'class'
@@ -369,9 +399,25 @@ export async function getSubjectQuery(id: string) {
     {
       where: { id },
       include: {
-        courses: true,
-        teacher: true,
-        classes: true,
+        courses: {
+          include: {
+            chapters: true,
+          },
+        },
+        teacher: {
+          include: {
+            user: true,
+          },
+        },
+        classes: {
+          include: {
+            class: {
+              include: {
+                students: true,
+              },
+            },
+          },
+        },
       },
     },
     'subject'
