@@ -120,7 +120,13 @@ const PageTable = ({ headCell, bodyCell, pages, ModalForm, className }: IProps) 
                     if (cell === 'Avatar') {
                       return (
                         <TableCell key={idx} className="max-w-16 overflow-scroll text-sm">
-                          <Image src={item.avatar} alt="avatar" width={30} height={30} />
+                          <Image
+                            src={item.avatar}
+                            alt="avatar"
+                            width={30}
+                            height={30}
+                            unoptimized
+                          />
                         </TableCell>
                       );
                     }

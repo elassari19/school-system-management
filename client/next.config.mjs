@@ -16,6 +16,11 @@ const nextConfig = {
         hostname: 'cloudflare-ipfs.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
+        pathname: '**',
+      },
       // Add other image sources if needed
     ],
   },

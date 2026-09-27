@@ -16,7 +16,6 @@ export async function setCookie(key: string, value: any, options = {}) {
 export async function getCookie(key: string) {
   const cookieStore = await cookies();
   const cookie = cookieStore.get(key)?.value;
-  console.log('cookie', cookie);
   return cookie;
 }
 

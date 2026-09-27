@@ -12,7 +12,7 @@
 @source "../i18n";
 
 @theme inline {
-  --color-background: ##d4bdc3;
+  --color-background: #f3efef;
   --color-foreground: #f0f0f0;
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
@@ -44,8 +44,8 @@
 }
 
 :root {
-  --background: #d4bdc3;
-  --foreground: #d4bdc3;
+  --background: #f3efef;
+  --foreground: #f0f0f0;
 }
 
 @layer utilities {
