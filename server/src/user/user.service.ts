@@ -6,6 +6,8 @@ import { User } from '../common/entities/user.entity';
 import { CreateUserDto, UpdateUserDto, GetUserDto } from './dto/user.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -28,7 +30,7 @@ export class UserService {
   async findAll(query: any = {}): Promise<User[]> {
     const cacheKey = this.cacheService.generateListCacheKey('user', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
-      return this.userRepository.find(query);
+      return this.userRepository.find(sanitizeFindQuery<User>(query));
     }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] });
   }
 
@@ -56,6 +58,7 @@ export class UserService {
 
     const savedUser = await this.userRepository.save(user);
     await this.cacheService.invalidateByTag('user');
+    delete (savedUser as Partial<User>).password;
     return savedUser;
   }
 
@@ -70,6 +73,7 @@ export class UserService {
     const updatedUser = await this.userRepository.save(user);
     await this.cacheService.invalidateByTag('user');
     await this.cacheService.invalidateByTag('student');
+    delete (updatedUser as Partial<User>).password;
     return updatedUser;
   }
 

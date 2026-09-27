@@ -62,7 +62,10 @@ export class AuthService {
     const cacheKey = this.cacheService.generateEntityCacheKey('user', email);
 
     return this.cacheService.getOrSet(cacheKey, async () => {
-      return this.userRepository.findOne({ where: { email } });
+      return this.userRepository.findOne({
+        where: { email },
+        select: ['id', 'email', 'fullname', 'phone', 'role', 'password'],
+      });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['user'] })
       .then(async (user) => {
         if (!user || !(await bcrypt.compare(password, user.password))) {

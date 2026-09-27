@@ -5,6 +5,8 @@ import { Content } from '../common/entities/content.entity';
 import { CreateContentDto, UpdateContentDto, GetContentDto } from './dto/content.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class ContentService {
   constructor(
@@ -30,9 +32,10 @@ export class ContentService {
   async findAll(query: any = {}): Promise<Content[]> {
     const cacheKey = this.cacheService.generateListCacheKey('content', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Content>(query);
       return this.contentRepository.find({
-        ...query,
-        relations: ['chapter'],
+        ...options,
+        relations: Array.isArray(options.relations) && options.relations.length ? (options.relations as string[]) : ['chapter'],
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['content'] });
   }

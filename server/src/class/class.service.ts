@@ -5,6 +5,8 @@ import { Class } from '../common/entities/class.entity';
 import { CreateClassDto, UpdateClassDto, GetClassDto } from './dto/class.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class ClassService {
   constructor(

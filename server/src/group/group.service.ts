@@ -5,6 +5,8 @@ import { Group } from '../common/entities/group.entity';
 import { CreateGroupDto, UpdateGroupDto, GetGroupDto } from './dto/group.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class GroupService {
   constructor(
@@ -30,9 +32,10 @@ export class GroupService {
   async findAll(query: any = {}): Promise<Group[]> {
     const cacheKey = this.cacheService.generateListCacheKey('group', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Group>(query);
       return this.groupRepository.find({
-        ...query,
-        relations: ['user', 'memberships', 'admins'],
+        ...options,
+        relations: Array.isArray(options.relations) && options.relations.length ? (options.relations as string[]) : ['user', 'memberships', 'admins'],
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['group'] });
   }

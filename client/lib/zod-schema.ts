@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const signUpSchema = z
   .object({
-    role: z.enum(['student', 'parent', 'teacher'], {
+    role: z.enum(['student', 'parent', 'teacher', 'admin'], {
       required_error: 'Please select a user type',
     }),
     fullName: z.string().min(2, 'Full name must be at least 2 characters'),

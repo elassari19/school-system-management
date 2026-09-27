@@ -5,6 +5,8 @@ import { Student } from '../common/entities/student.entity';
 import { CreateStudentDto, UpdateStudentDto, GetStudentDto } from './dto/student.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class StudentService {
   constructor(
@@ -30,9 +32,10 @@ export class StudentService {
   async findAll(query: any = {}): Promise<Student[]> {
     const cacheKey = this.cacheService.generateListCacheKey('student', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Student>(query);
       return this.studentRepository.find({
-        ...query,
-        relations: ['user', 'parent', 'parent.user', 'class'],
+        ...options,
+        relations: Array.isArray(options.relations) && options.relations.length ? (options.relations as string[]) : ['user', 'parent', 'parent.user', 'class'],
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['student'] });
   }

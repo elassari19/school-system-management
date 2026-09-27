@@ -10,7 +10,7 @@ const SignOut = () => {
   const { au, g } = useIntlTranslations();
   const _signOut = async () => {
     const response = await signOut();
-    if (response.ok) {
+    if (response.success) {
       return toast.success(au('Signed out successfully'));
     }
     return toast.error(au('Failed to sign out'));

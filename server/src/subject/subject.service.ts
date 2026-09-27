@@ -5,6 +5,8 @@ import { Subject } from '../common/entities/subject.entity';
 import { CreateSubjectDto, UpdateSubjectDto, GetSubjectDto } from './dto/subject.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class SubjectService {
   constructor(
@@ -30,9 +32,10 @@ export class SubjectService {
   async findAll(query: any = {}): Promise<Subject[]> {
     const cacheKey = this.cacheService.generateListCacheKey('subject', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Subject>(query);
       return this.subjectRepository.find({
-        ...query,
-        relations: ['courses', 'teacher', 'classes', 'createdBy'],
+        ...options,
+        relations: Array.isArray(options.relations) && options.relations.length ? (options.relations as string[]) : ['courses', 'teacher', 'classes', 'createdBy'],
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['subject'] });
   }

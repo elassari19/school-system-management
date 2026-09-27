@@ -5,6 +5,8 @@ import { Teacher } from '../common/entities/teacher.entity';
 import { CreateTeacherDto, UpdateTeacherDto, GetTeacherDto } from './dto/teacher.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class TeacherService {
   constructor(
@@ -30,9 +32,10 @@ export class TeacherService {
   async findAll(query: any = {}): Promise<Teacher[]> {
     const cacheKey = this.cacheService.generateListCacheKey('teacher', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Teacher>(query);
       return this.teacherRepository.find({
-        ...query,
-        relations: ['user', 'subject', 'classes', 'education', 'experience'],
+        ...options,
+        relations: Array.isArray(options.relations) && options.relations.length ? (options.relations as string[]) : ['user', 'subject', 'classes', 'education', 'experience'],
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['teacher'] });
   }

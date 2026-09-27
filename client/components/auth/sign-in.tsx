@@ -5,24 +5,27 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter } from '@/i18n/routing';
 import { UserRole } from '@/lib/types';
 import { signInAction } from '../../app/api/auth';
 import toast from 'react-hot-toast';
 import useIntlTranslations from '@/hooks/use-intl-translations';
 import { type SignInFormData, signInSchema } from '@/lib/zod-schema';
-import { Mail, Lock, Eye, EyeOff, GraduationCap, Users, Briefcase } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, GraduationCap, Users, Briefcase, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const roleOptions: { value: UserRole; label: string; icon: React.ElementType; color: string }[] = [
   { value: 'Student', label: 'Student', icon: GraduationCap, color: 'amber' },
   { value: 'Parent', label: 'Parents', icon: Users, color: 'teal' },
   { value: 'Teacher', label: 'Teachers', icon: Briefcase, color: 'blue' },
+  { value: 'Admin', label: 'Admin', icon: Shield, color: 'purple' },
 ];
 
 const colorMap = {
   amber: { bg: 'bg-amber-500/20', border: 'border-amber-500/30', text: 'text-amber-400', hover: 'hover:bg-amber-500/30', iconBg: 'bg-amber-500/20', iconText: 'text-amber-400' },
   teal: { bg: 'bg-teal-500/20', border: 'border-teal-500/30', text: 'text-teal-400', hover: 'hover:bg-teal-500/30', iconBg: 'bg-teal-500/20', iconText: 'text-teal-400' },
   blue: { bg: 'bg-blue-500/20', border: 'border-blue-500/30', text: 'text-blue-400', hover: 'hover:bg-blue-500/30', iconBg: 'bg-blue-500/20', iconText: 'text-blue-400' },
+  purple: { bg: 'bg-purple-500/20', border: 'border-purple-500/30', text: 'text-purple-400', hover: 'hover:bg-purple-500/30', iconBg: 'bg-purple-500/20', iconText: 'text-purple-400' },
 };
 
 const SignIn = () => {
@@ -30,6 +33,7 @@ const SignIn = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole>('Student');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const hidePasswordLabel = au('Hide password');
   const showPasswordLabel = au('Show password');
@@ -46,10 +50,12 @@ const SignIn = () => {
     setError(null);
     try {
       const response = await signInAction(data);
-      if (response.faield) {
+      if (response.failed) {
         return toast.error(au('Email or Password wrong'));
       }
-      return toast.success(`${au('Successfully signed in')} ${response.fullname}`);
+      toast.success(`${au('Successfully signed in')} ${response.fullname}`);
+      router.push('/dashboard');
+      router.refresh();
     } catch {
       toast.error(au('Failed to sign in Please try again'));
       setError(au('Failed to sign in Please try again'));

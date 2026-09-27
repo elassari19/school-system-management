@@ -90,6 +90,7 @@
     "Average": "Average",
     "Users": "Users",
     "Teacher": "Teacher",
+    "Admin": "Admin",
     "Teacher Reports": "Teacher Reports",
     "Attendance Reports": "Attendance Reports",
     "new students this year": "new students this year",
@@ -149,7 +150,9 @@
     "Don't have account?": "Don't have account?",
     "Or continue with": "Or continue with",
     "Successfully signed up": "Successfully signed up",
-    "failedToSignUp": "Failed to sign up. Please try again."
+    "failedToSignUp": "Failed to sign up. Please try again.",
+    "Hide password": "Hide password",
+    "Show password": "Show password"
   },
   "academic": {
     "new Parents this year": "new Parents this year",

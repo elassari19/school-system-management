@@ -5,6 +5,8 @@ import { Chapter } from '../common/entities/chapter.entity';
 import { CreateChapterDto, UpdateChapterDto, GetChapterDto } from './dto/chapter.dto';
 import { CacheService } from '../common/cache/cache.service';
 
+import { sanitizeFindQuery } from '../utils/query-sanitizer';
+
 @Injectable()
 export class ChapterService {
   constructor(
@@ -30,9 +32,10 @@ export class ChapterService {
   async findAll(query: any = {}): Promise<Chapter[]> {
     const cacheKey = this.cacheService.generateListCacheKey('chapter', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Chapter>(query);
       return this.chapterRepository.find({
-        ...query,
-        relations: ['course', 'content'],
+        ...options,
+        relations: Array.isArray(options.relations) && options.relations.length ? (options.relations as string[]) : ['course', 'content'],
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['chapter'] });
   }

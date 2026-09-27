@@ -1,6 +1,7 @@
 'use server';
 
 import { API_URL } from '@/lib/functions-helper';
+import { getAuthHeaders } from '@/lib/api-headers';
 import { revalidatePath } from 'next/cache';
 import {
   transformPrismaToTypeORM,
@@ -37,7 +38,7 @@ export async function countData(query: Record<string, unknown>, target = 'user')
   const transformedQuery = transformPrismaToTypeORM(query);
   const res = await fetch(`${API_URL}/${target}/count`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
     body: JSON.stringify(transformedQuery),
   });
   const data = await res.json();
@@ -56,7 +57,7 @@ export async function getData(query: Record<string, unknown>, target = 'user') {
   
   const res = await fetch(`${API_URL}/${target}/all?${params.toString()}`, {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
   });
   const data = await res.json();
   return data;
@@ -68,20 +69,21 @@ export async function getFirstData(query: Record<string, unknown>, target = 'use
   if (transformedQuery.where) params.append('where', JSON.stringify(transformedQuery.where));
   if (transformedQuery.relations) params.append('relations', JSON.stringify(transformedQuery.relations));
   if (transformedQuery.select) params.append('select', JSON.stringify(transformedQuery.select));
+  params.append('take', '1');
   
-  const res = await fetch(`${API_URL}/${target}?${params.toString()}`, {
+  const res = await fetch(`${API_URL}/${target}/all?${params.toString()}`, {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
   });
   const data = await res.json();
-  return data;
+  return Array.isArray(data) ? data[0] ?? null : data;
 }
 
 export async function updateData(query: PrismaQuery, target = 'user') {
   const body = buildUpdateBody(query, target);
   const res = await fetch(`${API_URL}/${target}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
     body: JSON.stringify(body),
   });
 
@@ -94,7 +96,7 @@ export async function createData(query: PrismaQuery, target = 'user') {
   const transformedQuery = transformCreateQuery(query);
   const res = await fetch(`${API_URL}/${target}/create`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
     body: JSON.stringify(transformedQuery.data),
   });
 
@@ -107,7 +109,7 @@ export async function deleteData(query: PrismaQuery, target = 'user') {
   const body = buildDeleteBody(query, target);
   const res = await fetch(`${API_URL}/${target}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await getAuthHeaders(),
     body: JSON.stringify(body),
   });
 

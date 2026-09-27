@@ -4,14 +4,15 @@ import { getCookie } from '@/lib/cookies-handler';
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Lock, Mail, Eye, EyeOff, Globe, ArrowRight } from 'lucide-react';
+import { requireAuth } from '@/lib/auth-helper';
 
 export default async function page() {
   const g = await getTranslations('global');
   const au = await getTranslations('auth');
   const t = await getTranslations('');
 
-  const auth = await getCookie('session');
-  if (auth) {
+  const user = await requireAuth();
+  if (user) {
     return redirect(`/${t('locale')}/dashboard`);
   }
 

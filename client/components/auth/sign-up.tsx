@@ -3,27 +3,31 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from '@/i18n/routing';
 import useIntlTranslations from '@/hooks/use-intl-translations';
 import { signUpAction } from '../../app/api/auth';
 import toast from 'react-hot-toast';
 import { type SignUpFormData, signUpSchema } from '@/lib/zod-schema';
-import { Mail, Lock, Eye, EyeOff, User, GraduationCap, Users, Briefcase } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, GraduationCap, Users, Briefcase, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const roleOptions = [
   { value: 'student', label: 'Student', icon: GraduationCap, color: 'amber' },
   { value: 'parent', label: 'Parents', icon: Users, color: 'teal' },
   { value: 'teacher', label: 'Teachers', icon: Briefcase, color: 'blue' },
+  { value: 'admin', label: 'Admin', icon: Shield, color: 'purple' },
 ];
 
 const colorMap = {
   amber: { bg: 'bg-amber-500/20', border: 'border-amber-500/30', text: 'text-amber-400', hover: 'hover:bg-amber-500/30', iconBg: 'bg-amber-500/20', iconText: 'text-amber-400' },
   teal: { bg: 'bg-teal-500/20', border: 'border-teal-500/30', text: 'text-teal-400', hover: 'hover:bg-teal-500/30', iconBg: 'bg-teal-500/20', iconText: 'text-teal-400' },
   blue: { bg: 'bg-blue-500/20', border: 'border-blue-500/30', text: 'text-blue-400', hover: 'hover:bg-blue-500/30', iconBg: 'bg-blue-500/20', iconText: 'text-blue-400' },
+  purple: { bg: 'bg-purple-500/20', border: 'border-purple-500/30', text: 'text-purple-400', hover: 'hover:bg-purple-500/30', iconBg: 'bg-purple-500/20', iconText: 'text-purple-400' },
 };
 
 const SignUp = () => {
   const { g, au } = useIntlTranslations();
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState('student');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -36,6 +40,7 @@ const SignUp = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     watch,
   } = useForm<SignUpFormData>({
@@ -50,10 +55,12 @@ const SignUp = () => {
     setError(null);
     try {
       const response = await signUpAction(data);
-      if (response.faield) {
+      if (response?.failed) {
         return toast.error(au('Email or Password wrong'));
       }
-      return toast.success(`${au('Successfully signed up')} ${response.fullname}`);
+      toast.success(`${au('Successfully signed up')} ${response.fullname}`);
+      router.push('/dashboard');
+      router.refresh();
     } catch {
       toast.error(au('auth.failedToSignUp'));
       setError(au('auth.failedToSignUp'));
@@ -73,7 +80,10 @@ const SignUp = () => {
               <button
                 key={roleOption.value}
                 type="button"
-                onClick={() => setSelectedRole(roleOption.value)}
+                onClick={() => {
+                  setSelectedRole(roleOption.value);
+                  setValue('role', roleOption.value as SignUpFormData['role']);
+                }}
                 className={cn(
                   'relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background',
                   'group',

@@ -12,23 +12,27 @@ interface UserCredentials {
 interface SignUpCredentials extends UserCredentials {
   fullName: string;
   confirmPassword: string;
+  role?: string;
 }
 
 export async function signInAction(credentials: UserCredentials) {
   try {
-    const response = await fetch(`${API_URL}/auth/passport/sign-in`, {
+    const response = await fetch(`${API_URL}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
 
     if (!response.ok) {
-      return { faield: response.statusText };
-      throw new Error("Failed to sign in");
+      return { failed: response.statusText };
     }
 
     const data = await response.json();
-    setCookie("session", data.user);
+    await setCookie("token", data.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    await setCookie("session", JSON.stringify(data.user));
 
     return data.user;
   } catch (error) {
@@ -37,41 +41,28 @@ export async function signInAction(credentials: UserCredentials) {
 }
 
 export async function signUpAction(credentials: SignUpCredentials) {
-  const response = await fetch(`${API_URL}/auth/sign-up`, {
+  const { fullName, role, ...rest } = credentials;
+  const response = await fetch(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials),
+    body: JSON.stringify({
+      ...rest,
+      fullname: fullName,
+      role: (role || "parent").toUpperCase(),
+    }),
   });
 
   if (!response.ok) {
     throw new Error("Failed to sign up");
   }
 
-  const data = await response.json();
-  setCookie("token", data.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  return data.user;
+  // Automatically sign in so the session/token cookies are set
+  return signInAction({ email: credentials.email, password: credentials.password });
 }
 
 export async function signOut() {
-  try {
-    const response = await fetch(`${API_URL}/auth/sign-out`, {
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      console.log("signOut", response.statusText);
-    }
-    const data = await response.json();
-    console.log("signOut", data);
-
-    deleteCookie("session");
-    revalidatePath(`/`, "page");
-    return data;
-  } catch (error) {
-    return "error";
-  }
+  await deleteCookie("session");
+  await deleteCookie("token");
+  revalidatePath(`/`, "page");
+  return { success: true };
 }

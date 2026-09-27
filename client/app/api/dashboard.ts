@@ -1,28 +1,8 @@
 'use server';
 
 import { API_URL } from '@/lib/functions-helper';
-import { cookies } from 'next/headers';
+import { getAuthHeaders } from '@/lib/api-headers';
 import { transformPrismaToTypeORM, PrismaQuery, TypeORMQuery } from './query-transformer';
-
-async function getAuthHeaders() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
-  const session = cookieStore.get('session')?.value;
-  
-  console.log('Auth cookies:', { token: !!token, session: !!session });
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  } else if (session) {
-    headers['Cookie'] = `session=${session}`;
-  }
-  
-  return headers;
-}
 
 function buildQueryString(transformedQuery: TypeORMQuery) {
   const params = new URLSearchParams();

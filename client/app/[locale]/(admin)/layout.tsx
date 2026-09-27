@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import '../../globals.css';
 import TopMenuNav from '@/components/layout/top-menu-nav';
 import LeftMenuNav from '@/components/layout/left-menu-nav';
+import { requireAuth } from '@/lib/auth-helper';
 
 interface IProps {
   children: React.ReactNode;
@@ -15,6 +17,12 @@ export const metadata: Metadata = {
 
 export default async function LocaleLayout({ children }: IProps) {
   const messages = await getMessages();
+  const user = await requireAuth();
+  
+  if (!user) {
+    const t = await getTranslations('');
+    redirect(`/${t('locale')}/sign-in`);
+  }
 
   return (
     <main className="w-full grid grid-cols-10">

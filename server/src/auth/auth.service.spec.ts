@@ -138,7 +138,10 @@ describe('AuthService', () => {
 
       const result = await service.signIn(signInDto);
 
-      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: signInDto.email } });
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: expect.any(String) },
+        select: ['id', 'email', 'fullname', 'phone', 'role', 'password'],
+      });
       expect(bcrypt.compare).toHaveBeenCalledWith(signInDto.password, mockUser.password);
       expect(jwtService.sign).toHaveBeenCalledWith({
         sub: mockUser.id,
@@ -182,7 +185,10 @@ describe('AuthService', () => {
       const result = await service.validateUser('test@example.com', 'password123');
 
       expect(cacheService.getOrSet).toHaveBeenCalled();
-      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: expect.any(String) },
+        select: ['id', 'email', 'fullname', 'phone', 'role', 'password'],
+      });
       expect(result).toEqual(mockUser);
     });
 

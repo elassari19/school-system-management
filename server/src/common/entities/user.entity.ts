@@ -34,7 +34,7 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({
