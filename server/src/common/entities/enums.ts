@@ -23,3 +23,10 @@ export enum ContentType {
   QUIZ = 'quiz',
   IMAGE = 'image',
 }
+
+export enum EventType {
+  SCHOOL = 'School',
+  HOLIDAY = 'Holiday',
+  EXAM = 'Exam',
+  MEETING = 'Meeting',
+}

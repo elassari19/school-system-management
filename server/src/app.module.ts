@@ -13,6 +13,7 @@ import { ChapterModule } from './chapter/chapter.module';
 import { ContentModule } from './content/content.module';
 import { GroupModule } from './group/group.module';
 import { PaymentModule } from './payment/payment.module';
+import { EventModule } from './event/event.module';
 import { CacheModule } from './common/cache/cache.module';
 
 @Module({
@@ -34,6 +35,7 @@ import { CacheModule } from './common/cache/cache.module';
     ContentModule,
     GroupModule,
     PaymentModule,
+    EventModule,
   ],
 })
 export class AppModule {}

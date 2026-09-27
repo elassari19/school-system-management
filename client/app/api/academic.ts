@@ -1,4 +1,4 @@
-import { StudentFormType, TeacherFormType } from '../../lib/zod-schema';
+import { ClassFormType, StudentFormType, SubjectFormType, TeacherFormType } from '../../lib/zod-schema';
 import { countData, createData, getData, getFirstData, updateData } from './services';
 
 // acadimic page
@@ -278,4 +278,110 @@ export async function updateTeacherQuery(
       },
     },
   });
+}
+
+// class page
+export async function getClassesStatsQuery() {
+  return await getData(
+    {
+      include: {
+        students: true,
+        teachers: true,
+        subject: true,
+      },
+    },
+    'class'
+  );
+}
+
+export async function getSearchClassesQuery(page: number, q: string) {
+  return await getData(
+    {
+      where: { name: { contains: q, mode: 'insensitive' } },
+      include: {
+        students: true,
+        teachers: true,
+        subject: true,
+      },
+      skip: page > 0 ? (page - 1) * 5 : 0,
+      take: 5,
+      orderBy: { createdAt: 'asc' },
+    },
+    'class'
+  );
+}
+
+export async function getClassQuery(id: string) {
+  return await getFirstData(
+    {
+      where: { id },
+      include: {
+        students: true,
+        teachers: true,
+        subject: true,
+      },
+    },
+    'class'
+  );
+}
+
+export async function createClassQuery(data: ClassFormType) {
+  return await createData({ data: { name: data.name } }, 'class');
+}
+
+export async function updateClassQuery(data: ClassFormType, id: string) {
+  return await updateData({ where: { id }, data: { name: data.name } }, 'class');
+}
+
+// subject page
+export async function getSubjectsStatsQuery() {
+  return await getData(
+    {
+      include: {
+        courses: true,
+        teacher: true,
+        classes: true,
+      },
+    },
+    'subject'
+  );
+}
+
+export async function getSearchSubjectsQuery(page: number, q: string) {
+  return await getData(
+    {
+      where: { name: { contains: q, mode: 'insensitive' } },
+      include: {
+        courses: true,
+        teacher: true,
+        classes: true,
+      },
+      skip: page > 0 ? (page - 1) * 5 : 0,
+      take: 5,
+      orderBy: { createdAt: 'asc' },
+    },
+    'subject'
+  );
+}
+
+export async function getSubjectQuery(id: string) {
+  return await getFirstData(
+    {
+      where: { id },
+      include: {
+        courses: true,
+        teacher: true,
+        classes: true,
+      },
+    },
+    'subject'
+  );
+}
+
+export async function createSubjectQuery(data: SubjectFormType) {
+  return await createData({ data: { name: data.name } }, 'subject');
+}
+
+export async function updateSubjectQuery(data: SubjectFormType, id: string) {
+  return await updateData({ where: { id }, data: { name: data.name } }, 'subject');
 }

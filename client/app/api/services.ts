@@ -11,7 +11,7 @@ import {
   PrismaQuery,
 } from './query-transformer';
 
-const WHERE_BASED_TARGETS = ['user', 'class'];
+const WHERE_BASED_TARGETS = ['user', 'class', 'subject', 'event'];
 const ID_BASED_TARGETS = ['student', 'teacher'];
 
 function buildUpdateBody(query: PrismaQuery, target: string) {
@@ -94,7 +94,7 @@ export async function updateData(query: PrismaQuery, target = 'user') {
 
 export async function createData(query: PrismaQuery, target = 'user') {
   const transformedQuery = transformCreateQuery(query);
-  const res = await fetch(`${API_URL}/${target}/create`, {
+  const res = await fetch(`${API_URL}/${target}`, {
     method: 'POST',
     headers: await getAuthHeaders(),
     body: JSON.stringify(transformedQuery.data),

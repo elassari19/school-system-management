@@ -4,6 +4,7 @@ export { Teacher } from './teacher.entity';
 export { Parent } from './parent.entity';
 export { Class } from './class.entity';
 export { Subject } from './subject.entity';
+export { Event } from './event.entity';
 export { Course } from './course.entity';
 export { Chapter } from './chapter.entity';
 export { Content } from './content.entity';

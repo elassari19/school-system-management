@@ -31,9 +31,10 @@ interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   bodyCell: any[];
   ModalForm: React.FC<{ user: string }>;
   pages: number;
+  target?: string;
 }
 
-const PageTable = ({ headCell, bodyCell, pages, ModalForm, className }: IProps) => {
+const PageTable = ({ headCell, bodyCell, pages, ModalForm, className, target = 'user' }: IProps) => {
   const { g } = useIntlTranslations();
   const [tableData, setTableData] = useState(bodyCell || []);
 
@@ -50,9 +51,12 @@ const PageTable = ({ headCell, bodyCell, pages, ModalForm, className }: IProps) 
 
   const handleDelete = async (item: any) => {
     try {
-      const response = await deleteData({
-        where: { id: item.id },
-      });
+      const response = await deleteData(
+        {
+          where: { id: item.id },
+        },
+        target
+      );
 
       if (response.error) {
         console.error('Delete failed:', response.error);

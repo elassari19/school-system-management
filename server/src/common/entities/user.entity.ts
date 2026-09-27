@@ -19,6 +19,7 @@ import { Group } from './group.entity';
 import { GroupMembership } from './group-membership.entity';
 import { Session } from './session.entity';
 import { Account } from './account.entity';
+import { Event } from './event.entity';
 
 @Entity('users')
 export class User {
@@ -97,4 +98,7 @@ export class User {
 
   @OneToMany(() => Account, (account) => account.user)
   account: Account[];
+
+  @OneToMany(() => Event, (event) => event.createdBy)
+  events: Event[];
 }

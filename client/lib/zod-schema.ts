@@ -244,3 +244,24 @@ export const studentFormSchema = z.object({
   image: z.string().optional(),
 });
 export type StudentFormType = z.infer<typeof studentFormSchema>;
+
+export const classFormSchema = z.object({
+  name: z.string().min(1, 'Class name is required'),
+});
+export type ClassFormType = z.infer<typeof classFormSchema>;
+
+export const subjectFormSchema = z.object({
+  name: z.string().min(1, 'Subject name is required'),
+});
+export type SubjectFormType = z.infer<typeof subjectFormSchema>;
+
+export const eventFormSchema = z.object({
+  name: z.string().min(1, 'Event name is required'),
+  date: z.string().min(1, 'Date is required'),
+  location: z.string().optional(),
+  type: z.enum(['School', 'Holiday', 'Exam', 'Meeting'], {
+    required_error: 'Please select a type',
+  }),
+  description: z.string().optional(),
+});
+export type EventFormType = z.infer<typeof eventFormSchema>;

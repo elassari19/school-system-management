@@ -32,10 +32,14 @@ export class ClassService {
   async findAll(query: any = {}): Promise<Class[]> {
     const cacheKey = this.cacheService.generateListCacheKey('class', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
+      const options = sanitizeFindQuery<Class>(query);
       return this.classRepository.find({
-        ...query,
-        relations: ['students', 'teachers', 'teachers.teacher', 'subject', 'user'],
-        order: { createdAt: 'ASC' },
+        ...options,
+        relations:
+          Array.isArray(options.relations) && options.relations.length
+            ? (options.relations as string[])
+            : ['students', 'teachers', 'teachers.teacher', 'subject', 'user'],
+        order: options.order ?? { createdAt: 'ASC' },
       });
     }, { ttl: this.cacheService['cacheConfig'].getTtl('default'), tags: ['class'] });
   }
