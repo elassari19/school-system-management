@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
-import '../../globals.css';
 import TopMenuNav from '@/components/layout/top-menu-nav';
 import LeftMenuNav from '@/components/layout/left-menu-nav';
 import { requireAuth } from '@/lib/auth-helper';
@@ -22,6 +21,11 @@ export default async function LocaleLayout({ children }: IProps) {
   if (!user) {
     const t = await getTranslations('');
     redirect(`/${t('locale')}/sign-in`);
+  }
+
+  if (user.role === 'STUDENT') {
+    const t = await getTranslations('');
+    redirect(`/${t('locale')}/courses`);
   }
 
   return (

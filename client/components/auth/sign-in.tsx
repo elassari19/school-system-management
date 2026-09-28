@@ -54,7 +54,7 @@ const SignIn = () => {
         return toast.error(au('Email or Password wrong'));
       }
       toast.success(`${au('Successfully signed in')} ${response.fullname}`);
-      router.push('/dashboard');
+      router.push(response.role === 'STUDENT' ? '/courses' : '/dashboard');
       router.refresh();
     } catch {
       toast.error(au('Failed to sign in Please try again'));
