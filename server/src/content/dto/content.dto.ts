@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsUUID, IsEnum, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsEnum, IsObject, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentType } from '../../common/entities/enums';
 
@@ -14,6 +14,11 @@ export class CreateContentDto {
   @ApiProperty({ example: { url: 'https://example.com/video.mp4', duration: 600 } })
   @IsObject()
   data: Record<string, any>;
+
+  @ApiPropertyOptional({ example: 0 })
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 
   @ApiProperty({ example: 'uuid' })
   @IsUUID()
@@ -35,6 +40,11 @@ export class UpdateContentDto {
   @IsOptional()
   @IsObject()
   data?: Record<string, any>;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 
   @ApiPropertyOptional({ example: 'uuid' })
   @IsOptional()

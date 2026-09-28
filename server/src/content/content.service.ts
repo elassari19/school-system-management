@@ -51,6 +51,8 @@ export class ContentService {
     const content = this.contentRepository.create(createContentDto);
     const savedContent = await this.contentRepository.save(content);
     await this.cacheService.invalidateByTag('content');
+    await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
     return savedContent;
   }
 
@@ -59,6 +61,8 @@ export class ContentService {
     Object.assign(content, updateContentDto);
     const updatedContent = await this.contentRepository.save(content);
     await this.cacheService.invalidateByTag('content');
+    await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
     return updatedContent;
   }
 
@@ -66,15 +70,21 @@ export class ContentService {
     await this.findOne(id);
     await this.contentRepository.delete(id);
     await this.cacheService.invalidateByTag('content');
+    await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
   }
 
   async deleteMany(ids: string[]): Promise<void> {
     await this.contentRepository.delete(ids);
     await this.cacheService.invalidateByTag('content');
+    await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
   }
 
   async deleteAll(): Promise<void> {
     await this.contentRepository.clear();
     await this.cacheService.invalidateByTag('content');
+    await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
   }
 }

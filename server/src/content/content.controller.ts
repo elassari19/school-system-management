@@ -70,7 +70,7 @@ export class ContentController {
   }
 
   @Delete()
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'TEACHER')
   @ApiOperation({ summary: 'Delete a content' })
   @ApiResponse({ status: 200, description: 'Content deleted successfully' })
   @ApiResponse({ status: 404, description: 'Content not found' })
@@ -79,7 +79,7 @@ export class ContentController {
   }
 
   @Delete('many')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'TEACHER')
   @ApiOperation({ summary: 'Delete many contents' })
   @ApiResponse({ status: 200, description: 'Contents deleted successfully' })
   async deleteManyContents(@Body() body: { ids: string[] }) {

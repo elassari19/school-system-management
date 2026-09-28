@@ -51,6 +51,7 @@ export class ChapterService {
     const chapter = this.chapterRepository.create(createChapterDto);
     const savedChapter = await this.chapterRepository.save(chapter);
     await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
     return savedChapter;
   }
 
@@ -59,6 +60,7 @@ export class ChapterService {
     Object.assign(chapter, updateChapterDto);
     const updatedChapter = await this.chapterRepository.save(chapter);
     await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
     return updatedChapter;
   }
 
@@ -66,15 +68,18 @@ export class ChapterService {
     await this.findOne(id);
     await this.chapterRepository.delete(id);
     await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
   }
 
   async deleteMany(ids: string[]): Promise<void> {
     await this.chapterRepository.delete(ids);
     await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
   }
 
   async deleteAll(): Promise<void> {
     await this.chapterRepository.clear();
     await this.cacheService.invalidateByTag('chapter');
+    await this.cacheService.invalidateByTag('course');
   }
 }

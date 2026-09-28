@@ -16,6 +16,11 @@ export class CreateChapterDto {
   @IsNumber()
   duration?: number;
 
+  @ApiPropertyOptional({ example: 0 })
+  @IsOptional()
+  @IsNumber()
+  order?: number;
+
   @ApiProperty({ example: 'uuid' })
   @IsUUID()
   courseId: string;
@@ -36,6 +41,11 @@ export class UpdateChapterDto {
   @IsOptional()
   @IsNumber()
   duration?: number;
+
+  @ApiPropertyOptional({ example: 1 })
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 
   @ApiPropertyOptional({ example: 'uuid' })
   @IsOptional()

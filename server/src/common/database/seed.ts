@@ -21,6 +21,7 @@ import { VerificationToken } from '../entities/verification-token.entity';
 import { TeacherClasses } from '../entities/teacher-classes.entity';
 import { SubjectClasses } from '../entities/subject-classes.entity';
 import { Role, Level, ContentType, PaymentStatus } from '../entities/enums';
+import { seedCourses } from './seed-courses';
 import * as bcrypt from 'bcryptjs';
 
 async function seed() {
@@ -221,6 +222,9 @@ async function seed() {
   });
   await userRepo.save(adminUser);
   console.log('Created admin user');
+
+  await seedCourses(AppDataSource);
+  console.log('Created courses');
 
   await AppDataSource.destroy();
   console.log('Seeding completed!');

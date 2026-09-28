@@ -70,7 +70,7 @@ export class ChapterController {
   }
 
   @Delete()
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'TEACHER')
   @ApiOperation({ summary: 'Delete a chapter' })
   @ApiResponse({ status: 200, description: 'Chapter deleted successfully' })
   @ApiResponse({ status: 404, description: 'Chapter not found' })
@@ -79,7 +79,7 @@ export class ChapterController {
   }
 
   @Delete('many')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'TEACHER')
   @ApiOperation({ summary: 'Delete many chapters' })
   @ApiResponse({ status: 200, description: 'Chapters deleted successfully' })
   async deleteManyChapters(@Body() body: { ids: string[] }) {

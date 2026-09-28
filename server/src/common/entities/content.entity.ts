@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { ContentType } from './enums';
@@ -23,6 +24,10 @@ export class Content {
 
   @Column()
   title: string;
+
+  @Index()
+  @Column({ type: 'int', default: 0 })
+  order: number;
 
   @Column({ type: 'jsonb' })
   data: Record<string, any>;

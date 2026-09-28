@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Content } from './content.entity';
 import { Course } from './course.entity';
@@ -24,6 +25,10 @@ export class Chapter {
 
   @Column({ nullable: true })
   duration: number;
+
+  @Index()
+  @Column({ type: 'int', default: 0 })
+  order: number;
 
   @OneToMany(() => Content, (content) => content.chapter)
   content: Content[];

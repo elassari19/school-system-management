@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsUUID, IsNumber, IsEnum, IsArray, IsNumberString } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsNumber, IsEnum, IsArray, IsNumberString, IsBoolean } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Level } from '../../common/entities/enums';
 
@@ -31,9 +31,10 @@ export class CreateCourseDto {
   @IsString({ each: true })
   tags?: string[];
 
-  @ApiProperty({ example: 'https://example.com/thumbnail.jpg' })
+  @ApiPropertyOptional({ example: 'https://example.com/thumbnail.jpg' })
+  @IsOptional()
   @IsString()
-  thumbnail: string;
+  thumbnail?: string;
 
   @ApiProperty({ example: 'uuid' })
   @IsUUID()
@@ -47,6 +48,11 @@ export class CreateCourseDto {
   @IsOptional()
   @IsNumber()
   price?: number;
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  published?: boolean;
 }
 
 export class UpdateCourseDto {
@@ -100,6 +106,11 @@ export class UpdateCourseDto {
   @IsOptional()
   @IsNumber()
   price?: number;
+
+  @ApiPropertyOptional({ example: true })
+  @IsOptional()
+  @IsBoolean()
+  published?: boolean;
 }
 
 export class GetCourseDto {

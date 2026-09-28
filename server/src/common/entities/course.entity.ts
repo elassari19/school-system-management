@@ -45,7 +45,7 @@ export class Course {
   @OneToMany(() => Chapter, (chapter) => chapter.course)
   chapters: Chapter[];
 
-  @Column()
+  @Column({ nullable: true })
   thumbnail: string;
 
   @OneToMany(() => Grade, (grade) => grade.course)
@@ -70,6 +70,9 @@ export class Course {
 
   @Column({ type: 'float', default: 0 })
   price: number;
+
+  @Column({ type: 'boolean', default: false })
+  published: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
