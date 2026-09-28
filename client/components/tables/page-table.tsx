@@ -32,9 +32,18 @@ interface IProps extends React.HTMLAttributes<HTMLDivElement> {
   ModalForm: React.FC<{ user: string }>;
   pages: number;
   target?: string;
+  readOnly?: boolean;
 }
 
-const PageTable = ({ headCell, bodyCell, pages, ModalForm, className, target = 'user' }: IProps) => {
+const PageTable = ({
+  headCell,
+  bodyCell,
+  pages,
+  ModalForm,
+  className,
+  target = 'user',
+  readOnly = false,
+}: IProps) => {
   const { g } = useIntlTranslations();
   const [tableData, setTableData] = useState(bodyCell || []);
 
@@ -111,7 +120,7 @@ const PageTable = ({ headCell, bodyCell, pages, ModalForm, className, target = '
               {headCell.map((item, index) => (
                 <TableHead key={index}>{g(item)}</TableHead>
               ))}
-              <TableHead className="text-center">{g('More')}</TableHead>
+              {!readOnly && <TableHead className="text-center">{g('More')}</TableHead>}
             </TableRow>
           </TableHeader>
 
@@ -142,7 +151,7 @@ const PageTable = ({ headCell, bodyCell, pages, ModalForm, className, target = '
                   })}
 
                   {/* more action */}
-                  {headCell.length > 0 && (
+                  {!readOnly && headCell.length > 0 && (
                     <TableCell className="text-sm flex items-cneter justify-center gap-4">
                       <Link
                         href={`${pathname}/${item.id}`}

@@ -328,7 +328,19 @@
     "Discard": "تجاهل",
     "No content yet": "لا يوجد محتوى بعد",
     "Draft each chapter with its own AI assistant": "اكتب كل فصل بمساعد الذكاء الاصطناعي الخاص به",
-    "Chapters unlock after the course is created": "تُفتح الفصول بعد إنشاء الدورة"
+    "Chapters unlock after the course is created": "تُفتح الفصول بعد إنشاء الدورة",
+    "Staff": "الموظفون",
+    "Directors": "المديرون",
+    "Custodians": "عمال النظافة",
+    "Accountants": "المحاسبون",
+    "Custody": "الحراسة العامة",
+    "Open Positions": "وظائف شاغرة",
+    "Monthly": "شهري",
+    "yearly": "سنوي",
+    "Department": "القسم",
+    "Hire Date": "تاريخ التوظيف",
+    "Inactive": "غير نشط",
+    "On Leave": "في إجازة"
   },
   "auth": {
     "Successfully signed in": "تم تسجيل الدخول بنجاح",

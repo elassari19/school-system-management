@@ -327,7 +327,19 @@
     "Discard": "Discard",
     "No content yet": "No content yet",
     "Draft each chapter with its own AI assistant": "Draft each chapter with its own AI assistant",
-    "Chapters unlock after the course is created": "Chapters unlock after the course is created"
+    "Chapters unlock after the course is created": "Chapters unlock after the course is created",
+    "Staff": "Staff",
+    "Directors": "Directors",
+    "Custodians": "Custodians",
+    "Accountants": "Accountants",
+    "Custody": "Custody",
+    "Open Positions": "Open Positions",
+    "Monthly": "Monthly",
+    "yearly": "yearly",
+    "Department": "Department",
+    "Hire Date": "Hire Date",
+    "Inactive": "Inactive",
+    "On Leave": "On Leave"
   },
   "auth": {
     "Successfully signed in": "Successfully signed in",

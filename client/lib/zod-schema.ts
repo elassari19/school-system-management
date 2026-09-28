@@ -245,6 +245,25 @@ export const studentFormSchema = z.object({
 });
 export type StudentFormType = z.infer<typeof studentFormSchema>;
 
+export const staffFormSchema = z.object({
+  fullname: z.string().min(1, 'Full name is required'),
+  email: z.string().email('Invalid email address'),
+  age: z.string().min(1, 'Age is required'),
+  password: z
+    .string()
+    .optional()
+    .or(z.string().min(8, 'Password must be at least 8 characters')),
+  address: z.string().optional(),
+  gender: z.enum(['male', 'female'], {
+    required_error: 'Please select a gender',
+  }),
+  salary: z.string().optional(),
+  role: z.enum(['ADMIN', 'PARENT']).default('ADMIN'),
+  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  image: z.string().optional(),
+});
+export type StaffFormType = z.infer<typeof staffFormSchema>;
+
 export const classFormSchema = z.object({
   name: z.string().min(1, 'Class name is required'),
 });

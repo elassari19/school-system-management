@@ -7,6 +7,8 @@ import { AccordionMenu } from '../ui/accordion';
 import useUrlPath from '@/hooks/use-urlPath';
 import useIntlTranslations from '@/hooks/use-intl-translations';
 
+const toSlug = (value: string) => value.toLocaleLowerCase().replace(/\s+/g, '-');
+
 const MenuTabs = () => {
   const { t, g } = useIntlTranslations();
 
@@ -42,7 +44,7 @@ const MenuTabs = () => {
               key={subItem}
               href={`/${t(
                 'locale'
-              )}/${item.title.toLocaleLowerCase()}/${subItem.toLocaleLowerCase()}`}
+              )}/${item.title.toLocaleLowerCase()}/${toSlug(subItem)}`}
               locale={t('locale')}
               className={cn(
                 'hover:text-secondary/60 flex items-center gap-8 ml-4 text-sm font-semibold border-black/30',
@@ -52,7 +54,7 @@ const MenuTabs = () => {
               <div
                 className={cn(
                   'w-3 border',
-                  params === subItem.toLocaleLowerCase()
+                  params === toSlug(subItem)
                     ? 'border-b-black'
                     : 'border-b-black/50'
                 )}
@@ -60,7 +62,7 @@ const MenuTabs = () => {
               <p
                 className={cn(
                   'text-sm hover:text-secondary/60',
-                  params === subItem.toLocaleLowerCase() ? 'text-primary' : 'text-black/50'
+                  params === toSlug(subItem) ? 'text-primary' : 'text-black/50'
                 )}
               >
                 {g(subItem)}

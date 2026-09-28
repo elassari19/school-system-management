@@ -181,6 +181,217 @@ export const parentData = [
   },
 ];
 
+export interface StaffMember {
+  id: string;
+  avatar: string;
+  fullname: string;
+  email: string;
+  phone: string;
+  position: string;
+  department: string;
+  hiredate: string;
+  salary: number;
+  gender: 'Male' | 'Female';
+  age: number;
+  status: 'Active' | 'On Leave' | 'Inactive';
+}
+
+const staffOf = (members: Omit<StaffMember, 'id'>[], prefix: string): StaffMember[] =>
+  members.map((member, index) => ({ id: `${prefix}-${index + 1}`, ...member }));
+
+export const directorData: StaffMember[] = staffOf(
+  [
+    {
+      avatar: 'https://i.pravatar.cc/150?img=12',
+      fullname: 'Amadou Diallo',
+      email: 'director@schoolanoul.edu',
+      phone: '+221 77 123 45 67',
+      position: 'School Director',
+      department: 'Administration',
+      hiredate: '2015-09-01',
+      salary: 850000,
+      gender: 'Male',
+      age: 52,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=20',
+      fullname: 'Fatou Ndiaye',
+      email: 'deputy.director@schoolanoul.edu',
+      phone: '+221 78 234 56 78',
+      position: 'Deputy Director',
+      department: 'Administration',
+      hiredate: '2018-01-15',
+      salary: 620000,
+      gender: 'Female',
+      age: 44,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=33',
+      fullname: 'Moussa Kane',
+      email: 'pedagoogy@schoolanoul.edu',
+      phone: '+221 77 345 67 89',
+      position: 'Director of Studies',
+      department: 'Academic Affairs',
+      hiredate: '2019-10-05',
+      salary: 540000,
+      gender: 'Male',
+      age: 47,
+      status: 'On Leave',
+    },
+  ],
+  'dir'
+);
+
+export const custodyData: StaffMember[] = staffOf(
+  [
+    {
+      avatar: 'https://i.pravatar.cc/150?img=15',
+      fullname: 'Ibrahima Sow',
+      email: 'head.custody@schoolanoul.edu',
+      phone: '+221 77 456 78 90',
+      position: 'Head Custodian',
+      department: 'General Custody',
+      hiredate: '2016-03-01',
+      salary: 280000,
+      gender: 'Male',
+      age: 49,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=25',
+      fullname: 'Aminata Ba',
+      email: 'custody.north@schoolanoul.edu',
+      phone: '+221 78 567 89 01',
+      position: 'Custody Supervisor',
+      department: 'North Wing',
+      hiredate: '2020-09-12',
+      salary: 220000,
+      gender: 'Female',
+      age: 38,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=51',
+      fullname: 'Cheikh Fall',
+      email: 'custody.grounds@schoolanoul.edu',
+      phone: '+221 77 678 90 12',
+      position: 'Grounds Keeper',
+      department: 'Outdoor Areas',
+      hiredate: '2021-06-20',
+      salary: 190000,
+      gender: 'Male',
+      age: 35,
+      status: 'Inactive',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=47',
+      fullname: 'Mariama Sy',
+      email: 'custody.classrooms@schoolanoul.edu',
+      phone: '+221 78 789 01 23',
+      position: 'Classroom Attendant',
+      department: 'Main Building',
+      hiredate: '2022-01-10',
+      salary: 180000,
+      gender: 'Female',
+      age: 29,
+      status: 'Active',
+    },
+  ],
+  'cust'
+);
+
+export const hrData: StaffMember[] = staffOf(
+  [
+    {
+      avatar: 'https://i.pravatar.cc/150?img=9',
+      fullname: 'Ndeye Diop',
+      email: 'hr.manager@schoolanoul.edu',
+      phone: '+221 77 890 12 34',
+      position: 'HR Manager',
+      department: 'Human Resources',
+      hiredate: '2017-04-03',
+      salary: 560000,
+      gender: 'Female',
+      age: 41,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=68',
+      fullname: 'Ousmane Gueye',
+      email: 'hr.recruit@schoolanoul.edu',
+      phone: '+221 78 901 23 45',
+      position: 'Recruitment Officer',
+      department: 'Talent Acquisition',
+      hiredate: '2021-11-08',
+      salary: 340000,
+      gender: 'Male',
+      age: 33,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=44',
+      fullname: 'Awa Sarr',
+      email: 'hr.payroll@schoolanoul.edu',
+      phone: '+221 77 012 34 56',
+      position: 'Payroll Specialist',
+      department: 'Compensation',
+      hiredate: '2022-07-19',
+      salary: 310000,
+      gender: 'Female',
+      age: 30,
+      status: 'On Leave',
+    },
+  ],
+  'hr'
+);
+
+export const accountantData: StaffMember[] = staffOf(
+  [
+    {
+      avatar: 'https://i.pravatar.cc/150?img=60',
+      fullname: 'Modou Faye',
+      email: 'chief.accountant@schoolanoul.edu',
+      phone: '+221 77 111 22 33',
+      position: 'Chief Accountant',
+      department: 'Finance',
+      hiredate: '2016-02-14',
+      salary: 520000,
+      gender: 'Male',
+      age: 45,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=32',
+      fullname: 'Djeynabou Cisse',
+      email: 'bursar@schoolanoul.edu',
+      phone: '+221 78 222 33 44',
+      position: 'Bursar',
+      department: 'Fees Management',
+      hiredate: '2019-08-26',
+      salary: 380000,
+      gender: 'Female',
+      age: 36,
+      status: 'Active',
+    },
+    {
+      avatar: 'https://i.pravatar.cc/150?img=57',
+      fullname: 'Abdou Mbaye',
+      email: 'audit@schoolanoul.edu',
+      phone: '+221 77 333 44 55',
+      position: 'Audit Clerk',
+      department: 'Finance',
+      hiredate: '2023-02-01',
+      salary: 260000,
+      gender: 'Male',
+      age: 28,
+      status: 'Active',
+    },
+  ],
+  'acc'
+);
+
 export const genderData = [
   {
     name: 'Total',
