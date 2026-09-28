@@ -22,7 +22,7 @@ const FormInput = ({ error, label, options, ...rest }: IProps) => {
           {...rest}
           className={cn(
             "w-full p-2 bg-white outline-none rounded-md border",
-            error ? "border-secondary" : "border-green-400"
+            error ? "border-secondary" : "border-primary"
           )}
           onChange={(e) => {
             rest.onChange(e);
@@ -38,7 +38,7 @@ const FormInput = ({ error, label, options, ...rest }: IProps) => {
       ) : (
         <Input
           {...rest}
-          className={cn("bg-white", error ? "border-secondary" : "border-green-400")}
+          className={cn("bg-white", error ? "border-secondary" : "border-primary")}
         />
       )}
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

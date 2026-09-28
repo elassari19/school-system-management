@@ -178,7 +178,7 @@ export default async function page(props: IProps) {
   return (
     <PageTemplate>
       <RootCard
-        className=" h-48 rounded-t-lg relative mb-16"
+        className=" h-40 rounded-t-lg relative mb-16"
         cardContent={
           <>
             <div className="absolute top-0 left-8 flex h-12 w-12 items-center justify-center rounded-full border-2 border-secondary/50 bg-secondary/50 p-1 shadow-lg">
