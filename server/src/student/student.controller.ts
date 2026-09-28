@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Query,
+  Req,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -32,6 +33,15 @@ export class StudentController {
   @ApiResponse({ status: 404, description: 'Student not found' })
   async getStudent(@Query() query: GetStudentDto) {
     return this.studentService.findOne(query.id);
+  }
+
+  @Get('me')
+  @Roles('STUDENT')
+  @ApiOperation({ summary: 'Get the authenticated student own record (class + subjects)' })
+  @ApiResponse({ status: 200, description: 'Student found' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  async getMyStudent(@Req() req: any) {
+    return this.studentService.findMeByUserId(req.user.id);
   }
 
   @Get('all')

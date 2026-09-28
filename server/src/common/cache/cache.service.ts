@@ -151,11 +151,13 @@ export class CacheService {
 
     try {
       const taggedKey = this.generateTaggedKey(tag);
-      const keys = await this.redisService.getCache<string[]>(taggedKey);
+      const fullTaggedKey = this.generateKey(taggedKey);
+      const keys = await this.redisService.getClient().smembers(fullTaggedKey);
 
       if (keys && keys.length > 0) {
-        const deleted = await this.redisService.deleteMultiple(keys);
-        await this.redisService.clearCache(taggedKey);
+        // Set members are already fully-prefixed keys, so delete them as-is
+        const deleted = await this.redisService.getClient().del(...keys);
+        await this.redisService.getClient().del(fullTaggedKey);
         return deleted;
       }
 
@@ -405,9 +407,12 @@ export class CacheService {
   private async associateTags(key: string, tags: string[], ttl: number): Promise<void> {
     const pipeline = this.redisService.getClient().pipeline();
 
+    // `key` is already CacheService-prefixed; the entry itself is stored by
+    // RedisService with one more prefix, so track the final stored key
+    const storedKey = this.generateKey(key);
     for (const tag of tags) {
-      const taggedKey = this.generateTaggedKey(tag);
-      pipeline.sadd(taggedKey, key);
+      const taggedKey = this.generateKey(this.generateTaggedKey(tag));
+      pipeline.sadd(taggedKey, storedKey);
       pipeline.expire(taggedKey, ttl);
     }
 
@@ -417,9 +422,10 @@ export class CacheService {
   private async removeTagAssociations(key: string, tags: string[]): Promise<void> {
     const pipeline = this.redisService.getClient().pipeline();
 
+    const storedKey = this.generateKey(key);
     for (const tag of tags) {
-      const taggedKey = this.generateTaggedKey(tag);
-      pipeline.srem(taggedKey, key);
+      const taggedKey = this.generateKey(this.generateTaggedKey(tag));
+      pipeline.srem(taggedKey, storedKey);
     }
 
     await pipeline.exec();

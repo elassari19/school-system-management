@@ -29,6 +29,22 @@ export class StudentService {
     }, { ttl: this.cacheService['cacheConfig'].getTtl('user'), tags: ['student'] });
   }
 
+  async findMeByUserId(userId: string) {
+    const student = await this.studentRepository.findOne({
+      where: { userId },
+      relations: ['class', 'class.subject'],
+    });
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return {
+      id: student.id,
+      userId: student.userId,
+      classId: student.classId,
+      subjects: (student.class?.subject ?? []).map((sc) => ({ subjectId: sc.subjectId })),
+    };
+  }
+
   async findAll(query: any = {}): Promise<Student[]> {
     const cacheKey = this.cacheService.generateListCacheKey('student', query);
     return this.cacheService.getOrSet(cacheKey, async () => {
