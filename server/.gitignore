@@ -6,3 +6,4 @@ dist
 package-lock.json
 dist
 .vercel
+tsconfig.tsbuildinfo
