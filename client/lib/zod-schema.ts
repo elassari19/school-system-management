@@ -255,6 +255,19 @@ export const subjectFormSchema = z.object({
 });
 export type SubjectFormType = z.infer<typeof subjectFormSchema>;
 
+export const courseFormSchema = z.object({
+  title: z.string().min(1, 'Course title is required'),
+  description: z.string().min(1, 'Description is required'),
+  instructor: z.string().min(1, 'Instructor is required'),
+  duration: z.string().optional(),
+  level: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+  tags: z.string().optional(),
+  thumbnail: z.string().url('Invalid URL').optional().or(z.literal('')),
+  subjectId: z.string().min(1, 'Subject is required'),
+  price: z.string().optional(),
+});
+export type CourseFormType = z.infer<typeof courseFormSchema>;
+
 export const eventFormSchema = z.object({
   name: z.string().min(1, 'Event name is required'),
   date: z.string().min(1, 'Date is required'),

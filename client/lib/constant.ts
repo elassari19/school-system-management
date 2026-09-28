@@ -126,7 +126,7 @@ export const menuList = [
   {
     title: 'Academic',
     icon: GrTree,
-    list: ['Students', 'Teachers', 'Classes', 'Subjects', 'Events'],
+    list: ['Students', 'Teachers', 'Classes', 'Subjects', 'Courses', 'Events'],
   },
   // {
   //   title: 'Attendance',

@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import NoData from '@/components/no-data';
+import CoursesTable from '@/components/tables/courses-table';
 import { getTranslations } from 'next-intl/server';
 import { BookOpen, GraduationCap, Layers, School, Users } from 'lucide-react';
 
@@ -95,37 +95,9 @@ export default async function page(props: IProps) {
     0
   );
 
-  const coursesContent =
-    courses.length === 0 ? (
-      <NoData />
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{g('Course Title')}</TableHead>
-            <TableHead>{g('Instructor')}</TableHead>
-            <TableHead>{g('Level')}</TableHead>
-            <TableHead>{g('Chapters')}</TableHead>
-            <TableHead>{g('Price')}</TableHead>
-            <TableHead>{g('Created At')}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {courses.map((course) => (
-            <TableRow key={course.id}>
-              <TableCell className="font-medium">{course.title || '-'}</TableCell>
-              <TableCell>{course.instructor || '-'}</TableCell>
-              <TableCell>
-                {course.level ? <Badge variant="secondary">{course.level}</Badge> : '-'}
-              </TableCell>
-              <TableCell>{course.chapters?.length ?? 0}</TableCell>
-              <TableCell>{course.price ? `$${course.price}` : '-'}</TableCell>
-              <TableCell>{formatDate(course.createdAt)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    );
+  const coursesContent = (
+    <CoursesTable courses={courses} subjectId={subject.id} />
+  );
 
   const teachersContent =
     teachers.length === 0 ? (

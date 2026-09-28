@@ -11,7 +11,7 @@ import {
   PrismaQuery,
 } from './query-transformer';
 
-const WHERE_BASED_TARGETS = ['user', 'class', 'subject', 'event'];
+const WHERE_BASED_TARGETS = ['user', 'class', 'subject', 'event', 'course', 'chapter', 'content'];
 const ID_BASED_TARGETS = ['student', 'teacher'];
 
 function buildUpdateBody(query: PrismaQuery, target: string) {
@@ -77,6 +77,16 @@ export async function getFirstData(query: Record<string, unknown>, target = 'use
   });
   const data = await res.json();
   return Array.isArray(data) ? data[0] ?? null : data;
+}
+
+export async function getMyStudent(): Promise<{ classId?: string; subjects?: { subjectId: string }[] } | null> {
+  const res = await fetch(`${API_URL}/student/me`, {
+    method: 'GET',
+    headers: await getAuthHeaders(),
+    cache: 'no-store',
+  });
+  if (!res.ok) return null;
+  return res.json();
 }
 
 export async function updateData(query: PrismaQuery, target = 'user') {
