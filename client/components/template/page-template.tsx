@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import OverviewCard from '../cards/overview-card';
+import OverviewGrid from '../cards/overview-grid';
 import { getTranslations } from 'next-intl/server';
 import SearchInput from '../inputs/search-input';
 import { SheetDrawer } from '../ui/sheet';
@@ -14,19 +14,7 @@ interface OverviewProps {
   }[];
 }
 export function OverviewSection({ overviewData }: OverviewProps) {
-  return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-      {overviewData.map(({ icon, title, currentValue, pastValue }) => (
-        <OverviewCard
-          key={title}
-          icon={icon}
-          title={title}
-          currentValue={currentValue}
-          pastValue={pastValue}
-        />
-      ))}
-    </section>
-  );
+  return <OverviewGrid overviewData={overviewData} />;
 }
 
 interface ActionsProps extends React.HTMLAttributes<HTMLDivElement> {

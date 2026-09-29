@@ -24,6 +24,8 @@ const statusTone: Record<string, keyof typeof toneStyles> = {
   Draft: 'warning',
   Partial: 'warning',
   Pending: 'warning',
+  'In Maintenance': 'warning',
+  'On Leave': 'warning',
   Overdue: 'destructive',
   'Out of Stock': 'destructive',
   Inactive: 'destructive',

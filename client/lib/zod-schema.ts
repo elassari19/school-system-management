@@ -297,3 +297,29 @@ export const eventFormSchema = z.object({
   description: z.string().optional(),
 });
 export type EventFormType = z.infer<typeof eventFormSchema>;
+
+export const vehicleFormSchema = z.object({
+  plate: z.string().min(1, 'Plate number is required'),
+  type: z.enum(['Bus', 'Minibus', 'Van', 'Car'], {
+    required_error: 'Please select a vehicle type',
+  }),
+  model: z.string().min(1, 'Model is required'),
+  capacity: z.string().min(1, 'Capacity is required'),
+  driver: z.string().default('none'),
+  route: z.string().min(1, 'Route is required'),
+  insuranceExpiry: z.string().min(1, 'Insurance expiry is required'),
+  status: z.enum(['Available', 'In Maintenance', 'Inactive']).default('Available'),
+});
+export type VehicleFormType = z.infer<typeof vehicleFormSchema>;
+
+export const driverFormSchema = z.object({
+  fullname: z.string().min(1, 'Full name is required'),
+  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  licenseNumber: z.string().min(1, 'License number is required'),
+  licenseExpiry: z.string().min(1, 'License expiry is required'),
+  experience: z.string().min(1, 'Experience is required'),
+  route: z.string().min(1, 'Route is required'),
+  vehicle: z.string().default('none'),
+  status: z.enum(['Active', 'On Leave', 'Inactive']).default('Active'),
+});
+export type DriverFormType = z.infer<typeof driverFormSchema>;
